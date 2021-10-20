@@ -12,7 +12,7 @@ class Room:
         self.neighbours = []  # neighbouring rooms coordinates
         self.doors = []  # door locations
         self.type = None  # type of the room, to be added
-        self.room_map = None  # csv-like file
+        self.room_map = None  # list of sprite identifiers
         self.room_image = None  # TileMap
 
     def __repr__(self):
@@ -117,7 +117,6 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                         if door == 'right':
                             room_map[5][20] = -1
                         if door == 'up':
-                            # room_map[0][10] = -1
                             room_map[1][10] = -1
                         if door == 'down':
                             room_map[10][10] = -1

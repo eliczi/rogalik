@@ -1,9 +1,17 @@
 import pygame
 
-
 world_size = (1312, 720)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+
+
+def draw_text(self, text, size, x, y):
+    font = pygame.font.SysFont('Comic Sans MS', size)
+    text_surface = font.render(text, True, WHITE)
+    text_rect = text_surface.get_rect()
+    text_rect.center = (x, y)
+    self.screen.blit(text_surface, text_rect)
+
 
 def collided2(sprite, other):
     """Check if the hitbox of one sprite collides with rect of another sprite."""

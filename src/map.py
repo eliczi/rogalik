@@ -1,5 +1,6 @@
 import pygame, csv, os
 import utils
+from player import Player
 
 
 class Spritesheet(object):
@@ -24,27 +25,11 @@ class Tile(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = spritesheet.image_at(rectangle)
         self.image = pygame.transform.scale(self.image, (64, 64))
-        # Manual load in: self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
-
-    def map_size(self, game):
-        self.image_size = (64, 64)
-        self.image_size = tuple(int(game.zoom_level * x) for x in self.image_size)
-        self.image = pygame.transform.scale(self.image, self.image_size)
-
-    def update(self, game):
-        self.map_size(game)
-        c = self.rect.center
-        self.rect = self.image.get_rect()
-        self.rect.center = c
-
-
-def update_player_position():
-    pass
 
 
 class TileMap():
@@ -58,6 +43,7 @@ class TileMap():
         self.map_surface = pygame.Surface(utils.world_size)
         self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
+        self.player = None
 
     def draw_map(self, surface):
         if self.x != 0:
@@ -97,3 +83,22 @@ class TileMap():
                 x += 64
             y += 64
         return tiles
+
+    def next_level(self, player, current_map):
+        for wall in self.entrance:
+            if wall.rect.collidepoint(player.hitbox.midbottom) or wall.rect.collidepoint(
+                    player.hitbox.bottomleft) or wall.rect.collidepoint(player.hitbox.bottomright):
+
+                if player.rect.y < 100:
+                    current_map[0] -= 1
+                    player.rect.y = 572
+                elif player.rect.y > 500:
+                    current_map[0] += 1
+                    player.rect.y = 64
+                elif player.rect.x > 600:
+                    current_map[1] += 1
+                    player.rect.x = 48
+                elif player.rect.x < 100:
+                    current_map[1] -= 1
+                    player.rect.x = 1230
+

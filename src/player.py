@@ -29,13 +29,13 @@ class Player(pygame.sprite.Sprite):
         self.velocity = [0, 0]
         self.old_velocity = [0, 0]
         self.speed = 100
-        self.direction = 'RIGHT'
+        self.direction = ''
         self.player_moving = False
         self.player_index = 0  # animation frames
         # Player Attacking
         self.attacking = False
         self.hasWeapon = True
-        self.weapon = Weapon(self.game, 10, 'sword', 2, self.game.weapon_group)  # usuniete groups z self.game
+        self.weapon = Weapon(self.game, 10, 'sword', self.game.weapon_group)  # usuniete groups z self.game
         self.hp = 100
         self.max_stamina = 1000
         self.current_stamina = self.max_stamina
@@ -170,7 +170,7 @@ class Player(pygame.sprite.Sprite):
     def wall_collision(self):
         """Sets player's velocity to zero if it would collide with walls
            In other words, prevents player to collide with walls"""
-        for wall in self.game.wall_list:
+        for wall in self.game.map.wall_list:
             test_rect = self.hitbox.move(*self.velocity)
             if wall.rect.collidepoint(test_rect.midbottom) or wall.rect.collidepoint(
                     test_rect.bottomleft) or wall.rect.collidepoint(test_rect.bottomright):
