@@ -1,8 +1,9 @@
 import pygame
 
 
-
-
+world_size = (1312, 720)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 def collided2(sprite, other):
     """Check if the hitbox of one sprite collides with rect of another sprite."""

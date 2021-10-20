@@ -1,25 +1,27 @@
 import random
+import csv
+import copy
+from map import TileMap
 
 
 class Room:
     def __init__(self, x, y, starting):
         self.x = x
         self.y = y
-        self.starting = starting
-        self.neighbours = []
-        # we need to specify side from which it is possible to get to the neighbour
-        self.doors = []
-        self.type = None
-        self.room_map = None
-        self.room_image = None
+        self.starting = starting  # starting room
+        self.neighbours = []  # neighbouring rooms coordinates
+        self.doors = []  # door locations
+        self.type = None  # type of the room, to be added
+        self.room_map = None  # csv-like file
+        self.room_image = None  # TileMap
 
     def __repr__(self):
-        return f'({self.x}, {self.y})'
+        return f'({self.x}, {self.y})' # str(self)?
 
     def __str__(self):
         return f'({self.x}, {self.y})'
 
-    def position_to_side(self, position):
+    def position_to_direction(self, position):
         direction = None
         if position[0] == 1:
             direction = 'up'
@@ -29,21 +31,21 @@ class Room:
             direction = 'left'
         elif position[1] == -1:
             direction = 'right'
-
         self.doors.append(direction)
 
     def door_position(self):
         if len(self.neighbours) == 1:  # if only 1 neighbour, there must be a door to that neighbour
             position = [self.x - self.neighbours[0][0], self.y - self.neighbours[0][1]]
-            self.position_to_side(position)  # add position to door list
+            self.position_to_direction(position)  # add position to door list
         else:
             for neighbour in self.neighbours:
                 position = [self.x - neighbour[0], self.y - neighbour[1]]
-                self.position_to_side(position)
+                self.position_to_direction(position)
 
 
-def map_generator(num_of_rooms, width, height):
+def map_generator(num_of_rooms, width, height, spritesheet):
     """Generate specified number of room in a world of specified size and connection between them"""
+    spritesheet = spritesheet
     world_width, world_height = width, height  # world size
     world = [[None for x in range(world_width)] for y in range(world_height)]
 
@@ -72,10 +74,9 @@ def map_generator(num_of_rooms, width, height):
 
     room_counter = 0
     first_room = True
-    start_room = None
     while room_counter < num_of_rooms:
         if first_room:
-            start_room = world[x][y] = Room(x, y, True)
+            world[x][y] = Room(x, y, True)
             first_room = False
         else:
             world[x][y] = Room(x, y, False)
@@ -99,7 +100,34 @@ def map_generator(num_of_rooms, width, height):
                     for q in range(-1, 2, 2):  # left/right
                         if check_boundary(room.y + q, world_width) and world[room.x][room.y + q] is not None:
                             room.neighbours.append([room.x, room.y + q])
-                    room.door_position() # generates doors
+                    room.door_position()  # generates doors
+
+    def add_room_map():
+        with open('../maps/test_map.csv', newline='') as f:  # load room template
+            reader = csv.reader(f)
+            basic_map = list(reader)
+
+        for row in world:  # make passage through rooms
+            for room in row:
+                if isinstance(room, Room):
+                    room_map = copy.deepcopy(basic_map)
+                    for door in room.doors:
+                        if door == 'left':
+                            room_map[5][0] = -1
+                        if door == 'right':
+                            room_map[5][20] = -1
+                        if door == 'up':
+                            # room_map[0][10] = -1
+                            room_map[1][10] = -1
+                        if door == 'down':
+                            room_map[10][10] = -1
+                        room.room_map = room_map
+
+    def add_graphics():
+        for row in world:
+            for room in row:
+                if isinstance(room, Room):
+                    room.room_image = TileMap(room.room_map, spritesheet)
 
     def print_world():
         for row in world:
@@ -110,14 +138,10 @@ def map_generator(num_of_rooms, width, height):
                     print(0, end=' ')
             print('')
 
-    def print_nei():
-        for row in world:
-            for room in row:
-                if isinstance(room, Room):
-                    print(room, room.neighbours, room.doors)
-
     add_neighbors()
-    # print_world()
+    add_room_map()
+    add_graphics()
+    print_world()
     # print_nei()
 
     return world

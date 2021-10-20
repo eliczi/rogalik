@@ -5,6 +5,7 @@ import utils
 from weapon import Weapon
 from utils import get_mask_rect
 from Entity import Entity
+from math import sqrt
 
 
 # import numpy as np
@@ -48,6 +49,44 @@ class Player(pygame.sprite.Sprite):
         self.load_animation('../assets/player/')
         # hitbox
         self.hitbox = self.rect_mask
+
+    def input(self):
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_w]:
+            self.direction = 'UP'
+        if pressed[pygame.K_s]:
+            self.direction = 'DOWN'
+        if pressed[pygame.K_a]:
+            self.direction = 'LEFT'
+        if pressed[pygame.K_d]:
+            self.direction = 'RIGHT'
+
+        constant_dt = 0.06
+        vel_up = [0, -self.speed * constant_dt]
+        vel_up = [i * pressed[pygame.K_w] for i in vel_up]
+        vel_down = [0, self.speed * constant_dt]
+        vel_down = [i * pressed[pygame.K_s] for i in vel_down]
+        vel_left = [-self.speed * constant_dt, 0]
+        vel_left = [i * pressed[pygame.K_a] for i in vel_left]
+        vel_right = [self.speed * constant_dt, 0]
+        vel_right = [i * pressed[pygame.K_d] for i in vel_right]
+        vel = zip(vel_up, vel_down, vel_left, vel_right)
+        vel_list = [sum(item) for item in vel]
+
+        x = sqrt(pow(vel_list[0], 2) + pow(vel_list[1], 2))
+
+        if 0 not in vel_list:
+            z = x / (abs(vel_list[0]) + abs(vel_list[1]))
+            vel_list_fixed = [item * z for item in vel_list]
+            self.set_velocity(vel_list_fixed)
+        else:
+            self.set_velocity(vel_list)
+
+        if pygame.mouse.get_pressed()[0] and self.game.counter > 30:
+            self.attacking = True
+            self.attacked = False
+            self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
+            self.game.counter = 0
 
     def load_animation(self, path):
         """Loads animation frames to dictionary
@@ -178,7 +217,7 @@ class Player(pygame.sprite.Sprite):
         c = self.rect.center
         self.rect = self.image.get_rect()
         self.rect.center = c
-        #self.mask = pygame.mask.from_surface(self.image)
+        # self.mask = pygame.mask.from_surface(self.image)
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
         self.wall_collision()
         self.rect.move_ip(*self.velocity)
@@ -187,8 +226,8 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = self.rect_mask
         self.hitbox.midbottom = self.rect.midbottom
 
-        # pygame.draw.rect(self.game.screen, (0, 255, 0), self.rect, 1)
-        # pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
+        pygame.draw.rect(self.game.screen, (0, 255, 0), self.rect, 1)
+        pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         """Render player's gun

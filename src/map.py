@@ -1,7 +1,5 @@
 import pygame, csv, os
-import random
-import copy
-from map_generator import map_generator, Room
+import utils
 
 
 class Spritesheet(object):
@@ -19,9 +17,6 @@ class Spritesheet(object):
                 colorkey = image.get_at((0, 0))
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
-
-
-
 
 
 class Tile(pygame.sprite.Sprite):
@@ -48,55 +43,27 @@ class Tile(pygame.sprite.Sprite):
         self.rect.center = c
 
 
-def testing():
-    game_world = map_generator(3, 3, 3)  # generate world
-    with open('../maps/test_map.csv', newline='') as f:  # load room template
-        reader = csv.reader(f)
-        basic_map = list(reader)
-
-    for row in game_world:  # make passage through rooms
-        for room in row:
-            if isinstance(room, Room):
-                room_map = copy.deepcopy(basic_map)
-                for door in room.doors:
-                    if door == 'left':
-                        room_map[5][0] = -1
-                    if door == 'right':
-                        room_map[5][20] = -1
-                    if door == 'up':
-                        room_map[0][10] = -1
-                        room_map[1][10] = -1
-                    if door == 'down':
-                        room_map[10][10] = -1
-                    room.room_map = room_map
-    return game_world
+def update_player_position():
+    pass
 
 
 class TileMap():
-    def __init__(self, game, filename, spritesheet):
-        self.game = game
+    def __init__(self, filename, spritesheet):
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
         self.entrance = []
         self.start_x, self.start_y = 0, 0
         self.tiles = self.load_tiles(filename)
-        self.map_surface = pygame.Surface(self.game.SIZE)
+        self.map_surface = pygame.Surface(utils.world_size)
         self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
-        # map structure = map layers, entrances, exits, wall_list,
 
     def draw_map(self, surface):
-        if self.game.zoom_level != 1.0:
-            self.update_tiles()
-            self.map_surface.fill((0, 0, 0))
-            self.load_map()
 
+        for entrance in self.entrance:
+            pygame.draw.rect(self.map_surface, (255, 0, 0), entrance.rect, 2)
         surface.blit(self.map_surface, (0, 0))
-
-    def update_tiles(self):
-        for tile in self.tiles:
-            tile.update(self.game)
 
     def load_map(self):
         for tile in self.tiles:
@@ -118,9 +85,9 @@ class TileMap():
 
     def load_tiles(self, filename):
         tiles = []
-        map = filename
+        room_map = filename
         x, y = 0, 0
-        for row in map:
+        for row in room_map:
             x = -0
             for tile in row:
                 tiles.append(Tile((*self.location(int(tile)), 16, 16), x, y, self.spritesheet))
@@ -128,9 +95,6 @@ class TileMap():
                     self.entrance.append(tiles[-1])
                 if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47):
                     self.wall_list.append(tiles[-1])
-                # Move to next tile in current row
                 x += 64
-            # Move to next row
             y += 64
-            # Store the size of the tile map
         return tiles
