@@ -206,16 +206,8 @@ class TileMap():
                 if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47):
                     self.wall_list.append(tiles[-1])
                 # Move to next tile in current row
-
                 x += 64
-
             # Move to next row
             y += 64
             # Store the size of the tile map
         return tiles
-
-    # 4x4 map
-    # 1000
-    # 1110
-    # 0110
-    # 0111
