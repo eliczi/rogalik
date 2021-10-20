@@ -7,8 +7,9 @@ from bullet import Bullet
 from item_bar import Items_bar
 from particles import DeathParticle
 from math import sqrt, pow
+from map_generator import Room
 import sys
-from map import Spritesheet, TileMap, generator, map_loader
+from map import Spritesheet, TileMap, testing
 import random
 import csv
 import copy
@@ -72,18 +73,25 @@ class Game:
 
         self.fps_counter = FPSCounter(self, self.screen, self.myfont, self.clock, (150, 200))
         self.player_info = PlayerInfo(self, (800, 10))
-        # MAP CODE BELOW ############################
+
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 4
-        self.map_list = []
-        self.map_info = generator()
+        world_width, world_height = 3, 3
+        self.world = testing()  # mapa 3 na 3  z 3 pokojami
 
-        for i in range(num_of_rooms):
-            self.map_list.append(TileMap(self, map_loader(i), ss))
+        for row in self.world:
+            for room in row:
+                if isinstance(room, Room):
+                    room.room_image = TileMap(self, room.room_map, ss)
 
-        self.current_map = 0
-        self.map = self.map_list[self.current_map]
-        ## MAP CODE ABOVE ############################
+        for row in self.world:
+            for room in row:
+                if isinstance(room, Room):
+                    if room.starting:
+                        self.current_map = [room.x, room.y]
+
+        self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
+
         self.wall_list = self.map.wall_list
         self.entrance = self.map.entrance
         self.enemy_list = []
@@ -217,6 +225,7 @@ class Game:
         for wall in self.entrance:
             if wall.rect.collidepoint(self.player.rect.midbottom) or wall.rect.collidepoint(
                     self.player.rect.bottomleft) or wall.rect.collidepoint(self.player.rect.bottomright):
+                print('hej')
                 self.current_map += 1
                 self.map = self.map_list[self.current_map]
                 self.wall_list = self.map.wall_list
@@ -289,4 +298,3 @@ class Game:
         pygame.quit()
         print("Exited the game loop. Game will quit...")
         quit()
-

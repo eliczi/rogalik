@@ -9,6 +9,9 @@ class Room:
         self.neighbours = []
         # we need to specify side from which it is possible to get to the neighbour
         self.doors = []
+        self.type = None
+        self.room_map = None
+        self.room_image = None
 
     def __repr__(self):
         return f'({self.x}, {self.y})'
@@ -45,7 +48,6 @@ def map_generator(num_of_rooms, width, height):
     world = [[None for x in range(world_width)] for y in range(world_height)]
 
     x, y = random.randint(0, world_width - 1), random.randint(0, world_height - 1)
-    print(x, y)
 
     def check_boundary(x, world_param):  # checks if x doesnt exceed world boundary
         if x >= world_param or x < 0:
@@ -97,7 +99,7 @@ def map_generator(num_of_rooms, width, height):
                     for q in range(-1, 2, 2):  # left/right
                         if check_boundary(room.y + q, world_width) and world[room.x][room.y + q] is not None:
                             room.neighbours.append([room.x, room.y + q])
-                    room.door_position()
+                    room.door_position() # generates doors
 
     def print_world():
         for row in world:
@@ -114,7 +116,7 @@ def map_generator(num_of_rooms, width, height):
                 if isinstance(room, Room):
                     print(room, room.neighbours, room.doors)
 
-    # add_neighbors()
+    add_neighbors()
     # print_world()
     # print_nei()
 

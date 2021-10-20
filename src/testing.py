@@ -44,7 +44,7 @@ def map_generator(num_of_rooms, width, height):
     world_width, world_height = width, height  # world size
     world = [[None for x in range(world_width)] for y in range(world_height)]
 
-    x, y = random.randint(0, world_width - 1), random.randint(0, world_height - 1)
+    x, y = random.randint(0, world_height - 1), random.randint(0, world_width - 1)
     print(x, y)
 
     def check_boundary(x, world_param):  # checks if x doesnt exceed world boundary

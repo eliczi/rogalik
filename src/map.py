@@ -1,7 +1,7 @@
 import pygame, csv, os
 import random
 import copy
-from map_generator import map_generator
+from map_generator import map_generator, Room
 
 
 class Spritesheet(object):
@@ -19,6 +19,9 @@ class Spritesheet(object):
                 colorkey = image.get_at((0, 0))
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
+
+
+
 
 
 class Tile(pygame.sprite.Sprite):
@@ -45,32 +48,28 @@ class Tile(pygame.sprite.Sprite):
         self.rect.center = c
 
 
-def map_loader(num_room):
-    numer = num_room
-    map_info = map_generator(3, 3, 3)
-    with open('../maps/test_map.csv', newline='') as f:
+def testing():
+    game_world = map_generator(3, 3, 3)  # generate world
+    with open('../maps/test_map.csv', newline='') as f:  # load room template
         reader = csv.reader(f)
         basic_map = list(reader)
 
-    def get_direction(numer):
-        start_b = [k for k, v in map_info[numer][1].items() if v]
-        direction = start_b[0]
-        # Tu zmienic zeby mapa sie dobrze ladowala
-        return direction
-
-    direction = get_direction(numer)
-    map = copy.deepcopy(basic_map)
-    if direction == 'left':
-        map[5][0] = -1
-    if direction == 'right':
-        map[5][20] = -1
-    if direction == 'up':
-        map[0][10] = -1
-        map[1][10] = -1
-    if direction == 'down':
-        map[10][10] = -1
-
-    return map
+    for row in game_world:  # make passage through rooms
+        for room in row:
+            if isinstance(room, Room):
+                room_map = copy.deepcopy(basic_map)
+                for door in room.doors:
+                    if door == 'left':
+                        room_map[5][0] = -1
+                    if door == 'right':
+                        room_map[5][20] = -1
+                    if door == 'up':
+                        room_map[0][10] = -1
+                        room_map[1][10] = -1
+                    if door == 'down':
+                        room_map[10][10] = -1
+                    room.room_map = room_map
+    return game_world
 
 
 class TileMap():
@@ -94,8 +93,6 @@ class TileMap():
             self.load_map()
 
         surface.blit(self.map_surface, (0, 0))
-        # for tile in self.tiles:
-        #     pygame.draw.rect(self.game.screen, (255, 0, 0), tile.rect, 1)
 
     def update_tiles(self):
         for tile in self.tiles:
@@ -121,7 +118,7 @@ class TileMap():
 
     def load_tiles(self, filename):
         tiles = []
-        map = filename  # self.read_csv(filename)
+        map = filename
         x, y = 0, 0
         for row in map:
             x = -0
