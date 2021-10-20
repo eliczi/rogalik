@@ -74,12 +74,11 @@ class Game:
         self.player_info = PlayerInfo(self, (800, 10))
         # MAP CODE BELOW ############################
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
+        num_of_rooms = 4
         self.map_list = []
         self.map_info = generator()
 
-
-
-        for i in range(3):
+        for i in range(num_of_rooms):
             self.map_list.append(TileMap(self, map_loader(i), ss))
 
         self.current_map = 0
