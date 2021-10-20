@@ -86,7 +86,7 @@ def map_generator(num_of_rooms, width, height, spritesheet):
             move = random.choice(free_room)
             x, y = move[0], move[1]
             room_counter += 1
-        elif num_of_rooms == width * height:
+        elif room_counter == width * height - 1:
             break
         else:
             reset_world()

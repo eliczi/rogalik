@@ -45,8 +45,8 @@ class Game:
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 2
-        world_width, world_height = 1, 2
+        num_of_rooms = 10
+        world_width, world_height = 3, 3
         self.world, start = map_generator(num_of_rooms, world_width, world_height, ss)
         self.current_map = [start.x, start.y]
 
