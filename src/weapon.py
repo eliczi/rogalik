@@ -8,6 +8,7 @@ class Weapon(pygame.sprite.Sprite):
     def __init__(self, game, damage, name, width, *groups):
         super().__init__(*groups)
         self.width = width
+        self.dupa = 'x'
         self.damage = damage
         self.name = name
         self.blade_length = int(width)
