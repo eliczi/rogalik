@@ -53,17 +53,16 @@ class TileMap():
         self.spritesheet = spritesheet
         self.wall_list = []
         self.entrance = []
-        self.start_x, self.start_y = 0, 0
+        self.x, self.y = 0, 0
         self.tiles = self.load_tiles(filename)
         self.map_surface = pygame.Surface(utils.world_size)
         self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
 
     def draw_map(self, surface):
-
-        for entrance in self.entrance:
-            pygame.draw.rect(self.map_surface, (255, 0, 0), entrance.rect, 2)
-        surface.blit(self.map_surface, (0, 0))
+        if self.x != 0:
+            self.x += 10
+        surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
         for tile in self.tiles:

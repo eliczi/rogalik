@@ -1,11 +1,9 @@
 import pygame
 from enemy import Enemy, EnemySlow
-from maploader import MapLoader
 from player import Player
 from utils import PlayerInfo, FPSCounter
 import utils
 from bullet import Bullet
-from item_bar import Items_bar
 from particles import DeathParticle
 from math import sqrt, pow
 from map_generator import Room
@@ -25,17 +23,12 @@ class Game:
         self.counter = 0
         self.FPS = 60
         self.SIZE = utils.world_size
-
         self.myfont = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
-
         self.all_enemy = None
-        self.all_environment = None
-        self.all_wall = None
         self.all_player = None
         self.player = None
         self.screen = None
         self.clock = None
-        self.screen_rect = None
         self.fps_counter = None
         self.player_info = None
         self.wall_list = []
@@ -45,19 +38,14 @@ class Game:
         self.map = None
         self.particles = []
         self.bg = None
-        self.floor = None
         self.entity_size = (64, 64)  # size of the characters(player, enemy)
-        self.flame = None
         self.particle_surface = None
         self.running = True
-        self.zoom_level = 1.0
         self.entrance = []
 
     def init_all(self):
         self.wall_list = []
         self.all_enemy = pygame.sprite.Group()
-        self.all_environment = pygame.sprite.Group()
-        self.all_wall = pygame.sprite.Group()
         self.all_player = pygame.sprite.Group()
         self.bullet_list = pygame.sprite.Group()
         self.weapon_group = pygame.sprite.Group()
@@ -67,11 +55,9 @@ class Game:
         self.screen = pygame.Surface((self.SIZE))
         self.player = Player(self, self.all_player)
         self.clock = pygame.time.Clock()
-        self.screen_rect = self.screen.get_rect()
         self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
 
         self.fps_counter = FPSCounter(self, self.screen, self.myfont, self.clock, (150, 200))
-        self.player_info = PlayerInfo(self, (800, 10))
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 4
@@ -88,6 +74,7 @@ class Game:
 
         self.wall_list = self.map.wall_list
         self.entrance = self.map.entrance
+
         self.enemy_list = []
 
         for _ in range(1):
@@ -119,33 +106,29 @@ class Game:
 
     def update_groups(self):
         self.all_enemy.update()
-        self.all_environment.update()
         self.all_player.update()
-        self.all_wall.update()
         self.bullet_list.update()
         self.weapon_group.update()
 
     def draw_groups(self):
 
-        self.all_environment.draw(self.screen)
         self.all_enemy.draw(self.screen)
         self.all_player.draw(self.screen)
         self.weapon_group.draw(self.screen)
-        self.all_wall.draw(self.screen)
         self.player.render()
         for bullet in self.bullet_list:
             bullet.draw()
 
     def input(self):
         self.player.input()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.game_over()
+        if pressed[pygame.K_q]:
+            self.map.x -= 100
         if pressed[pygame.K_ESCAPE]:
             self.running = False
 
@@ -188,26 +171,25 @@ class Game:
         while self.running:
             dt = self.clock.tick(60)
             dt = dt / 400
-            self.screen.fill(utils.BLACK)  # Fill the screen with background color.
+            self.screen.fill(utils.BLACK)
             self.screen.fill((0, 0, 0))
             self.particle_surface.fill((0, 0, 0, 0))
             self.map.draw_map(self.screen)
-            print(self.player.rect)
             self.input()
+
             for enemy in self.enemy_list:  # Why not self.all_enemy???
                 enemy.move(dt)
                 for bullet in self.bullet_list:
                     bullet.collision_enemy(enemy)
                 if enemy.hp > 0:
                     enemy.draw_health(self.screen)
+
                 else:
                     enemy.kill()
                     self.enemy_list.remove(enemy)
                     self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
 
-            # Updates elements in groups, see function
             self.update_groups()
-            # Detects collision of enemies and player with walls
 
             for enemy in self.enemy_list:
                 if pygame.sprite.collide_mask(enemy, self.player):
@@ -222,16 +204,13 @@ class Game:
             self.update_particles()
             self.draw_particles()
             self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
+
             self.next_level()
             self.counter += 1
 
             # self.screen.blit(self.bg, (0, 0))
-            # Screen shake
             self.fps_counter.render()
             x, y = 0, 0
-            if self.player.attacking:
-                x = random.randint(-6, 6)
-                y = random.randint(-6, 6)
             self.display.blit(self.screen, (x, y))
             pygame.display.update()
 

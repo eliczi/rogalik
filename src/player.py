@@ -29,8 +29,6 @@ class Player(pygame.sprite.Sprite):
         self.velocity = [0, 0]
         self.old_velocity = [0, 0]
         self.speed = 100
-        self.priority = 1000
-        self.score = 0
         self.direction = 'RIGHT'
         self.player_moving = False
         self.player_index = 0  # animation frames
@@ -88,14 +86,10 @@ class Player(pygame.sprite.Sprite):
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             self.game.counter = 0
 
-    def load_animation(self, path):
-        """Loads animation frames to dictionary
 
-        :param path:
-        :type path:
-        :return:
-        :rtype:
-        """
+    def load_animation(self, path):
+        """Loads animation frames to dictionary"""
+
         # Lists all the subdirectories in specified path
         animation_states = os.listdir(path)
         for state in animation_states:
@@ -109,22 +103,14 @@ class Player(pygame.sprite.Sprite):
                 self.animation_database[key].append(animation_image)
 
     def moving(self) -> bool:
-        """Player movement detection
 
-        :return:
-        :rtype:
-        """
         if self.velocity[0] != 0 or self.velocity[1] != 0:
             return True
         else:
             return False
 
     def animation(self):
-        """
 
-        :return:
-        :rtype:
-        """
         if self.moving():
             self.player_index += 1.0 / 15  # change factor of animation
             if self.player_index >= 4:  # 4 frames per movement
@@ -155,26 +141,12 @@ class Player(pygame.sprite.Sprite):
         pass
 
     def attack_collision(self, collision_obj):  # do zmiany
-        """
 
-        :param collision_obj:
-        :type collision_obj:
-        :return:
-        :rtype:
-        """
         if self.attack_range.colliderect(collision_obj.hitbox):
             self.calculate_collison(collision_obj, self.weapon.damage)
 
     def calculate_collison(self, collision_obj, damage):
-        """
 
-        :param collision_obj:
-        :type collision_obj:
-        :param damage:
-        :type damage:
-        :return:
-        :rtype:
-        """
         if collision_obj.hp > 0:
             collision_obj.hp -= damage
             collision_obj.hurt = True  # indicating that enemy is hurt
@@ -205,19 +177,8 @@ class Player(pygame.sprite.Sprite):
                 self.velocity = [0, 0]
 
     def update(self) -> None:
-        """Update state of the player
-
-        :return:
-        :rtype:
-        """
 
         self.animation()
-        # Code below: Demonstrating zooming
-        self.player_size()
-        c = self.rect.center
-        self.rect = self.image.get_rect()
-        self.rect.center = c
-        # self.mask = pygame.mask.from_surface(self.image)
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
         self.wall_collision()
         self.rect.move_ip(*self.velocity)
@@ -230,12 +191,7 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
-        """Render player's gun
-
-        :return:
-        :rtype:
-        """
-
+        pass
         # start = pygame.math.Vector2(self.rect.midright)
         # mouse = pygame.mouse.get_pos()
         # end = start + (mouse - start).normalize() * self.gun_length
@@ -243,41 +199,14 @@ class Player(pygame.sprite.Sprite):
         # pygame.draw.lines(self.game.screen, (255, 255, 255), False, (start, end), width=self.gun_width)
 
     def gun_point(self):
-        """
 
-        :return:
-        :rtype:
-        """
         start = pygame.math.Vector2(self.rect.midright)
         mouse = pygame.mouse.get_pos()
         end = start + (mouse - start).normalize() * self.gun_length
         return end
 
     def assign_weapon(self, weapon: Weapon):
-        """
 
-        :param weapon:
-        :type weapon:
-        :return:
-        :rtype:
-        """
         self.weapon = weapon
         self.hasWeapon = True
 
-    def gun_line(self, ax, ay, bx, by, radius):
-        """
-
-        :param ax:
-        :type ax:
-        :param ay:
-        :type ay:
-        :param bx:
-        :type bx:
-        :param by:
-        :type by:
-        :param radius:
-        :type radius:
-        :return:
-        :rtype:
-        """
-        pass
