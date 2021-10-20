@@ -1,63 +1,51 @@
 import random
+from dataclasses import dataclass
 
 
-# random map layout generator
-def generator():
-    w, h = 4, 4  # world size
-    world = [[0 for x in range(w)] for y in range(h)]
-    start_x, start_y = random.randint(0, w - 1), random.randint(0, h - 1)
-    world[start_x][start_y] = 1  # starting position
-    i = 0
-    num_of_rooms = 3
-    current_room_x = start_x
-    current_room_y = start_y
+class Room:
+    def __init__(self, x, y, starting):
+        self.x = x
+        self.y = y
+        self.starting = starting
+        self.neighbours = []
 
-    my_dict = {"left": False,
-               "right": False,
-               "up": False,
-               "down": False}
-    map_info = []
-    while i != num_of_rooms:
-        c = random.choice(["up", 'down', 'left', 'right'])
-        if c == 'up' and current_room_x - 1 > 0:
-            if world[current_room_x - 1][current_room_y] != 1:
-                world[current_room_x - 1][current_room_y] = 1
-                current_room_x -= 1
-                i += 1
-                room_dict = my_dict.copy()
-                room_dict['up'] = True
-                map_info.append([i, room_dict])
-        elif c == 'down' and current_room_x + 1 < 3:
-            if world[current_room_x + 1][current_room_y] != 1:
-                world[current_room_x + 1][current_room_y] = 1
-                current_room_x += 1
-                i += 1
-                room_dict = my_dict.copy()
-                room_dict['down'] = True
-                map_info.append([i, room_dict])
-        elif c == 'right' and current_room_y + 1 < 3:
-            if world[current_room_x][current_room_y + 1] != 1:
-                world[current_room_x][current_room_y + 1] = 1
-                current_room_y += 1
-                i += 1
-                room_dict = my_dict.copy()
-                room_dict['right'] = True
-                map_info.append([i, room_dict])
-        elif c == 'left' and current_room_y - 1 > 0:
-            if world[current_room_x][current_room_y - 1] != 1:
-                world[current_room_x][current_room_y - 1] = 1
-                current_room_y -= 1
-                i += 1
-                room_dict = my_dict.copy()
-                room_dict['left'] = True
-                map_info.append([i, room_dict])
+    def add_neighbor(self, room):
+        self.neighbours.append(room)
 
-    for row in world:
-        print(row)
-    return map_info
+
+def generator(num_of_rooms):
+    world_width, world_height = 5, 5  # world size
+    world = [[0 for x in range(world_width)] for y in range(world_height)]
+
+    x, y = random.randint(0, world_width - 1), random.randint(0, world_height - 1)
+
+    def get_direction(x, y):
+        directions = {'up': x + 1,
+                      'down': x - 1,
+                      'left': y - 1,
+                      'right': y + 1
+                      }
+        return direction
+
+    room_counter
+    while room_counter != num_of_rooms:
+        world[x][y] = Room(x, y, False)
+        get_direction(x, y)
+
+        room_counter += 1
 
 
 
-my_map = generator()
-for row in my_map:
-    print(row)
+    def print_world():
+        for row in world:
+            for room in row:
+                if isinstance(room, Room):
+                    print(1, end=' ')
+                else:
+                    print(0, end=' ')
+            print('')
+
+    print_world()
+
+
+generator(5)

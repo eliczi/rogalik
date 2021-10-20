@@ -56,15 +56,10 @@ class Tile(pygame.sprite.Sprite):
 
 
 def generator():
-    '''Add condition that if no new room can be created, start again with new starting position. Why?
-        0 0 0 0
-        0 0 0 0
-        1 1 0 0
-        1 1 0 0  in this situation, starting from [3][1] going up and left, we cannot make fifth room'''
+    world_width, world_height = 4, 4  # world size
+    world = [[0 for x in range(world_width)] for y in range(world_height)]
 
-    w, h = 4, 4  # world size
-    world = [[0 for x in range(w)] for y in range(h)]
-    start_x, start_y = random.randint(0, w - 1), random.randint(0, h - 1)
+    start_x, start_y = random.randint(0, world_width - 1), random.randint(0, world_height - 1)
     world[start_x][start_y] = 1  # starting position
     i = 0
     num_of_rooms = 3
