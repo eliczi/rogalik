@@ -1,18 +1,10 @@
 import pygame
-from enemy import Enemy, EnemySlow
 from player import Player
-from utils import PlayerInfo, FPSCounter
 import utils
-from bullet import Bullet
-from particles import DeathParticle
-from math import sqrt, pow
 from map_generator import Room
-import sys
 from map import Spritesheet, TileMap
 from map_generator import map_generator
-import random
-import csv
-import copy
+
 
 successes, failures = pygame.init()
 print(f"Initializing pygame: {successes} successes and {failures} failures.")
@@ -54,16 +46,13 @@ class Game:
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 2
-        world_width, world_height = 2, 2
-        self.world = map_generator(num_of_rooms, world_width, world_height, ss)
+        world_width, world_height = 1, 2
+        self.world, start = map_generator(num_of_rooms, world_width, world_height, ss)
+        self.current_map = [start.x, start.y]
 
-        for row in self.world:
-            for room in row:
-                if isinstance(room, Room):
-                    if room.starting:
-                        self.current_map = [room.x, room.y]
 
         self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
+
         self.bg = pygame.Surface((1200, 600), pygame.SRCALPHA).convert_alpha()
         self.bg.fill((0, 0, 0, 100))
 
@@ -83,7 +72,6 @@ class Game:
         self.weapon_group.update()
 
     def draw_groups(self):
-
         self.all_enemy.draw(self.screen)
         self.all_player.draw(self.screen)
         self.weapon_group.draw(self.screen)
@@ -120,6 +108,8 @@ class Game:
         self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
 
     def run_game(self):
+
+
         self.init_all()
         while self.running:
             dt = self.clock.tick(60)
@@ -129,6 +119,7 @@ class Game:
             # self.particle_surface.fill((0, 0, 0, 0))
             self.map.draw_map(self.screen)
             self.input()
+
 
             # for enemy in self.enemy_list:  # Why not self.all_enemy???
             #     enemy.move(dt)

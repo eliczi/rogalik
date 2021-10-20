@@ -31,6 +31,11 @@ class Tile(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
+    def new_image(self, image):
+        self.image = image
+        self.image = pygame.transform.scale(self.image, (64, 64))
+
+
 
 class TileMap():
     def __init__(self, filename, spritesheet):
@@ -46,8 +51,6 @@ class TileMap():
         self.player = None
 
     def draw_map(self, surface):
-        if self.x != 0:
-            self.x += 10
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):

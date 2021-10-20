@@ -49,7 +49,7 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     world_width, world_height = width, height  # world size
     world = [[None for x in range(world_width)] for y in range(world_height)]
 
-    x, y = random.randint(0, world_width - 1), random.randint(0, world_height - 1)
+    x, y = random.randint(0, world_height - 1), random.randint(0, world_width - 1)
 
     def check_boundary(x, world_param):  # checks if x doesnt exceed world boundary
         if x >= world_param or x < 0:
@@ -74,9 +74,10 @@ def map_generator(num_of_rooms, width, height, spritesheet):
 
     room_counter = 0
     first_room = True
+    start = None
     while room_counter < num_of_rooms:
         if first_room:
-            world[x][y] = Room(x, y, True)
+            start = world[x][y] = Room(x, y, True)
             first_room = False
         else:
             world[x][y] = Room(x, y, False)
@@ -85,6 +86,8 @@ def map_generator(num_of_rooms, width, height, spritesheet):
             move = random.choice(free_room)
             x, y = move[0], move[1]
             room_counter += 1
+        elif num_of_rooms == width * height:
+            break
         else:
             reset_world()
             first_room = True
@@ -143,4 +146,4 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     print_world()
     # print_nei()
 
-    return world
+    return world, start
