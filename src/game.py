@@ -14,7 +14,6 @@ import csv
 import copy
 
 successes, failures = pygame.init()
-pygame.mixer.init()
 print(f"Initializing pygame: {successes} successes and {failures} failures.")
 
 
@@ -26,11 +25,7 @@ class Game:
         self.BLACK = (0, 0, 0)
         self.WHITE = (255, 255, 255)
         self.myfont = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
-        self.music = pygame.mixer.music.load('../assets/sound/music.wav',)
-        pygame.mixer.music.play(-1)
-        self.hitsound = pygame.mixer.Sound('../assets/sound/hit.wav',)
-        self.deathsound = pygame.mixer.Sound('../assets/sound/death.wav',)
-        self.swordswipesound = pygame.mixer.Sound('../assets/sound/sword.wav',)
+
         self.all_enemy = None
         self.all_environment = None
         self.all_wall = None
@@ -209,7 +204,6 @@ class Game:
         if pygame.mouse.get_pressed()[0] and self.counter > 30:
             self.player.attacking = True
             self.player.attacked = False
-            pygame.mixer.Sound.play(self.swordswipesound)
             # self.player.weapon.counter = 0
             self.player.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             # bullet = Bullet(self, self.player.gun_point()[0],
@@ -283,7 +277,6 @@ class Game:
                     enemy.draw_health(self.screen)
                 else:
                     enemy.kill()
-                    pygame.mixer.Sound.play(self.deathsound)
                     self.enemy_list.remove(enemy)
                     self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
 
@@ -296,7 +289,6 @@ class Game:
                     self.player.hp -= 10
                 if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking:
                     enemy.hurt = True
-                    pygame.mixer.Sound.play(self.hitsound)
                     enemy.hp -= self.player.weapon.damage
 
             self.draw_groups()
