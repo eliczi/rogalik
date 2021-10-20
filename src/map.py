@@ -1,6 +1,6 @@
 import pygame, csv, os
 import random
-
+import copy
 
 class Spritesheet(object):
     def __init__(self, filename):
@@ -75,15 +75,8 @@ def generator():
                "right": False,
                "up": False,
                "down": False}
-    def get_map_info(num_of_rooms, starting_x, starting_y):
-        current_room_x = starting_x
-        current_room_y = starting_y
-        map_info = []
 
     map_info = []
-    def get_position():
-        if map_info[-1]:
-            pass
     previous_choice = None
     while i != num_of_rooms:
         c = random.choice(["up", 'down', 'left', 'right'])
@@ -93,9 +86,9 @@ def generator():
                 current_room_x -= 1
                 i += 1
                 room_dict = my_dict.copy()
-                room_dict['up'] = True # == room_dict[c]
+                room_dict['up'] = True  # == room_dict[c]
                 room_dict[previous_choice] = True
-                map_info.append([i -1, room_dict])
+                map_info.append([i - 1, room_dict])
         elif c == 'down' and current_room_x + 1 < 3:
             if world[current_room_x + 1][current_room_y] != 1:
                 world[current_room_x + 1][current_room_y] = 1
@@ -104,7 +97,7 @@ def generator():
                 room_dict = my_dict.copy()
                 room_dict['down'] = True
                 room_dict[previous_choice] = True
-                map_info.append([i -1, room_dict])
+                map_info.append([i - 1, room_dict])
         elif c == 'right' and current_room_y + 1 < 3:
             if world[current_room_x][current_room_y + 1] != 1:
                 world[current_room_x][current_room_y + 1] = 1
@@ -113,7 +106,7 @@ def generator():
                 room_dict = my_dict.copy()
                 room_dict['right'] = True
                 room_dict[previous_choice] = True
-                map_info.append([i -1, room_dict])
+                map_info.append([i - 1, room_dict])
         elif c == 'left' and current_room_y - 1 > 0:
             if world[current_room_x][current_room_y - 1] != 1:
                 world[current_room_x][current_room_y - 1] = 1
@@ -122,15 +115,41 @@ def generator():
                 room_dict = my_dict.copy()
                 room_dict['left'] = True
                 room_dict[previous_choice] = True
-                map_info.append([i -1, room_dict])
-        if c == 'up':
-            previous_choice = 'down'
-        if c =='down':
-            previous_choice ='up'
+                map_info.append([i - 1, room_dict])
+
 
     for row in world:
         print(row)
     return map_info
+
+
+def map_loader(num_room):
+    numer = num_room
+    map_info = generator()
+    with open('../maps/test_map.csv', newline='') as f:
+        reader = csv.reader(f)
+        basic_map = list(reader)
+
+    def get_direction(numer):
+        start_b = [k for k, v in map_info[numer][1].items() if v]
+        direction = start_b[0]
+        # Tu zmienic zeby mapa sie dobrze ladowala
+        return direction
+
+
+    direction = get_direction(numer)
+    map = copy.deepcopy(basic_map)
+    if direction == 'left':
+        map[5][0] = -1
+    if direction == 'right':
+        map[5][20] = -1
+    if direction == 'up':
+        map[0][10] = -1
+        map[1][10] = -1
+    if direction == 'down':
+        map[10][10] = -1
+
+    return map
 
 
 class TileMap():
@@ -181,7 +200,7 @@ class TileMap():
 
     def load_tiles(self, filename):
         tiles = []
-        map = filename#self.read_csv(filename)
+        map = filename  # self.read_csv(filename)
         x, y = 0, 0
         for row in map:
             x = -0

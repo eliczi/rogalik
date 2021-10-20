@@ -8,7 +8,7 @@ from item_bar import Items_bar
 from particles import DeathParticle
 from math import sqrt, pow
 import sys
-from map import Spritesheet, TileMap, generator
+from map import Spritesheet, TileMap, generator, map_loader
 import random
 import csv
 import copy
@@ -73,44 +73,14 @@ class Game:
         self.fps_counter = FPSCounter(self, self.screen, self.myfont, self.clock, (150, 200))
         self.player_info = PlayerInfo(self, (800, 10))
         # MAP CODE BELOW ############################
-        self.ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
+        ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         self.map_list = []
         self.map_info = generator()
 
-        start_dict = {'left': 'left',
-                      'right': 'right',
-                      'down': 'down',
-                      'up': 'up'
-                      }
 
-        with open('../maps/test_map.csv', newline='') as f:
-            reader = csv.reader(f)
-            basic_map = list(reader)
-
-        def get_direction(num_room):
-            start_b = [k for k, v in self.map_info[num_room][1].items() if v]
-            start_b = start_b[0]
-            #Tu zmienic zeby mapa sie dobrze ladowala
-            direction = start_dict[start_b]
-            return direction
-
-        def get_map(num):
-            direction = get_direction(num)
-            map = copy.deepcopy(basic_map)
-            if direction == 'left':
-                map[5][0] = -1
-            if direction == 'right':
-                map[5][20] = -1
-            if direction == 'up':
-                map[0][10] = -1
-                map[1][10] = -1
-            if direction == 'down':
-                map[10][10] = -1
-
-            return map
 
         for i in range(3):
-            self.map_list.append(TileMap(self, get_map(i), self.ss))
+            self.map_list.append(TileMap(self, map_loader(i), ss))
 
         self.current_map = 0
         self.map = self.map_list[self.current_map]
