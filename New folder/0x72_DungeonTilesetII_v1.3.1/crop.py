@@ -35,4 +35,4 @@ for line in f.readlines():
         for frameIndex in range(0, numOfFrames):
             saveCrop(img, arr[0] + '_f' + str(frameIndex), getBox(arr, frameIndex))
 
-print('')
+

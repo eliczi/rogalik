@@ -11,9 +11,8 @@ from math import sqrt
 # import numpy as np
 # Zoom note: transform.scale self.image and self.animation_database images to self.image_size * game.zoom_factor
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, game, *groups):
-        super().__init__(*groups)
+class Player():
+    def __init__(self, game):
         self.game = game
         self.animation_database = {"IDLE_LEFT": [],
                                    "IDLE_RIGHT": [],
@@ -35,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         # Player Attacking
         self.attacking = False
         self.hasWeapon = True
-        self.weapon = Weapon(self.game, 10, 'sword', self.game.weapon_group)  # usuniete groups z self.game
+        self.weapon = Weapon(self.game, 10, 'sword')  # usuniete groups z self.game
         self.hp = 100
         self.max_stamina = 1000
         self.current_stamina = self.max_stamina
@@ -47,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.load_animation('../assets/player/')
         # hitbox
         self.hitbox = self.rect_mask
+        self.can_move = True
 
     def input(self):
         pressed = pygame.key.get_pressed()
@@ -85,7 +85,6 @@ class Player(pygame.sprite.Sprite):
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             self.game.counter = 0
-
 
     def load_animation(self, path):
         """Loads animation frames to dictionary"""
@@ -140,11 +139,6 @@ class Player(pygame.sprite.Sprite):
     def weapon_attack(self, enemy):
         pass
 
-    def attack_collision(self, collision_obj):  # do zmiany
-
-        if self.attack_range.colliderect(collision_obj.hitbox):
-            self.calculate_collison(collision_obj, self.weapon.damage)
-
     def calculate_collison(self, collision_obj, damage):
 
         if collision_obj.hp > 0:
@@ -157,10 +151,6 @@ class Player(pygame.sprite.Sprite):
     def set_velocity(self, velocity):
         self.old_velocity = self.velocity
         self.velocity = velocity
-        # print(np.linalg.norm(self.velocity))
-        # if self.velocity != velocity
-        # self.velocity = [0, 0]
-        # self.velocity = [sum(x) for x in zip(self.velocity, velocity)]
 
     def player_size(self):
         self.image_size = (64, 64)
@@ -177,18 +167,23 @@ class Player(pygame.sprite.Sprite):
                 self.velocity = [0, 0]
 
     def update(self) -> None:
-
+        self.weapon.update()
         self.animation()
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
         self.wall_collision()
-        self.rect.move_ip(*self.velocity)
-        self.rect_mask.move_ip(*self.velocity)
+        if self.can_move:
+            self.rect.move_ip(*self.velocity)
+            self.rect_mask.move_ip(*self.velocity)
 
         self.hitbox = self.rect_mask
         self.hitbox.midbottom = self.rect.midbottom
 
-        pygame.draw.rect(self.game.screen, (0, 255, 0), self.rect, 1)
-        pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
+        # pygame.draw.rect(self.game.screen, (0, 255, 0), self.rect, 1)
+        # pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        self.weapon.draw(screen)
 
     def render(self):  # Render weapon
         pass
@@ -209,4 +204,3 @@ class Player(pygame.sprite.Sprite):
 
         self.weapon = weapon
         self.hasWeapon = True
-

@@ -1,10 +1,8 @@
 import pygame
 from player import Player
 import utils
-from map_generator import Room
-from map import Spritesheet, TileMap
+from map import Spritesheet
 from map_generator import map_generator
-
 
 successes, failures = pygame.init()
 print(f"Initializing pygame: {successes} successes and {failures} failures.")
@@ -16,48 +14,33 @@ class Game:
         self.FPS = 60
         self.SIZE = utils.world_size
         self.myfont = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
-        self.all_enemy = None
-        self.all_player = None
         self.player = None
         self.screen = None
         self.clock = None
-        self.fps_counter = None
-        self.player_info = None
         self.enemy_list = []
         self.bullet_list = None
-        self.weapon_group = None
         self.map = None
         self.particles = []
-        self.bg = None
-        self.entity_size = (64, 64)  # size of the characters(player, enemy)
         self.particle_surface = None
         self.running = True
+        self.world = None
+        self.current_map = None
+        self.previous_map = None
 
     def init_all(self):
-        self.all_enemy = pygame.sprite.Group()
-        self.all_player = pygame.sprite.Group()
         self.bullet_list = pygame.sprite.Group()
-        self.weapon_group = pygame.sprite.Group()
         self.display = pygame.display.set_mode(self.SIZE)
         self.screen = pygame.Surface(self.SIZE)
-        self.player = Player(self, self.all_player)
+        self.player = Player(self)
         self.clock = pygame.time.Clock()
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 2
         world_width, world_height = 2, 1
-        self.world, start = map_generator(num_of_rooms, world_width, world_height, ss)
-        self.current_map = [start.x, start.y]
-        self.second_map = start.neighbours[0]
-
-        self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
-        self.map2 = self.world[self.second_map[0]][self.second_map[1]].room_image
-        self.map2.x = -1300
-        self.map2.y = 0
-
-        self.bg = pygame.Surface((1200, 600), pygame.SRCALPHA).convert_alpha()
-        self.bg.fill((0, 0, 0, 100))
+        self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
+        self.current_map = [start_map.x, start_map.y]
+        self.map = self.world[start_map.x][start_map.y].room_image
 
     def collided(self, sprite, other):
         """Check if the hitbox of one sprite collides with rect of another sprite."""
@@ -69,15 +52,12 @@ class Game:
         self.run_game()
 
     def update_groups(self):
-        self.all_enemy.update()
-        self.all_player.update()
+        self.player.update()
         self.bullet_list.update()
-        self.weapon_group.update()
 
     def draw_groups(self):
-        self.all_enemy.draw(self.screen)
-        self.all_player.draw(self.screen)
-        self.weapon_group.draw(self.screen)
+        self.map.load_map()
+        self.player.draw(self.map.map_surface)
         self.player.render()
         for bullet in self.bullet_list:
             bullet.draw()
@@ -105,21 +85,22 @@ class Game:
         pass
 
     def next_level(self):
-        self.map.next_level(self.player, self.current_map)
+        if self.map.x == 0 and self.map.y == 0:
+            self.player.can_move = True
+        self.map.next_level(self.player, self.current_map, self.world)
         self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
 
     def run_game(self):
         self.init_all()
         while self.running:
-            dt = self.clock.tick(60)
-            #dt = dt / 400
+            self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             self.screen.fill((0, 0, 0))
             # self.particle_surface.fill((0, 0, 0, 0))
             self.map.draw_map(self.screen)
-            self.map2.draw_map(self.screen)
-            self.input()
 
+
+            self.input()
 
             # for enemy in self.enemy_list:  # Why not self.all_enemy???
             #     enemy.move(dt)
@@ -150,9 +131,8 @@ class Game:
             # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
 
             self.next_level()
-            # self.counter += 1
+            self.counter += 1
 
-            # self.screen.blit(self.bg, (0, 0))
             x, y = 0, 0
             self.display.blit(self.screen, (0, 0))
             pygame.display.update()

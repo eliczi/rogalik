@@ -57,10 +57,10 @@ def map_generator(num_of_rooms, width, height, spritesheet):
 
     def check_free_space():  # returns free neighbouring spaces
         free_space = []
-        for i in range(-1, 2, 2):
+        for i in [-1, 1]:
             if check_boundary(x + i, height) and world[x + i][y] is None:
                 free_space.append([x + i, y])
-        for q in range(-1, 2, 2):
+        for q in [-1, 1]:
             if check_boundary(y + q, width) and world[x][y + q] is None:
                 free_space.append([x, y + q])
         return free_space
@@ -95,10 +95,10 @@ def map_generator(num_of_rooms, width, height, spritesheet):
         for row in world:
             for room in row:
                 if isinstance(room, Room):
-                    for i in range(-1, 2, 2):  # up/down
+                    for i in [-1, 1]:  # up/down
                         if check_boundary(room.x + i, height) and world[room.x + i][room.y] is not None:
                             room.neighbours.append([room.x + i, room.y])
-                    for q in range(-1, 2, 2):  # left/right
+                    for q in [-1, 1]:  # left/right
                         if check_boundary(room.y + q, width) and world[room.x][room.y + q] is not None:
                             room.neighbours.append([room.x, room.y + q])
                     room.door_position()  # generates doors
@@ -141,7 +141,6 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     add_neighbors()
     add_room_map()
     add_graphics()
-    print_world()
-    # print_nei()
+    #print_world()
 
     return world, start

@@ -36,7 +36,6 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (64, 64))
 
 
-
 class TileMap():
     def __init__(self, filename, spritesheet):
         self.tile_size = 64
@@ -50,7 +49,20 @@ class TileMap():
         self.load_map()
         self.player = None
 
+    def animation(self):
+        # It just changes coordinates on which the map_surface will be drawn on self.screen
+        if self.x < 0:
+            self.x += 32
+        elif self.x > 0:
+            self.x -= 32
+        elif self.y > 0:
+            self.y -= 16
+        elif self.y < 0:
+            self.y += 16
+
     def draw_map(self, surface):
+
+        self.animation()
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
@@ -87,21 +99,24 @@ class TileMap():
             y += 64
         return tiles
 
-    def next_level(self, player, current_map):
+    def next_level(self, player, current_map, world):
         for wall in self.entrance:
             if wall.rect.collidepoint(player.hitbox.midbottom) or wall.rect.collidepoint(
                     player.hitbox.bottomleft) or wall.rect.collidepoint(player.hitbox.bottomright):
-
+                player.can_move = False
                 if player.rect.y < 100:
                     current_map[0] -= 1
                     player.rect.y = 572
+                    world[current_map[0]][current_map[1]].room_image.y -= 720
                 elif player.rect.y > 500:
                     current_map[0] += 1
                     player.rect.y = 64
+                    world[current_map[0]][current_map[1]].room_image.y += 720
                 elif player.rect.x > 600:
                     current_map[1] += 1
                     player.rect.x = 48
+                    world[current_map[0]][current_map[1]].room_image.x += 1312
                 elif player.rect.x < 100:
                     current_map[1] -= 1
                     player.rect.x = 1230
-
+                    world[current_map[0]][current_map[1]].room_image.x = -1312
