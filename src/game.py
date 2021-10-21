@@ -45,13 +45,16 @@ class Game:
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 10
-        world_width, world_height = 3, 3
+        num_of_rooms = 2
+        world_width, world_height = 2, 1
         self.world, start = map_generator(num_of_rooms, world_width, world_height, ss)
         self.current_map = [start.x, start.y]
-
+        self.second_map = start.neighbours[0]
 
         self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
+        self.map2 = self.world[self.second_map[0]][self.second_map[1]].room_image
+        self.map2.x = -1300
+        self.map2.y = 0
 
         self.bg = pygame.Surface((1200, 600), pygame.SRCALPHA).convert_alpha()
         self.bg.fill((0, 0, 0, 100))
@@ -87,8 +90,6 @@ class Game:
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.game_over()
-        if pressed[pygame.K_q]:
-            self.map.x -= 100
         if pressed[pygame.K_ESCAPE]:
             self.running = False
 
@@ -108,8 +109,6 @@ class Game:
         self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
 
     def run_game(self):
-
-
         self.init_all()
         while self.running:
             dt = self.clock.tick(60)
@@ -118,6 +117,7 @@ class Game:
             self.screen.fill((0, 0, 0))
             # self.particle_surface.fill((0, 0, 0, 0))
             self.map.draw_map(self.screen)
+            self.map2.draw_map(self.screen)
             self.input()
 
 
