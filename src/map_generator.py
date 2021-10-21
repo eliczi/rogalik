@@ -45,11 +45,9 @@ class Room:
 
 def map_generator(num_of_rooms, width, height, spritesheet):
     """Generate specified number of room in a world of specified size and connection between them"""
-    spritesheet = spritesheet
-    world_width, world_height = width, height  # world size
-    world = [[None for x in range(world_width)] for y in range(world_height)]
+    world = [[None for x in range(width)] for y in range(height)]
 
-    x, y = random.randint(0, world_height - 1), random.randint(0, world_width - 1)
+    x, y = random.randint(0, height - 1), random.randint(0, width - 1)
 
     def check_boundary(x, world_param):  # checks if x doesnt exceed world boundary
         if x >= world_param or x < 0:
@@ -60,16 +58,16 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     def check_free_space():  # returns free neighbouring spaces
         free_space = []
         for i in range(-1, 2, 2):
-            if check_boundary(x + i, world_height) and world[x + i][y] is None:
+            if check_boundary(x + i, height) and world[x + i][y] is None:
                 free_space.append([x + i, y])
         for q in range(-1, 2, 2):
-            if check_boundary(y + q, world_width) and world[x][y + q] is None:
+            if check_boundary(y + q, width) and world[x][y + q] is None:
                 free_space.append([x, y + q])
         return free_space
 
     def reset_world():  # resets game world
-        for i in range(world_height):
-            for y in range(world_width):
+        for i in range(height):
+            for y in range(width):
                 world[i][y] = None
 
     room_counter = 0
@@ -98,10 +96,10 @@ def map_generator(num_of_rooms, width, height, spritesheet):
             for room in row:
                 if isinstance(room, Room):
                     for i in range(-1, 2, 2):  # up/down
-                        if check_boundary(room.x + i, world_height) and world[room.x + i][room.y] is not None:
+                        if check_boundary(room.x + i, height) and world[room.x + i][room.y] is not None:
                             room.neighbours.append([room.x + i, room.y])
                     for q in range(-1, 2, 2):  # left/right
-                        if check_boundary(room.y + q, world_width) and world[room.x][room.y + q] is not None:
+                        if check_boundary(room.y + q, width) and world[room.x][room.y + q] is not None:
                             room.neighbours.append([room.x, room.y + q])
                     room.door_position()  # generates doors
 
