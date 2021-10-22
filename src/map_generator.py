@@ -115,12 +115,18 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                     for door in room.doors:
                         if door == 'left':
                             room_map[5][0] = -1
+                            room_map[6][0] = 2
+                            room_map[4][0] = 32
                         if door == 'right':
                             room_map[5][20] = -1
+                            room_map[6][20] = 0
+                            room_map[4][20] = 30
                         if door == 'up':
                             room_map[1][10] = -1
                         if door == 'down':
                             room_map[10][10] = -1
+                            room_map[10][9] = 2
+                            room_map[10][11] = 0
                         room.room_map = room_map
 
     def add_graphics():
@@ -138,9 +144,11 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                     print(0, end=' ')
             print('')
 
+
+
     add_neighbors()
     add_room_map()
     add_graphics()
-    #print_world()
+    print_world()
 
     return world, start

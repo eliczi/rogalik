@@ -178,8 +178,8 @@ class Player():
         self.hitbox = self.rect_mask
         self.hitbox.midbottom = self.rect.midbottom
 
-        # pygame.draw.rect(self.game.screen, (0, 255, 0), self.rect, 1)
-        # pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
+        pygame.draw.rect(self.game.screen, (0, 255, 0), self.rect, 1)
+        pygame.draw.rect(self.game.screen, (255, 0, 0), self.hitbox, 1)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)

@@ -20,6 +20,10 @@ class Spritesheet(object):
         return image
 
 
+def get_map(world, position):
+    return world[position[0]][position[1]]
+
+
 class Tile(pygame.sprite.Sprite):
     def __init__(self, rectangle, x, y, spritesheet):
         pygame.sprite.Sprite.__init__(self)
@@ -47,22 +51,27 @@ class TileMap():
         self.map_surface = pygame.Surface(utils.world_size)
         self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
-        self.player = None
+        self.previous = False
 
     def animation(self):
-        # It just changes coordinates on which the map_surface will be drawn on self.screen
         if self.x < 0:
-            self.x += 32
+            self.x += 21
         elif self.x > 0:
-            self.x -= 32
+            self.x -= 21
         elif self.y > 0:
             self.y -= 16
         elif self.y < 0:
             self.y += 16
+    #better animation
+    def testing(self):
+        if self.previous:
+            self.x += 21
+        else:
+            self.animation()
 
     def draw_map(self, surface):
-
-        self.animation()
+        self.testing()
+        #self.animation()
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
@@ -91,19 +100,23 @@ class TileMap():
             x = -0
             for tile in row:
                 tiles.append(Tile((*self.location(int(tile)), 16, 16), x, y, self.spritesheet))
-                if int(tile) == -1:
+                if int(tile) in (-1, 75):
                     self.entrance.append(tiles[-1])
-                if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47):
+                if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32):
                     self.wall_list.append(tiles[-1])
                 x += 64
             y += 64
         return tiles
 
-    def next_level(self, player, current_map, world):
+    def next_level(self, game, player, current_map, world):
         for wall in self.entrance:
-            if wall.rect.collidepoint(player.hitbox.midbottom) or wall.rect.collidepoint(
-                    player.hitbox.bottomleft) or wall.rect.collidepoint(player.hitbox.bottomright):
+            if wall.rect.collidepoint(player.hitbox.midbottom) \
+                    or wall.rect.collidepoint(player.hitbox.bottomleft) \
+                    or wall.rect.collidepoint(player.hitbox.bottomright):
+                print('OK')
+                self.previous = True
                 player.can_move = False
+                game.map2 = self
                 if player.rect.y < 100:
                     current_map[0] -= 1
                     player.rect.y = 572
@@ -114,9 +127,9 @@ class TileMap():
                     world[current_map[0]][current_map[1]].room_image.y += 720
                 elif player.rect.x > 600:
                     current_map[1] += 1
-                    player.rect.x = 48
-                    world[current_map[0]][current_map[1]].room_image.x += 1312
+                    player.rect.x = 50
+                    world[current_map[0]][current_map[1]].room_image.x += 21 * 64
                 elif player.rect.x < 100:
                     current_map[1] -= 1
-                    player.rect.x = 1230
-                    world[current_map[0]][current_map[1]].room_image.x = -1312
+                    player.rect.x = 1228
+                    world[current_map[0]][current_map[1]].room_image.x = -21 * 64

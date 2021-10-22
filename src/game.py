@@ -1,7 +1,7 @@
 import pygame
 from player import Player
 import utils
-from map import Spritesheet
+from map import Spritesheet, get_map
 from map_generator import map_generator
 
 successes, failures = pygame.init()
@@ -20,12 +20,12 @@ class Game:
         self.enemy_list = []
         self.bullet_list = None
         self.map = None
+        self.map2 = None
         self.particles = []
         self.particle_surface = None
         self.running = True
         self.world = None
         self.current_map = None
-        self.previous_map = None
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
@@ -40,7 +40,9 @@ class Game:
         world_width, world_height = 2, 1
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.current_map = [start_map.x, start_map.y]
+        #self.map = get_map(self.world, self.current_map).room_image
         self.map = self.world[start_map.x][start_map.y].room_image
+
 
     def collided(self, sprite, other):
         """Check if the hitbox of one sprite collides with rect of another sprite."""
@@ -87,8 +89,9 @@ class Game:
     def next_level(self):
         if self.map.x == 0 and self.map.y == 0:
             self.player.can_move = True
-        self.map.next_level(self.player, self.current_map, self.world)
+        self.map.next_level(self,self.player, self.current_map, self.world)
         self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
+
 
     def run_game(self):
         self.init_all()
@@ -98,8 +101,9 @@ class Game:
             self.screen.fill((0, 0, 0))
             # self.particle_surface.fill((0, 0, 0, 0))
             self.map.draw_map(self.screen)
-
-
+            if self.map2 is not None:
+                self.map2.load_map()
+                self.map2.draw_map(self.screen)
             self.input()
 
             # for enemy in self.enemy_list:  # Why not self.all_enemy???
