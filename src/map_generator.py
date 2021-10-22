@@ -52,8 +52,7 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     def check_boundary(x, world_param):  # checks if x doesnt exceed world boundary
         if x >= world_param or x < 0:
             return False
-        else:
-            return True
+        return True
 
     def check_free_space():  # returns free neighbouring spaces
         free_space = []
