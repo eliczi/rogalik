@@ -62,7 +62,8 @@ class TileMap():
             self.y -= 16
         elif self.y < 0:
             self.y += 16
-    #better animation
+
+    # better animation
     def testing(self):
         if self.previous:
             self.x += 21
@@ -71,7 +72,7 @@ class TileMap():
 
     def draw_map(self, surface):
         self.testing()
-        #self.animation()
+        # self.animation()
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
@@ -89,8 +90,7 @@ class TileMap():
     def location(self, number):
         a = number // 15
         b = number % 15
-        x = b * 16, a * 16
-        return x
+        return b * 16, a * 16
 
     def load_tiles(self, filename):
         tiles = []
