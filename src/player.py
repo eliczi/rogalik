@@ -160,7 +160,7 @@ class Player():
     def wall_collision(self):
         """Sets player's velocity to zero if it would collide with walls
            In other words, prevents player to collide with walls"""
-        for wall in self.game.map.wall_list:
+        for wall in self.game.room_image.wall_list:
             test_rect = self.hitbox.move(*self.velocity)
             if wall.rect.collidepoint(test_rect.midbottom) or wall.rect.collidepoint(
                     test_rect.bottomleft) or wall.rect.collidepoint(test_rect.bottomright):
@@ -178,12 +178,13 @@ class Player():
         self.hitbox = self.rect_mask
         self.hitbox.midbottom = self.rect.midbottom
 
-        pygame.draw.rect(self.game.map.map_surface, (0, 255, 0), self.rect, 1)
-        pygame.draw.rect(self.game.map.map_surface, (255, 0, 0), self.hitbox, 1)
+
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
+        # pygame.draw.rect(self.game.map.map_surface, (0, 255, 0), self.rect, 1)
+        # pygame.draw.rect(self.game.map.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         pass

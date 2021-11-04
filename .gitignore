@@ -4,3 +4,4 @@ src/__pycache__/
 *.pyc
 src/__pycache__/game.cpython-37.pyc
 *.pyc
+*.pyc

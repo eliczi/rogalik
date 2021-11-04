@@ -1,6 +1,6 @@
 import pygame
 
-world_size = (21*64, 13*64)
+world_size = (21*64, 14*64)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 

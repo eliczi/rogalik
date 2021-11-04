@@ -19,13 +19,14 @@ class Game:
         self.clock = None
         self.enemy_list = []
         self.bullet_list = None
-        self.map = None
-        self.map2 = None
+        self.room = None
+        self.room_image = None
         self.particles = []
         self.particle_surface = None
         self.running = True
         self.world = None
-        self.current_map = None
+        self.x = None
+        self.y = None
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
@@ -36,12 +37,12 @@ class Game:
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 2
-        world_width, world_height = 1, 2
+        num_of_rooms = 4
+        world_width, world_height = 2, 2
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
-        self.current_map = [start_map.x, start_map.y]
-        self.map = self.world[start_map.x][start_map.y].room_image
-
+        self.x, self.y = start_map.x, start_map.y
+        self.room = self.world[start_map.x][start_map.y]
+        self.room_image = self.room.room_image
 
     def collided(self, sprite, other):
         """Check if the hitbox of one sprite collides with rect of another sprite."""
@@ -57,13 +58,12 @@ class Game:
         self.bullet_list.update()
 
     def draw_groups(self):
-        self.map.load_map()
-
-        self.player.draw(self.map.map_surface)
+        self.room_image.load_map()
+        self.player.draw(self.room_image.map_surface)
         self.player.render()
         for bullet in self.bullet_list:
             bullet.draw()
-        self.map.draw_map(self.screen)
+        self.room_image.draw_map(self.screen)
 
     def input(self):
         self.player.input()
@@ -88,17 +88,14 @@ class Game:
         pass
 
     def next_level(self):
-        if self.map.x == 0 and self.map.y == 0:
-            self.player.can_move = True
-        self.map.next_level(self,self.player, self.current_map, self.world)
-        self.map = self.world[self.current_map[0]][self.current_map[1]].room_image
-
+        self.room_image.next_level(self, self.player, self.world)
 
     def run_game(self):
         self.init_all()
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
+            pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
             # self.particle_surface.fill((0, 0, 0, 0))
 
             # if self.map2 is not None:
@@ -134,7 +131,7 @@ class Game:
 
             self.next_level()
             self.counter += 1
-
+            #pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
             x, y = 0, 0
             self.display.blit(self.screen, (0, 0))
             pygame.display.update()
