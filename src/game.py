@@ -37,10 +37,9 @@ class Game:
 
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 2
-        world_width, world_height = 2, 1
+        world_width, world_height = 1, 2
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.current_map = [start_map.x, start_map.y]
-        #self.map = get_map(self.world, self.current_map).room_image
         self.map = self.world[start_map.x][start_map.y].room_image
 
 
@@ -59,10 +58,12 @@ class Game:
 
     def draw_groups(self):
         self.map.load_map()
-        self.player.draw(self.screen)
+
+        self.player.draw(self.map.map_surface)
         self.player.render()
         for bullet in self.bullet_list:
             bullet.draw()
+        self.map.draw_map(self.screen)
 
     def input(self):
         self.player.input()
@@ -99,7 +100,7 @@ class Game:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             # self.particle_surface.fill((0, 0, 0, 0))
-            self.map.draw_map(self.screen)
+
             # if self.map2 is not None:
             #     self.map2.load_map()
             #     self.map2.draw_map(self.screen)
@@ -125,9 +126,7 @@ class Game:
             #     if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking:
             #         enemy.hurt = True
             #         enemy.hp -= self.player.weapon.damage
-
             self.draw_groups()
-
             # Update and draw particles,
             # self.update_particles()
             # self.draw_particles()

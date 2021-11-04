@@ -41,17 +41,17 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap():
-    def __init__(self, filename, spritesheet, map_size=(13 * 64, 9 * 64)):
+    def __init__(self, filename, spritesheet, map_size=(15 * 64, 11 * 64)):
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
         self.entrance = []
         self.tiles = self.load_tiles(filename)
         self.map_surface = pygame.Surface(map_size)
-        print(map_size)
+        self.map_surface.fill((0, 0, 0))
         self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
-        self.x, self.y = 4 * 64, 64
+        self.x, self.y = 3 * 64, 64
         self.previous = {'up': False,
                          'down': False,
                          'right': False,
@@ -77,12 +77,14 @@ class TileMap():
 
     def draw_map(self, surface):
         #self.testing()
-        # self.animation()
+
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
+        self.map_surface.fill(utils.BLACK)
         for tile in self.tiles:
             tile.draw(self.map_surface)
+            #pygame.draw.rect(self.map_surface, (0, 0, 255), tile.rect, 1)
 
     def read_csv(self, filename):
         map = []
@@ -100,9 +102,9 @@ class TileMap():
     def load_tiles(self, filename):
         tiles = []
         room_map = filename
-        x, y = 0, 0
+        x, y = 0, 64
         for row in room_map:
-            x = -0
+            x = 64
             for tile in row:
                 tiles.append(Tile((*self.location(int(tile)), 16, 16), x, y, self.spritesheet))
                 if int(tile) in (-1, 75):
@@ -118,7 +120,6 @@ class TileMap():
             if wall.rect.collidepoint(player.hitbox.midbottom) \
                     or wall.rect.collidepoint(player.hitbox.bottomleft) \
                     or wall.rect.collidepoint(player.hitbox.bottomright):
-                print('OK')
                 self.previous = True
                 player.can_move = False
                 game.map2 = self

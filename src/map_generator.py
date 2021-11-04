@@ -111,21 +111,22 @@ def map_generator(num_of_rooms, width, height, spritesheet):
             for room in row:
                 if isinstance(room, Room):
                     room_map = copy.deepcopy(basic_map)  # csv file
-                    # for door in room.doors:
-                    #     if door == 'left':
-                    #         room_map[5][4] = -1
-                    #         room_map[6][4] = 18#2
-                    #         room_map[4][4] = 18#32
-                    #     if door == 'right':
-                    #         room_map[5][16] = -1
-                    #         room_map[6][16] = 0
-                    #         room_map[4][16] = 30
-                    #     if door == 'up':
-                    #         room_map[1][10] = -1
-                    #     if door == 'down':
-                    #         room_map[10][10] = -1
-                    #         room_map[10][9] = 2
-                    #         room_map[10][11] = 0
+                    for door in room.doors:
+                        # if door == 'left':
+                        #     room_map[5][4] = -1
+                        #     room_map[6][4] = 18#2
+                        #     room_map[4][4] = 18#32
+                        # if door == 'right':
+                        #     room_map[5][16] = -1
+                        #     room_map[6][16] = 0
+                        #     room_map[4][16] = 30
+                        if door == 'up':
+                            room_map[1][6] = -1
+                        if door == 'down':
+                            room_map[8][6] = -1
+                            # room_map[10][10] = -1
+                            # room_map[10][9] = 2
+                            # room_map[10][11] = 0
                     room.room_map = room_map
 
     def add_graphics():
