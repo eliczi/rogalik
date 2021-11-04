@@ -59,7 +59,7 @@ class Game:
 
     def draw_groups(self):
         self.map.load_map()
-        self.player.draw(self.map.map_surface)
+        self.player.draw(self.screen)
         self.player.render()
         for bullet in self.bullet_list:
             bullet.draw()
@@ -98,12 +98,11 @@ class Game:
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
-            self.screen.fill((0, 0, 0))
             # self.particle_surface.fill((0, 0, 0, 0))
             self.map.draw_map(self.screen)
-            if self.map2 is not None:
-                self.map2.load_map()
-                self.map2.draw_map(self.screen)
+            # if self.map2 is not None:
+            #     self.map2.load_map()
+            #     self.map2.draw_map(self.screen)
             self.input()
 
             # for enemy in self.enemy_list:  # Why not self.all_enemy???

@@ -6,7 +6,7 @@ from map import TileMap
 
 class Room:
     def __init__(self, x, y, starting):
-        self.x = x
+        self.x = x  # position in game world
         self.y = y
         self.starting = starting  # starting room
         self.neighbours = []  # neighbouring rooms coordinates
@@ -16,7 +16,7 @@ class Room:
         self.room_image = None  # TileMap
 
     def __repr__(self):
-        return f'({self.x}, {self.y})' # str(self)?
+        return f'({self.x}, {self.y})'  # str(self)?
 
     def __str__(self):
         return f'({self.x}, {self.y})'
@@ -72,7 +72,7 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     room_counter = 0
     first_room = True
     start = None
-    while room_counter < num_of_rooms:
+    while room_counter < num_of_rooms:  # this while loop populates game world with one possible room-layout
         if first_room:
             start = world[x][y] = Room(x, y, True)
             first_room = False
@@ -103,30 +103,30 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                     room.door_position()  # generates doors
 
     def add_room_map():
-        with open('../maps/test_map.csv', newline='') as f:  # load room template
+        with open('../maps/new2_test_map.csv', newline='') as f:  # load room template
             reader = csv.reader(f)
             basic_map = list(reader)
 
         for row in world:  # make passage through rooms
             for room in row:
                 if isinstance(room, Room):
-                    room_map = copy.deepcopy(basic_map)
-                    for door in room.doors:
-                        if door == 'left':
-                            room_map[5][0] = -1
-                            room_map[6][0] = 2
-                            room_map[4][0] = 32
-                        if door == 'right':
-                            room_map[5][20] = -1
-                            room_map[6][20] = 0
-                            room_map[4][20] = 30
-                        if door == 'up':
-                            room_map[1][10] = -1
-                        if door == 'down':
-                            room_map[10][10] = -1
-                            room_map[10][9] = 2
-                            room_map[10][11] = 0
-                        room.room_map = room_map
+                    room_map = copy.deepcopy(basic_map)  # csv file
+                    # for door in room.doors:
+                    #     if door == 'left':
+                    #         room_map[5][4] = -1
+                    #         room_map[6][4] = 18#2
+                    #         room_map[4][4] = 18#32
+                    #     if door == 'right':
+                    #         room_map[5][16] = -1
+                    #         room_map[6][16] = 0
+                    #         room_map[4][16] = 30
+                    #     if door == 'up':
+                    #         room_map[1][10] = -1
+                    #     if door == 'down':
+                    #         room_map[10][10] = -1
+                    #         room_map[10][9] = 2
+                    #         room_map[10][11] = 0
+                    room.room_map = room_map
 
     def add_graphics():
         for row in world:
@@ -142,8 +142,6 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                 else:
                     print(0, end=' ')
             print('')
-
-
 
     add_neighbors()
     add_room_map()

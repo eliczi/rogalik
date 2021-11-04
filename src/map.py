@@ -41,16 +41,21 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap():
-    def __init__(self, filename, spritesheet):
+    def __init__(self, filename, spritesheet, map_size=(13 * 64, 9 * 64)):
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
         self.entrance = []
-        self.x, self.y = 0, 0
         self.tiles = self.load_tiles(filename)
-        self.map_surface = pygame.Surface(utils.world_size)
+        self.map_surface = pygame.Surface(map_size)
+        print(map_size)
         self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
+        self.x, self.y = 4 * 64, 64
+        self.previous = {'up': False,
+                         'down': False,
+                         'right': False,
+                         'left': False}
         self.previous = False
 
     def animation(self):
@@ -71,7 +76,7 @@ class TileMap():
             self.animation()
 
     def draw_map(self, surface):
-        self.testing()
+        #self.testing()
         # self.animation()
         surface.blit(self.map_surface, (self.x, self.y))
 
@@ -104,8 +109,8 @@ class TileMap():
                     self.entrance.append(tiles[-1])
                 if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32):
                     self.wall_list.append(tiles[-1])
-                x += 64
-            y += 64
+                x += self.tile_size
+            y += self.tile_size
         return tiles
 
     def next_level(self, game, player, current_map, world):
