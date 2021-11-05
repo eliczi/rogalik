@@ -95,7 +95,7 @@ class Game:
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
-            pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
+            pygame.draw.line(self.screen, (255, 25, 125), (0, 0), (0 + self.counter * 3, 1600), 3)
             # self.particle_surface.fill((0, 0, 0, 0))
 
             # if self.map2 is not None:
@@ -131,7 +131,7 @@ class Game:
 
             self.next_level()
             self.counter += 1
-            #pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
+            # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
             x, y = 0, 0
             self.display.blit(self.screen, (0, 0))
             pygame.display.update()

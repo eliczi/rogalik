@@ -1,6 +1,8 @@
-import pygame, csv, os
+import csv
+import os
+import pygame
+
 import utils
-from player import Player
 
 
 class Spritesheet(object):
@@ -9,7 +11,7 @@ class Spritesheet(object):
 
     # Load a specific image from a specific rectangle
     def image_at(self, rectangle, colorkey=None):
-        "Loads image from x,y,x+offset,y+offset"
+        """Loads image from x,y,x+offset,y+offset"""
         rect = pygame.Rect(rectangle)
         image = pygame.Surface(rect.size).convert_alpha()
         image.blit(self.sheet, (0, 0), rect)
@@ -41,7 +43,7 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (64, 64))
 
 
-class TileMap():
+class TileMap:
     def __init__(self, filename, spritesheet, doors, map_size=(15 * 64, 12 * 64)):
         self.tile_size = 64
         self.spritesheet = spritesheet
@@ -50,7 +52,7 @@ class TileMap():
         self.doors = doors
         self.tiles = self.load_tiles(filename)
         self.map_surface = pygame.Surface(map_size)
-        #self.map_surface.set_colorkey((0, 0, 0))
+        self.map_surface.set_colorkey((0, 0, 0))
         self.load_map()
         self.x, self.y = 3 * 64, 64
 
@@ -106,21 +108,27 @@ class TileMap():
         elif wall[1] == 'down':
             self.y -= 25
         elif wall[1] == 'right':
-            self.x -= 35
+            self.x += 35
         elif wall[1] == 'left':
             self.x -= 35
-        print(self.y)
-        if self.x < 0 or self.x > utils.world_size[1] or self.y + 13 * 64 < 0 or self.y > 15 * 64:
-
+        print(self.x)
+        if self.x < 0 - 15 * 64 or self.x > utils.world_size[0] or self.y + 13 * 64 < 0 or self.y > 15 * 64:
             if direction == 'up':
-                game.room =game.world[game.x -1][game.y]
+                game.room = game.world[game.x - 1][game.y]
                 game.room_image = game.room.room_image
                 self.x, self.y = 3 * 64, 64
             if direction == 'down':
-                game.room =game.world[game.x + 1][game.y]
+                game.room = game.world[game.x + 1][game.y]
                 game.room_image = game.room.room_image
                 self.x, self.y = 3 * 64, 64
-
+            if direction == 'right':
+                game.room = game.world[game.x][game.y + 1]
+                game.room_image = game.room.room_image
+                self.x, self.y = 3 * 64, 64
+            if direction == 'left':
+                game.room = game.world[game.x][game.y - 1]
+                game.room_image = game.room.room_image
+                self.x, self.y = 3 * 64, 64
 
     def next_level(self, game, player, world):
 
