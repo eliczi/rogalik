@@ -96,7 +96,7 @@ class TileMap:
                         self.entrance.append([tiles[-1], 'left'])
                     if tiles[-1].rect.x / 64 == 13 and tiles[-1].rect.y / 64 == 6:
                         self.entrance.append([tiles[-1], 'right'])
-                if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3):
+                if int(tile) in utils.wall_list:
                     self.wall_list.append(tiles[-1])
                 x += self.tile_size
             y += self.tile_size
@@ -104,19 +104,19 @@ class TileMap:
 
     def animation(self, wall, game, direction):
         if wall[1] == 'up':
-            self.y += 25
+            self.y += 5
         elif wall[1] == 'down':
-            self.y -= 25
+            self.y -= 5
         elif wall[1] == 'right':
             self.x += 35
         elif wall[1] == 'left':
             self.x -= 35
-        print(self.x)
         if self.x < 0 - 15 * 64 or self.x > utils.world_size[0] or self.y + 13 * 64 < 0 or self.y > 15 * 64:
             if direction == 'up':
                 game.room = game.world[game.x - 1][game.y]
                 game.room_image = game.room.room_image
                 self.x, self.y = 3 * 64, 64
+
             if direction == 'down':
                 game.room = game.world[game.x + 1][game.y]
                 game.room_image = game.room.room_image
@@ -130,14 +130,11 @@ class TileMap:
                 game.room_image = game.room.room_image
                 self.x, self.y = 3 * 64, 64
 
-    def next_level(self, game, player, world):
-
-        # for door in game.room.doors:
-        #     pass
+    def next_level(self, game, player):
         for wall in self.entrance:
-            if wall[0].rect.collidepoint(player.hitbox.midbottom) \
-                    or wall[0].rect.collidepoint(player.hitbox.bottomleft) \
-                    or wall[0].rect.collidepoint(player.hitbox.bottomright):
-                player.can_move = False
-                direction = wall[1]
-                self.animation(wall, game, direction)
+            collide_points = (player.hitbox.midbottom, player.hitbox.bottomleft, player.hitbox.bottomright)
+            for collide_point in collide_points:
+                if wall[0].rect.collidepoint(collide_point):
+                    player.can_move = False
+                    self.animation(wall, game, wall[1])
+

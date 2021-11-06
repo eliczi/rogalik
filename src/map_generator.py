@@ -116,23 +116,19 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                             room_map[5][0] = -1
                             room_map[4][0] = 33
                             room_map[6][0] = 3
-                            # room_map[6][4] = 18#2
-                            # room_map[4][4] = 18#32
+
                         if door == 'right':
                             room_map[5][12] = -1
                             room_map[4][12] = 33
                             room_map[6][12] = 3
-                            # room_map[6][16] = 0
-                            # room_map[4][16] = 30
+
                         if door == 'up':
                             room_map[1][6] = -1
                         if door == 'down':
                             room_map[9][6] = -1
                             room_map[9][5] = 47
                             room_map[9][7] = 45
-                            # room_map[10][10] = -1
-                            # room_map[10][9] = 2
-                            # room_map[10][11] = 0
+
                     room.room_map = room_map
 
     def add_graphics():
