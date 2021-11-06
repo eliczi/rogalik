@@ -2,7 +2,4 @@ venv/
 src/__pycache__/
 .idea/
 *.pyc
-src/__pycache__/game.cpython-37.pyc
-*.pyc
-*.pyc
-*.pyc
+src/__pycache__/
