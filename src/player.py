@@ -13,25 +13,20 @@ from animation import load_animation_sprites
 class Player():
     def __init__(self, game):
         self.game = game
-
         self.animation_database = load_animation_sprites('../assets/player/')
-        self.image = pygame.image.load("../assets/player/idle/idle0.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
+        self.image = pygame.transform.scale(pygame.image.load("../assets/player/idle/idle0.png").convert_alpha(), utils.basic_entity_size)
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect(
-            center=(500, 400))  # (center=self.game.screen.get_rect().center)  # mask -> image
-        self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)  # Get rect of some size as 'image'.
+        self.rect = self.image.get_rect(center=(500, 400))  # (center=self.game.screen.get_rect().center)  # mask -> image
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)  # Get rect of some size as 'image'.
         self.velocity = [0, 0]
         self.speed = 75
         self.direction = ''
-        self.player_moving = False
-        self.player_index = 0  # frames
-        self.attacking = False
+        self.animation_frame = 0  # frames
         self.weapon = Weapon(self.game, 10, 'sword')  # deleted groups z self.game
+        self.attacking = False
         self.attacked = False
         self.gun_length = 15
         self.gun_width = 5
-        self.hitbox = self.rect_mask
         self.can_move = True
 
     def input(self):
@@ -76,33 +71,36 @@ class Player():
         if sum(self.velocity):
             return True
 
+    def update_animation_frame(self):
+        self.animation_frame += 1.0 / 15
+        if self.animation_frame >= 4:
+            self.animation_frame = 0
+
+    def idle_animation(self):
+        self.update_animation_frame()
+        if self.direction == 'LEFT':
+            self.image = self.animation_database["IDLE"][int(self.animation_frame)]
+        elif self.direction == 'RIGHT':
+            self.image = self.animation_database["IDLE"][int(self.animation_frame)]
+            self.image = pygame.transform.flip(self.image, 1, 0)
+
+
     def animation(self):
 
         if self.moving():
-            self.player_index += 1.0 / 15  # change factor of
-            if self.player_index >= 4:  # 4 frames per movement
-                self.player_index = 0
+            self.update_animation_frame()
             if self.direction == 'LEFT':
-                self.image = self.animation_database["WALK"][int(self.player_index)]
+                self.image = self.animation_database["WALK"][int(self.animation_frame)]
             elif self.direction == 'UP':
-                self.image = self.animation_database["WALK"][int(self.player_index)]
+                self.image = self.animation_database["WALK"][int(self.animation_frame)]
             elif self.direction == "RIGHT":
-                self.image = pygame.transform.flip(self.animation_database["WALK"][int(self.player_index)], True,
+                self.image = pygame.transform.flip(self.animation_database["WALK"][int(self.animation_frame)], True,
                                                    False)
             elif self.direction == "DOWN":
-                self.image = self.animation_database["WALK"][int(self.player_index)]
-        else:  # if idle
-            self.player_index += 1.0 / 15
-            if self.player_index >= 4:
-                self.player_index = 0
-            if self.direction == 'LEFT':
-                self.image = self.animation_database["IDLE"][int(self.player_index)]
-            elif self.direction == 'RIGHT':
-                self.image = self.animation_database["IDLE"][int(self.player_index)]
-            elif self.direction == "UP":
-                self.image = self.animation_database["IDLE"][int(self.player_index)]
-            elif self.direction == "DOWN":
-                self.image = self.animation_database["IDLE"][int(self.player_index)]
+                self.image = self.animation_database["WALK"][int(self.animation_frame)]
+        else:
+            self.idle_animation()
+
 
     def set_velocity(self, velocity):
         self.velocity = velocity
@@ -125,13 +123,12 @@ class Player():
     def update(self) -> None:
         self.weapon.update()
         self.animation()
-        self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.wall_collision()
         if self.can_move:
             self.rect.move_ip(*self.velocity)
-            self.rect_mask.move_ip(*self.velocity)
+            self.hitbox.move_ip(*self.velocity)
 
-        self.hitbox = self.rect_mask
         self.hitbox.midbottom = self.rect.midbottom
 
     def draw(self, screen):

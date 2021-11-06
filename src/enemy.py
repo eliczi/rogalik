@@ -2,28 +2,12 @@ import random
 import pygame
 import math
 import os
+from animation import load_animation_sprites
+
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
-    """
 
-    :param surf:
-    :type surf:
-    :param pos:
-    :type pos:
-    :param size:
-    :type size:
-    :param border_c:
-    :type border_c:
-    :param back_c:
-    :type back_c:
-    :param health_c:
-    :type health_c:
-    :param progress:
-    :type progress:
-    :return:
-    :rtype:
-    """
     pygame.draw.rect(surf, back_c, (*pos, *size))
     pygame.draw.rect(surf, border_c, (*pos, *size), 1)
     inner_pos = (pos[0] + 1, pos[1] + 1)
@@ -36,24 +20,16 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, game, speed, max_hp, name, *groups):
         super().__init__(*groups)
         self.name = name
-        self.animation_database = {"IDLE_LEFT": [],
-                                   "IDLE_RIGHT": [],
-                                   "WALK_LEFT": [],
-                                   "WALK_RIGHT": [],
-                                   "HURT_LEFT": [],
-                                   "HURT_RIGHT": []}
 
-        self.player_index = 0
         self.game = game
         self.max_hp = max_hp
         self.hp = self.max_hp
         enemy_side = int(self.set_side())
         self.image_size = (15 * enemy_side, 15 * enemy_side)
-        self.image = pygame.image.load("../assets/goblin/idle/right_idle0.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, self.image_size)
+        self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/right_idle0.png").convert_alpha(), self.image_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
-        self.rect_mask = None  # Get rect of some size as 'image'.
+        self.hitbox = None  # Get rect of some size as 'image'.
         self.spawn()
         self.speed = speed
         self.velocity = [0, 0]
@@ -62,22 +38,11 @@ class Enemy(pygame.sprite.Sprite):
         self.step = 400
         self.direction = "UP"
         self.load_animation('../assets/goblin/')
-        self.hitbox = None
         self.hurt = False
         self.counter = 0
 
     def getMaskRect(self, surf, top: int = 0, left: int = 0) -> None:
-        """
 
-        :param surf:
-        :type surf:
-        :param top:
-        :type top:
-        :param left:
-        :type left:
-        :return:
-        :rtype:
-        """
         surf_mask = pygame.mask.from_surface(surf)
         rect_list = surf_mask.get_bounding_rects()
         surf_mask_rect = rect_list[0].unionall(rect_list)
@@ -85,13 +50,7 @@ class Enemy(pygame.sprite.Sprite):
         return surf_mask_rect
 
     def load_animation(self, path):
-        """
 
-        :param path:
-        :type path:
-        :return:
-        :rtype:
-        """
         animation_states = os.listdir(path)
         for state in animation_states:
             substates = os.listdir(path + state)
@@ -104,26 +63,15 @@ class Enemy(pygame.sprite.Sprite):
                 self.animation_database[key].append(animation_image)
 
     def moving(self):
-        """
 
-        :return:
-        :rtype:
-        """
         if self.old_velocity != self.velocity:
             return True
         else:
             return False
 
-    def check_direction(self):
-        '''old rect.x - rect.x > '''
-
 
     def animation(self):
-        """
 
-        :return:
-        :rtype:
-        """
         if self.counter >= 4:
             self.hurt = False
             self.counter = 0
@@ -160,19 +108,15 @@ class Enemy(pygame.sprite.Sprite):
                 self.image = self.animation_database["IDLE_RIGHT"][int(self.player_index)]
 
     def set_side(self):
-        """
 
-        :return:
-        :rtype:
-        """
         enemy_side = self.max_hp / 10
         return enemy_side
 
     def spawn(self):
         self.rect.x = 250
         self.rect.y = 100
-        self.rect_mask = self.getMaskRect(self.image, *self.rect.topleft)
-        self.hitbox = self.rect_mask
+        self.hitbox = self.getMaskRect(self.image, *self.rect.topleft)
+        self.hitbox = self.hitbox
         # """
         #
         # :return:
@@ -239,7 +183,7 @@ class Enemy(pygame.sprite.Sprite):
             # Move along this normalized vector towards the player at current speed.
             dirvect.scale_to_length(self.speed * 3 * dtick)
         self.rect.move_ip(dirvect)
-        self.rect_mask.move_ip(dirvect)
+        self.hitbox.move_ip(dirvect)
 
     def find_target(self, dtick, target):
         """
