@@ -138,5 +138,5 @@ class Game:
 
         pygame.quit()
         print("Exited the game loop. Game will quit...")
-        
+
         quit()
