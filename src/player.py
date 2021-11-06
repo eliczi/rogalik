@@ -1,26 +1,25 @@
+from math import sqrt
 import pygame
-import os
-
 from weapon import Weapon
 from utils import get_mask_rect
 import utils
-from math import sqrt
-from animation import load_animation_sprites
+from animation import load_animation_sprites, entity_animation
 
 
-# import numpy as np
-# Zoom note: transform.scale self.image and self.animation_database images to self.image_size * game.zoom_factor
-class Player():
+class Player:
     def __init__(self, game):
         self.game = game
         self.animation_database = load_animation_sprites('../assets/player/')
-        self.image = pygame.transform.scale(pygame.image.load("../assets/player/idle/idle0.png").convert_alpha(), utils.basic_entity_size)
+        self.image = pygame.transform.scale(pygame.image.load("../assets/player/idle/idle0.png").convert_alpha(),
+                                            utils.basic_entity_size)
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect(center=(500, 400))  # (center=self.game.screen.get_rect().center)  # mask -> image
-        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)  # Get rect of some size as 'image'.
+        self.rect = self.image.get_rect(
+            center=(500, 400))  # (center=self.game.screen.get_rect().center)  # mask -> image
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.velocity = [0, 0]
         self.speed = 75
         self.direction = ''
+        self.animation_direction = 'right'
         self.animation_frame = 0  # frames
         self.weapon = Weapon(self.game, 10, 'sword')  # deleted groups z self.game
         self.attacking = False
@@ -30,6 +29,7 @@ class Player():
         self.can_move = True
 
     def input(self):
+        """s"""
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_w]:
             self.direction = 'UP'
@@ -67,45 +67,14 @@ class Player():
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             self.game.counter = 0
 
-    def moving(self) -> bool:
-        if sum(self.velocity):
-            return True
-
-    def update_animation_frame(self):
-        self.animation_frame += 1.0 / 15
-        if self.animation_frame >= 4:
-            self.animation_frame = 0
-
-    def idle_animation(self):
-        self.update_animation_frame()
-        if self.direction == 'LEFT':
-            self.image = self.animation_database["IDLE"][int(self.animation_frame)]
-        elif self.direction == 'RIGHT':
-            self.image = self.animation_database["IDLE"][int(self.animation_frame)]
-            self.image = pygame.transform.flip(self.image, 1, 0)
-
-
-    def animation(self):
-
-        if self.moving():
-            self.update_animation_frame()
-            if self.direction == 'LEFT':
-                self.image = self.animation_database["WALK"][int(self.animation_frame)]
-            elif self.direction == 'UP':
-                self.image = self.animation_database["WALK"][int(self.animation_frame)]
-            elif self.direction == "RIGHT":
-                self.image = pygame.transform.flip(self.animation_database["WALK"][int(self.animation_frame)], True,
-                                                   False)
-            elif self.direction == "DOWN":
-                self.image = self.animation_database["WALK"][int(self.animation_frame)]
-        else:
-            self.idle_animation()
 
 
     def set_velocity(self, velocity):
+        """s"""
         self.velocity = velocity
 
     def player_size(self):
+        """S"""
         image_size = tuple(int(self.game.zoom_level * x) for x in utils.basic_entity_size)
         self.image = pygame.transform.scale(self.image, image_size)
 
@@ -121,8 +90,11 @@ class Player():
                     self.velocity = [0, 0]
 
     def update(self) -> None:
+        """s"""
         self.weapon.update()
-        self.animation()
+        # self.update_animation_direction()
+        # self.animation()
+        entity_animation(self)
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.wall_collision()
         if self.can_move:
@@ -132,12 +104,14 @@ class Player():
         self.hitbox.midbottom = self.rect.midbottom
 
     def draw(self, screen):
+        """S"""
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
         # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
         # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
+        """s"""
         pass
         # start = pygame.math.Vector2(self.rect.midright)
         # mouse = pygame.mouse.get_pos()
@@ -146,11 +120,12 @@ class Player():
         # pygame.draw.lines(self.game.screen, (255, 255, 255), False, (start, end), width=self.gun_width)
 
     def gun_point(self):
-
+        """s"""
         start = pygame.math.Vector2(self.rect.midright)
         mouse = pygame.mouse.get_pos()
         end = start + (mouse - start).normalize() * self.gun_length
         return end
 
     def assign_weapon(self, weapon: Weapon):
+        """Assigning weapon to player"""
         self.weapon = weapon

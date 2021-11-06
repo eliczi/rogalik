@@ -21,7 +21,50 @@ def load_animation_sprites(path):
     return animation_data
 
 
-class EntityAnimation:
+def entity_animation(entity):
 
-    def __init__(self, entity):
-        self.entity = entity
+    def moving() -> bool:
+        """s"""
+        if sum(entity.velocity):
+            return True
+        return False
+
+    def update_animation_direction():
+        if entity.direction == 'RIGHT':
+            entity.animation_direction = 'right'
+        elif entity.direction == 'LEFT':
+            entity.animation_direction = 'left'
+
+    def update_animation_frame():
+        """sss"""
+        entity.animation_frame += 1.0 / 15
+        if entity.animation_frame >= 4:
+            entity.animation_frame = 0
+
+    def idle_animation():
+        """Animation if idle"""
+        update_animation_frame()
+        if entity.animation_direction == 'left':
+            entity.image = entity.animation_database["IDLE"][int(entity.animation_frame)]
+        elif entity.animation_direction == 'right':
+            entity.image = entity.animation_database["IDLE"][int(entity.animation_frame)]
+            entity.image = pygame.transform.flip(entity.image, 1, 0)
+
+    def walking_animation():
+        """s"""
+        update_animation_frame()
+        if entity.animation_direction == 'left':
+            entity.image = entity.animation_database["WALK"][int(entity.animation_frame)]
+        elif entity.animation_direction == "right":
+            entity.image = pygame.transform.flip(entity.animation_database["WALK"][int(entity.animation_frame)], True,
+                                               False)
+
+    def animation():
+        """s"""
+        if moving():
+            walking_animation()
+        else:
+            idle_animation()
+
+    update_animation_direction()
+    animation()
