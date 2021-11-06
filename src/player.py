@@ -19,13 +19,11 @@ class Player:
         self.velocity = [0, 0]
         self.speed = 75
         self.direction = ''
-        self.animation_direction = 'right'
-        self.animation_frame = 0  # frames
-        self.weapon = Weapon(self.game, 10, 'sword')  # deleted groups z self.game
+        self.animation_direction = 'right' # Default animation direction
+        self.animation_frame = 0  # current animation frame
+        self.weapon = Weapon(self.game, 10, 'sword')
         self.attacking = False
         self.attacked = False
-        self.gun_length = 15
-        self.gun_width = 5
         self.can_move = True
 
     def input(self):
@@ -66,8 +64,6 @@ class Player:
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             self.game.counter = 0
-
-
 
     def set_velocity(self, velocity):
         """s"""
@@ -119,12 +115,6 @@ class Player:
 
         # pygame.draw.lines(self.game.screen, (255, 255, 255), False, (start, end), width=self.gun_width)
 
-    def gun_point(self):
-        """s"""
-        start = pygame.math.Vector2(self.rect.midright)
-        mouse = pygame.mouse.get_pos()
-        end = start + (mouse - start).normalize() * self.gun_length
-        return end
 
     def assign_weapon(self, weapon: Weapon):
         """Assigning weapon to player"""

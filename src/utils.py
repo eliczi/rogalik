@@ -1,9 +1,11 @@
 import pygame
 
-world_size = (21*64, 14*64)
+world_size = (21 * 64, 14 * 64)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 basic_entity_size = (64, 64)
+wall_list = (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3)
+
 
 def draw_text(self, text, size, x, y):
     font = pygame.font.SysFont('Comic Sans MS', size)

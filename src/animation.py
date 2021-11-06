@@ -2,12 +2,13 @@ import os
 import pygame
 import utils
 
+
 def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
     animation_data = {"IDLE": [],
                       "WALK": []
-                    }
+                      }
 
     animation_states = os.listdir(path)  # Lists all the subdirectories in specified path
     for state in animation_states:
@@ -22,7 +23,6 @@ def load_animation_sprites(path):
 
 
 def entity_animation(entity):
-
     def moving() -> bool:
         """s"""
         if sum(entity.velocity):
@@ -57,7 +57,7 @@ def entity_animation(entity):
             entity.image = entity.animation_database["WALK"][int(entity.animation_frame)]
         elif entity.animation_direction == "right":
             entity.image = pygame.transform.flip(entity.animation_database["WALK"][int(entity.animation_frame)], True,
-                                               False)
+                                                 False)
 
     def animation():
         """s"""
