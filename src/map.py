@@ -96,7 +96,7 @@ class TileMap:
                         self.entrance.append([tiles[-1], 'left'])
                     if tiles[-1].rect.x / 64 == 13 and tiles[-1].rect.y / 64 == 6:
                         self.entrance.append([tiles[-1], 'right'])
-                if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32):
+                if int(tile) in (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3):
                     self.wall_list.append(tiles[-1])
                 x += self.tile_size
             y += self.tile_size

@@ -71,7 +71,7 @@ class Bullet(pygame.sprite.Sprite):
         :rtype:
         """
         if self.rect.colliderect(collision_enemy.rect_mask):  # rect->rect_mask
-            self.game.player.calculate_collison(collision_enemy, self.damage)
+            self.game.player.calculate_collision(collision_enemy, self.damage)
             self.sparkle()
             self.kill()
 

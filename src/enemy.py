@@ -117,6 +117,7 @@ class Enemy(pygame.sprite.Sprite):
     def check_direction(self):
         '''old rect.x - rect.x > '''
 
+
     def animation(self):
         """
 

@@ -3,7 +3,7 @@ import pygame
 world_size = (21*64, 14*64)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-
+basic_entity_size = (64, 64)
 
 def draw_text(self, text, size, x, y):
     font = pygame.font.SysFont('Comic Sans MS', size)

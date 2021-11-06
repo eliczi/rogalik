@@ -129,7 +129,7 @@ class Game:
             # self.draw_particles()
             # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
 
- 
+
             self.next_level()
             self.counter += 1
             # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
