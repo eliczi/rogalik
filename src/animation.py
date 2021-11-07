@@ -7,7 +7,8 @@ def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
     animation_data = {"IDLE": [],
-                      "WALK": []
+                      "WALK": [],
+                      "RUN": []
                       }
 
     animation_states = os.listdir(path)  # Lists all the subdirectories in specified path
@@ -66,5 +67,8 @@ def entity_animation(entity):
         else:
             idle_animation()
 
-    update_animation_direction()
-    animation()
+    def update():
+        update_animation_direction()
+        animation()
+
+    return update

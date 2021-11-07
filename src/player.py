@@ -19,12 +19,13 @@ class Player:
         self.velocity = [0, 0]
         self.speed = 75
         self.direction = ''
-        self.animation_direction = 'right' # Default animation direction
+        self.animation_direction = 'right'  # Default animation direction
         self.animation_frame = 0  # current animation frame
         self.weapon = Weapon(self.game, 10, 'sword')
         self.attacking = False
         self.attacked = False
         self.can_move = True
+        self.player_animation = entity_animation(self)
 
     def input(self):
         """s"""
@@ -85,19 +86,20 @@ class Player:
                 if wall.rect.collidepoint(collide_point):
                     self.velocity = [0, 0]
 
+    def update_hitbox(self):
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.hitbox.midbottom = self.rect.midbottom
+
     def update(self) -> None:
         """s"""
         self.weapon.update()
-        # self.update_animation_direction()
-        # self.animation()
-        entity_animation(self)
-        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.player_animation()
+
         self.wall_collision()
         if self.can_move:
             self.rect.move_ip(*self.velocity)
             self.hitbox.move_ip(*self.velocity)
-
-        self.hitbox.midbottom = self.rect.midbottom
+        self.update_hitbox()
 
     def draw(self, screen):
         """S"""
@@ -114,7 +116,6 @@ class Player:
         # end = start + (mouse - start).normalize() * self.gun_length
 
         # pygame.draw.lines(self.game.screen, (255, 255, 255), False, (start, end), width=self.gun_width)
-
 
     def assign_weapon(self, weapon: Weapon):
         """Assigning weapon to player"""

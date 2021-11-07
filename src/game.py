@@ -88,14 +88,13 @@ class Game:
         pass
 
     def next_level(self):
-        self.room_image.next_level(self, self.player, self.world)
+        self.room_image.next_level(self, self.player)
 
     def run_game(self):
         self.init_all()
         while self.running:
             self.clock.tick(60)
-            self.screen.fill(utils.BLACK)
-            pygame.draw.line(self.screen, (255, 25, 125), (0, 0), (0 + self.counter * 3, 1600), 3)
+            self.screen.fill(utils.WHITE)
             # self.particle_surface.fill((0, 0, 0, 0))
 
             # if self.map2 is not None:

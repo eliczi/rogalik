@@ -46,7 +46,6 @@ class Room:
 def map_generator(num_of_rooms, width, height, spritesheet):
     """Generate specified number of room in a world of specified size and connection between them"""
     world = [[None for x in range(width)] for y in range(height)]
-
     x, y = random.randint(0, height - 1), random.randint(0, width - 1)
 
     def check_boundary(x, world_param):  # checks if x doesnt exceed world boundary
@@ -78,10 +77,10 @@ def map_generator(num_of_rooms, width, height, spritesheet):
             first_room = False
         else:
             world[x][y] = Room(x, y, False)
-        free_room = check_free_space()
-        if free_room:
-            move = random.choice(free_room)
-            x, y = move[0], move[1]
+        empty_spaces = check_free_space()
+        if empty_spaces:
+            new_room = random.choice(empty_spaces)
+            x, y = new_room[0], new_room[1]
             room_counter += 1
         elif room_counter == width * height - 1:
             break
