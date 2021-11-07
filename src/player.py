@@ -82,9 +82,8 @@ class Player:
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
         collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
         for wall in self.game.room_image.wall_list:
-            for collide_point in collide_points:
-                if wall.rect.collidepoint(collide_point):
-                    self.velocity = [0, 0]
+            if any(wall.rect.collidepoint(point) for point in collide_points):
+                self.velocity = [0, 0]
 
     def update_hitbox(self):
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
@@ -94,7 +93,6 @@ class Player:
         """s"""
         self.weapon.update()
         self.player_animation()
-
         self.wall_collision()
         if self.can_move:
             self.rect.move_ip(*self.velocity)

@@ -149,9 +149,9 @@ class TileMap:
     def next_level(self, game, player):
         for wall in self.entrances:
             collide_points = (player.hitbox.midbottom, player.hitbox.bottomleft, player.hitbox.bottomright)
-            for collide_point in collide_points:
-                if self.entrances[wall].rect.collidepoint(collide_point):
-                    player.can_move = False
-                    self.load_level(game, wall)
-                    break  # as to not check other collide_point
-                    # self.animation(wall, game, wall[1])
+            if any(self.entrances[wall].rect.collidepoint(point) for point in collide_points):
+                player.can_move = False
+                self.load_level(game, wall)
+                break  # as to not check other collide_point
+                # self.animation(wall, game, wall[1])
+
