@@ -2,12 +2,10 @@ import random
 import pygame
 import math
 import os
-from animation import load_animation_sprites
-
+from animation import load_animation_sprites, entity_animation
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
-
     pygame.draw.rect(surf, back_c, (*pos, *size))
     pygame.draw.rect(surf, border_c, (*pos, *size), 1)
     inner_pos = (pos[0] + 1, pos[1] + 1)
@@ -20,13 +18,14 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, game, speed, max_hp, name, *groups):
         super().__init__(*groups)
         self.name = name
-
+        self.animation_database = load_animation_sprites('../assets/goblin/')
         self.game = game
         self.max_hp = max_hp
         self.hp = self.max_hp
         enemy_side = int(self.set_side())
         self.image_size = (15 * enemy_side, 15 * enemy_side)
-        self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/right_idle0.png").convert_alpha(), self.image_size)
+        self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/right_idle0.png").convert_alpha(),
+                                            self.image_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
         self.hitbox = None  # Get rect of some size as 'image'.
@@ -37,78 +36,18 @@ class Enemy(pygame.sprite.Sprite):
         self.priority = 100
         self.step = 400
         self.direction = "UP"
-        self.load_animation('../assets/goblin/')
         self.hurt = False
         self.counter = 0
+        self.enemy_animation = entity_animation(self)
 
     def getMaskRect(self, surf, top: int = 0, left: int = 0) -> None:
-
         surf_mask = pygame.mask.from_surface(surf)
         rect_list = surf_mask.get_bounding_rects()
         surf_mask_rect = rect_list[0].unionall(rect_list)
         surf_mask_rect.move_ip(top, left)
         return surf_mask_rect
 
-    def load_animation(self, path):
-
-        animation_states = os.listdir(path)
-        for state in animation_states:
-            substates = os.listdir(path + state)
-            for ss in substates:
-                image_loc = ss
-                elements = image_loc.split('_')
-                key = state.upper() + '_' + elements[0].upper()  # key to dictionary
-                animation_image = pygame.image.load(path + state + '/' + image_loc).convert()
-                animation_image = pygame.transform.scale(animation_image, self.image_size)
-                self.animation_database[key].append(animation_image)
-
-    def moving(self):
-
-        if self.old_velocity != self.velocity:
-            return True
-        else:
-            return False
-
-
-    def animation(self):
-
-        if self.counter >= 4:
-            self.hurt = False
-            self.counter = 0
-        if self.hurt and self.counter <= 4:  # if hurt
-            if self.player_index >= 4:
-                self.player_index = 0
-            self.image = self.animation_database["HURT_RIGHT"][2]  # just the red animation
-            #self.player_index += 0.035
-            self.counter += 0.2
-
-        elif self.moving():  # if moving
-            self.player_index += 0.035  # how fast animation changes
-            if self.player_index >= 4:
-                self.player_index = 0
-            if self.direction == 'LEFT':
-                self.image = self.animation_database["WALK_LEFT"][int(self.player_index)]
-            elif self.direction == 'UP':
-                self.image = self.animation_database["WALK_RIGHT"][int(self.player_index)]
-            elif self.direction == "RIGHT":
-                self.image = self.animation_database["WALK_RIGHT"][int(self.player_index)]
-            elif self.direction == "DOWN":
-                self.image = self.animation_database["WALK_RIGHT"][int(self.player_index)]
-        else:  # if idle
-            self.player_index += 0.035  # how fast animation changes
-            if self.player_index >= 4:
-                self.player_index = 0
-            if self.direction == 'LEFT':
-                self.image = self.animation_database["IDLE_LEFT"][int(self.player_index)]
-            elif self.direction == 'RIGHT':
-                self.image = self.animation_database["IDLE_RIGHT"][int(self.player_index)]
-            elif self.direction == "UP":
-                self.image = self.animation_database["IDLE_RIGHT"][int(self.player_index)]
-            elif self.direction == "DOWN":
-                self.image = self.animation_database["IDLE_RIGHT"][int(self.player_index)]
-
     def set_side(self):
-
         enemy_side = self.max_hp / 10
         return enemy_side
 
@@ -141,10 +80,9 @@ class Enemy(pygame.sprite.Sprite):
         :return:
         :rtype:
         """
-
+        self.enemy_animation()
         self.animation()
         self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
-
 
     def move(self, dtick):
         """
@@ -227,7 +165,7 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class EnemySlow(Enemy):
-    def __init__(self, game, speed, max_hp , name, *groups):
+    def __init__(self, game, speed, max_hp, name, *groups):
         super().__init__(game, speed, max_hp, name, *groups)
 
     def move(self, dtick):

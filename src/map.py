@@ -116,17 +116,17 @@ class TileMap:
         elif self.x < 0:
             self.x += 16
 
-    def animation(self, wall, game, direction):
-        if wall[1] == 'up':
+    def animation(self, wall, game):
+        if wall == 'up':
             self.y += 16
-        elif wall[1] == 'down':
+        elif wall == 'down':
             self.y -= 16
-        elif wall[1] == 'right':
+        elif wall == 'right':
             self.x += 32
-        elif wall[1] == 'left':
+        elif wall == 'left':
             self.x -= 32
 
-        self.load_level(game, direction)
+        self.load_level(game, wall)
 
     def load_level(self, game, direction):
         if direction == 'up':
@@ -150,7 +150,7 @@ class TileMap:
         for wall in self.entrances:
             collide_points = (player.hitbox.midbottom, player.hitbox.bottomleft, player.hitbox.bottomright)
             for collide_point in collide_points:
-                if self.entrances[str(wall)].rect.collidepoint(collide_point):
+                if self.entrances[wall].rect.collidepoint(collide_point):
                     player.can_move = False
                     self.load_level(game, wall)
                     break  # as to not check other collide_point
