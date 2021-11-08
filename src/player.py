@@ -17,7 +17,7 @@ class Player:
             center=(500, 400))  # (center=self.game.screen.get_rect().center)  # mask -> image
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.velocity = [0, 0]
-        self.speed = 75
+        self.speed = 100
         self.direction = ''
         self.animation_direction = 'right'  # Default animation direction
         self.animation_frame = 0  # current animation frame

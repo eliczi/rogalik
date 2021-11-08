@@ -1,8 +1,9 @@
 import pygame
 from player import Player
 import utils
-from map import Spritesheet, get_map
+from map import Spritesheet
 from map_generator import map_generator
+from utils import FPSCounter
 
 successes, failures = pygame.init()
 print(f"Initializing pygame: {successes} successes and {failures} failures.")
@@ -21,12 +22,14 @@ class Game:
         self.bullet_list = None
         self.room = None
         self.room_image = None
+        self.next_room = None
         self.particles = []
         self.particle_surface = None
         self.running = True
         self.world = None
         self.x = None
         self.y = None
+        self.directions = None
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
@@ -35,14 +38,15 @@ class Game:
         self.player = Player(self)
         self.clock = pygame.time.Clock()
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
-
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 4
-        world_width, world_height = 2, 2
+        num_of_rooms = 3
+        world_width, world_height = 1, 3
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
         self.room_image = self.room.room_image
+        self.next_room = None
+        self.directions = None
 
     def collided(self, sprite, other):
         """Check if the hitbox of one sprite collides with rect of another sprite."""
@@ -59,11 +63,16 @@ class Game:
 
     def draw_groups(self):
         self.room_image.load_map()
-        self.player.draw(self.room_image.map_surface)
-        self.player.render()
+        if self.next_room:
+            self.next_room.load_map()
+            self.player.draw(self.next_room.map_surface)
+        else:
+            self.player.draw(self.room_image.map_surface)
         for bullet in self.bullet_list:
             bullet.draw()
         self.room_image.draw_map(self.screen)
+        if self.next_room:
+            self.next_room.draw_map(self.screen)
 
     def input(self):
         self.player.input()
@@ -88,15 +97,21 @@ class Game:
         pass
 
     def next_level(self):
-        self.room_image.next_level(self, self.player)
+        if self.directions is None:
+            self.directions = self.room_image.detect_passage(self.player)
+        if self.next_room:
+            self.room_image.load_level(self, *self.directions)
+        elif self.directions:
+            self.player.can_move = False
+            self.room_image.load_level(self, *self.directions)
 
     def run_game(self):
         self.init_all()
         while self.running:
             self.clock.tick(60)
-            self.screen.fill(utils.WHITE)
+            self.screen.fill(utils.BLACK)
             # self.particle_surface.fill((0, 0, 0, 0))
-
+            print(self.clock.get_fps())
             # if self.map2 is not None:
             #     self.map2.load_map()
             #     self.map2.draw_map(self.screen)
@@ -115,7 +130,6 @@ class Game:
             #         self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
 
             self.update_groups()
-
             # for enemy in self.enemy_list:
             #     if pygame.sprite.collide_mask(enemy, self.player):
             #         self.player.hp -= 10
@@ -127,7 +141,6 @@ class Game:
             # self.update_particles()
             # self.draw_particles()
             # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
-
 
             self.next_level()
             self.counter += 1

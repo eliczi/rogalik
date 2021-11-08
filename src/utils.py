@@ -29,6 +29,12 @@ def get_mask_rect(surf, top=0, left=0):
     return surf_mask_rect
 
 
+def wait(mil_sec, game):
+    ticks = mil_sec / 16
+    if game.counter == game.counter + ticks:
+        return True
+
+
 class PlayerInfo:
     def __init__(self, game, pos):
         self.game = game
@@ -73,19 +79,19 @@ class PlayerInfo:
         :return:
         :rtype:
         """
-        self.coordinates = self.game.myfont.render('SCORE: ' + str(self.game.player.score), False, (255, 255, 255))
-        self.hp_text = self.game.myfont.render("HP: " + str(self.game.player.hp),
-                                               False, self.game.GREEN)
-        self.weapon_text = self.game.myfont.render("Weapon: " + str(self.game.player.weapon.name),
-                                                   False, self.game.GREEN)
-        self.damage_text = self.game.myfont.render("Damage: " + str(self.game.player.weapon.damage),
-                                                   False, self.game.GREEN)
-        self.stamina_text = self.game.myfont.render("Stamina: " + str(self.game.player.current_stamina),
+        self.coordinates = self.game.my_font.render('SCORE: ' + str(self.game.player.score), False, (255, 255, 255))
+        self.hp_text = self.game.my_font.render("HP: " + str(self.game.player.hp),
+                                                False, self.game.GREEN)
+        self.weapon_text = self.game.my_font.render("Weapon: " + str(self.game.player.weapon.name),
                                                     False, self.game.GREEN)
-        self.time_text = self.game.myfont.render("Time: " + f"{round(self.game.last_shot / 1000, 1)}s",
-                                                 False, self.game.GREEN)
-        self.enemy_count_text = self.game.myfont.render("Enemy count: " + str(len(self.game.all_enemy)),
-                                                        False, self.game.GREEN)
+        self.damage_text = self.game.my_font.render("Damage: " + str(self.game.player.weapon.damage),
+                                                    False, self.game.GREEN)
+        self.stamina_text = self.game.my_font.render("Stamina: " + str(self.game.player.current_stamina),
+                                                     False, self.game.GREEN)
+        self.time_text = self.game.my_font.render("Time: " + f"{round(self.game.last_shot / 1000, 1)}s",
+                                                  False, self.game.GREEN)
+        self.enemy_count_text = self.game.my_font.render("Enemy count: " + str(len(self.game.all_enemy)),
+                                                         False, self.game.GREEN)
 
         self.hp_text_rect = self.weapon_text.get_rect(center=(self.pos[0], self.pos[1]))
         self.stamina_text_rect = self.weapon_text.get_rect(center=(self.pos[0], self.pos[1] + self.space_between))
@@ -97,11 +103,11 @@ class PlayerInfo:
 
 
 class FPSCounter:
-    def __init__(self, game, surface, font, cock, pos):
+    def __init__(self, game, surface, font, clock, pos):
         self.game = game
         self.surface = surface
         self.font = font
-        self.clock = cock
+        self.clock = clock
         self.pos = pos
         self.fps_text = self.font.render(str(self.game.clock.get_fps()) + "FPS", False, (0, 0, 0))
         self.fps_text_rect = self.fps_text.get_rect(center=(self.pos[0], self.pos[1]))
@@ -121,5 +127,5 @@ class FPSCounter:
         :rtype:
         """
         text = f"{self.game.clock.get_fps():2.0f} FPS"
-        self.fps_text = self.font.render(text, False, self.color)
+        self.fps_text = self.font.render(text, False, WHITE)
         self.fps_text_rect = self.fps_text.get_rect(center=(self.pos[0], self.pos[1]))

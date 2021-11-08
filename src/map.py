@@ -3,6 +3,7 @@ import os
 import pygame
 
 import utils
+from collections import namedtuple
 
 
 class Spritesheet(object):
@@ -20,10 +21,6 @@ class Spritesheet(object):
                 colorkey = image.get_at((0, 0))
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
-
-
-def get_map(world, position):
-    return world[position[0]][position[1]]
 
 
 class Tile(pygame.sprite.Sprite):
@@ -44,18 +41,18 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap:
-    def __init__(self, filename, spritesheet, doors, map_size=(15 * 64, 12 * 64)):
+    def __init__(self, filename, spritesheet, map_size=(15 * 64, 12 * 64)):
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
-        self.entrances = {}  # [Tile,direction]
-        self.doors = doors
+        self.door = namedtuple('Door', ['direction', 'value', 'tile'])
+        self.entrances = []
         self.tiles = self.load_tiles(filename)
         self.map_surface = pygame.Surface(map_size)
         self.rect = self.map_surface.get_rect()
         self.map_surface.set_colorkey((0, 0, 0))
-        # self.load_map()
         self.x, self.y = 3 * 64, 64
+        self.in_place = True
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
@@ -79,6 +76,16 @@ class TileMap:
         b = number % 15
         return b * 16, a * 16
 
+    def add_entrance(self, tile):
+        if tile.rect.x / 64 == 7 and tile.rect.y / 64 == 2:
+            self.entrances.append(self.door('up', -1, tile))
+        if tile.rect.x / 64 == 7 and tile.rect.y / 64 == 10:
+            self.entrances.append(self.door('down', 1, tile))
+        if tile.rect.x / 64 == 1 and tile.rect.y / 64 == 6:
+            self.entrances.append(self.door('left', 1, tile))
+        if tile.rect.x / 64 == 13 and tile.rect.y / 64 == 6:
+            self.entrances.append(self.door('right', 1, tile))
+
     def load_tiles(self, filename):
         tiles = []
         room_map = filename
@@ -87,71 +94,54 @@ class TileMap:
             x = 64
             for tile in row:
                 tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
-                if int(tile) in [-1, 75]:
-                    if tiles[-1].rect.x / 64 == 7 and tiles[-1].rect.y / 64 == 2:
-                        self.entrances['up'] = tiles[-1]
-                    if tiles[-1].rect.x / 64 == 7 and tiles[-1].rect.y / 64 == 10:
-                        self.entrances['down'] = tiles[-1]
-                    if tiles[-1].rect.x / 64 == 1 and tiles[-1].rect.y / 64 == 6:
-                        self.entrances['left'] = tiles[-1]
-                    if tiles[-1].rect.x / 64 == 13 and tiles[-1].rect.y / 64 == 6:
-                        self.entrances['right'] = tiles[-1]
+                if int(tile) in (-1, 75):
+                    self.add_entrance(tiles[-1])
                 if int(tile) in utils.wall_list:
                     self.wall_list.append(tiles[-1])
                 x += self.tile_size
             y += self.tile_size
         return tiles
 
-    def is_screen_center(self):
-        if self.x == 3 * 64 and self.y == 64:
-            return True
+    def animation(self, direction, game, value):
 
-    def move_room_to_screen_center(self):
-        if self.y < 0:
-            self.y += 16
-        elif self.y > utils.world_size[1]:
-            self.y -= 16
-        elif self.x > utils.world_size[0]:
-            self.x -= 16
-        elif self.x < 0:
-            self.x += 16
+        if direction == 'up' and self.y < utils.world_size[1] + 64:
+            self.y += 8
+            if game.next_room:
+                game.next_room.y += 8
+            if self.y + 64 + 10 * 64 > utils.world_size[1] and game.next_room is None:
+                game.next_room = game.world[game.x - 1][game.y].room_image
+                game.next_room.y -= 12 * 64
+                game.next_room.load_map()
+                game.player.rect.y -= -1 * 7 * 64
 
-    def animation(self, wall, game):
-        if wall == 'up':
-            self.y += 16
-        elif wall == 'down':
-            self.y -= 16
-        elif wall == 'right':
-            self.x += 32
-        elif wall == 'left':
-            self.x -= 32
+        elif direction == 'down' and self.y > - 13 * 64:
+            self.y -= 8
+            if game.next_room:
+                game.next_room.y -= 8
+            if self.y < -64 and game.next_room is None:
+                game.next_room = game.world[game.x + 1][game.y].room_image
+                game.next_room.y += 12 * 64
+                game.next_room.load_map()
+                game.player.rect.y -= 1 * 7 * 64
+        else:
+            if direction in ('up', 'down'):
+                game.x += value
+                #game.player.rect.y -= value * 7 * 64
+                game.directions = None
+            self.change_room(game, direction)
 
-        self.load_level(game, wall)
-
-    def load_level(self, game, direction):
-        if direction == 'up':
-            game.x -= 1
-            game.player.rect.y += 7 * 64
-        elif direction == 'down':
-            game.x += 1
-            game.player.rect.y -= 7 * 64
-        elif direction == 'right':
-            game.y += 1
-            game.player.rect.x -= 10 * 64 + 30
-        elif direction == 'left':
-            game.y -= 1
-            game.player.rect.x += 10 * 64 + 30
+    def change_room(self, game, direction):
         game.room = game.world[game.x][game.y]
         game.room_image = game.room.room_image
         game.player.can_move = True
         self.x, self.y = 3 * 64, 64
+        game.next_room = None
 
-    def next_level(self, game, player):
-        for wall in self.entrances:
-            collide_points = (player.hitbox.midbottom, player.hitbox.bottomleft, player.hitbox.bottomright)
-            if any(self.entrances[wall].rect.collidepoint(point) for point in collide_points):
-                player.can_move = False
-                self.load_level(game, wall)
-                break  # as to not check other collide_point
-                # self.animation(wall, game, wall[1])
+    def load_level(self, game, direction, value):
+        self.animation(direction, game, value)
 
+    def detect_passage(self, player):
+        collide_points = (player.hitbox.midbottom, player.hitbox.bottomleft, player.hitbox.bottomright)
+        for door in self.entrances:
+            if any(door.tile.rect.collidepoint(point) for point in collide_points):
+                return door.direction, door.value
