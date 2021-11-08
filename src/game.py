@@ -40,8 +40,8 @@ class Game:
         self.clock = pygame.time.Clock()
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 10
-        world_width, world_height = 4, 4
+        num_of_rooms = 4
+        world_width, world_height = 3, 2
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
@@ -58,6 +58,15 @@ class Game:
         self.player.update()
         self.bullet_list.update()
 
+    def minim_map(self):
+        block_height = 40
+        block_width = 40
+        width = len(self.world[0])
+        height = len(self.world)
+        for x in range(2):
+            for y in range(2):
+                pygame.draw.rect(self.screen, (255, 255, 255), (5 + x * 45, 0 + y * 45,block_width, block_height, ))
+
     def draw_groups(self):
         self.room_image.load_map()
         if self.next_room:
@@ -71,8 +80,8 @@ class Game:
         if self.next_room:
             self.next_room.draw_map(self.screen)
         textsurface = self.myfont.render(str(self.room.type), False, (255, 255, 255))
-        self.screen.blit(textsurface,(500,500))
-
+        self.screen.blit(textsurface, (500, 500))
+        self.minim_map()
 
     def input(self):
         self.player.input()
