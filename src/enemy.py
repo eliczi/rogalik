@@ -14,9 +14,8 @@ def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
     pygame.draw.rect(surf, health_c, rect)
 
 
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self, game, speed, max_hp, name, *groups):
-        super().__init__(*groups)
+class Enemy():
+    def __init__(self, game, speed, max_hp, name):
         self.name = name
         self.animation_database = load_animation_sprites('../assets/goblin/')
         self.game = game
@@ -29,16 +28,16 @@ class Enemy(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
         self.hitbox = None  # Get rect of some size as 'image'.
-        self.spawn()
         self.speed = speed
         self.velocity = [0, 0]
-        self.old_velocity = [0, 0]
-        self.priority = 100
         self.step = 400
         self.direction = "UP"
         self.hurt = False
         self.counter = 0
+        self.animation_frame = 0
+        self.animation_direction = 'right'
         self.enemy_animation = entity_animation(self)
+        self.spawn()
 
     def getMaskRect(self, surf, top: int = 0, left: int = 0) -> None:
         surf_mask = pygame.mask.from_surface(surf)
@@ -53,45 +52,16 @@ class Enemy(pygame.sprite.Sprite):
 
     def spawn(self):
         self.rect.x = 250
-        self.rect.y = 100
+        self.rect.y = 250
         self.hitbox = self.getMaskRect(self.image, *self.rect.topleft)
         self.hitbox = self.hitbox
-        # """
-        #
-        # :return:
-        # :rtype:
-        # """
-        # spawned = False
-        # while not spawned:
-        #     spawn_point = self.game.map.spawn_points[random.randint(0, len(self.game.map.spawn_points) - 1)]
-        #     if spawn_point[1]:
-        #         spawn_point_y = spawn_point[0]
-        #         spawn_point_x = spawn_point[1][random.randint(0, len(spawn_point[1]) - 1)]
-        #         self.rect.x = spawn_point_x
-        #         self.rect.y = spawn_point_y
-        #
-        #         self.rect_mask = self.getMaskRect(self.image, *self.rect.topleft)
-        #         self.hitbox = self.rect_mask
-        #         spawned = True
 
     def update(self):
-        """
-
-        :return:
-        :rtype:
-        """
+        self.move()
         self.enemy_animation()
-        self.animation()
         self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
 
-    def move(self, dtick):
-        """
-
-        :param dtick:
-        :type dtick:
-        :return:
-        :rtype:
-        """
+    def move(self, dtick = 0.06):
         threshold = random.randrange(1, 20)
         if self.step >= threshold:
             self.old_velocity = self.velocity
@@ -104,15 +74,6 @@ class Enemy(pygame.sprite.Sprite):
         self.step += 1
 
     def move_towards_player(self, player, dtick):
-        """
-
-        :param player:
-        :type player:
-        :param dtick:
-        :type dtick:
-        :return:
-        :rtype:
-        """
         # Find direction vector (dx, dy) between enemy and player.
         dirvect = pygame.math.Vector2(player.rect.x - self.rect.x,
                                       player.rect.y - self.rect.y)
@@ -124,15 +85,6 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox.move_ip(dirvect)
 
     def find_target(self, dtick, target):
-        """
-
-        :param dtick:
-        :type dtick:
-        :param target:
-        :type target:
-        :return:
-        :rtype:
-        """
         dist_to_target_x = target.rect.x - self.rect.x
         dist_to_target_y = target.rect.x - self.rect.y
 
@@ -140,28 +92,17 @@ class Enemy(pygame.sprite.Sprite):
         self.velocity[1] = dist_to_target_y / self.speed * dtick * 10
 
     def collision(self, collided):
-        """
-
-        :param collided:
-        :type collided:
-        :return:
-        :rtype:
-        """
         pass
 
     def draw_health(self, surf):
-        """
-
-        :param surf:
-        :type surf:
-        :return:
-        :rtype:
-        """
         if self.hp < self.max_hp:
             health_rect = pygame.Rect(0, 0, 20, 5)
             health_rect.midbottom = self.rect.centerx, self.rect.top
             draw_health_bar(surf, health_rect.topleft, health_rect.size,
                             (0, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
+
+    def draw(self, surf):
+        surf.blit(self.image, self.rect.topleft)
 
 
 class EnemySlow(Enemy):

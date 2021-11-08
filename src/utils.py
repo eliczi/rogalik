@@ -7,6 +7,11 @@ basic_entity_size = (64, 64)
 wall_list = (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3)
 
 
+def collided(sprite, other):
+    """Check if the hitbox of one sprite collides with rect of another sprite."""
+    return sprite.hitbox.colliderect(other.rect)
+
+
 def draw_text(self, text, size, x, y):
     font = pygame.font.SysFont('Comic Sans MS', size)
     text_surface = font.render(text, True, WHITE)

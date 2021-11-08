@@ -6,10 +6,7 @@ import utils
 def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
-    animation_data = {"IDLE": [],
-                      "WALK": [],
-                      "RUN": []
-                      }
+    animation_data = {"IDLE": [], "WALK": [], "RUN": [], 'HURT': []}
 
     animation_states = os.listdir(path)  # Lists all the subdirectories in specified path
     for state in animation_states:

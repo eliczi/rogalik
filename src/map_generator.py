@@ -145,6 +145,6 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     add_neighbors()
     add_room_map()
     add_graphics()
-    # print_world()
+    print_world()
 
     return world, start

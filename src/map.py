@@ -52,7 +52,6 @@ class TileMap:
         self.rect = self.map_surface.get_rect()
         self.map_surface.set_colorkey((0, 0, 0))
         self.x, self.y = 3 * 64, 64
-        self.in_place = True
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
@@ -82,7 +81,7 @@ class TileMap:
         if tile.rect.x / 64 == 7 and tile.rect.y / 64 == 10:
             self.entrances.append(self.door('down', 1, tile))
         if tile.rect.x / 64 == 1 and tile.rect.y / 64 == 6:
-            self.entrances.append(self.door('left', 1, tile))
+            self.entrances.append(self.door('left', -1, tile))
         if tile.rect.x / 64 == 13 and tile.rect.y / 64 == 6:
             self.entrances.append(self.door('right', 1, tile))
 
@@ -103,34 +102,54 @@ class TileMap:
         return tiles
 
     def animation(self, direction, game, value):
-
         if direction == 'up' and self.y < utils.world_size[1] + 64:
-            self.y += 8
+            self.y += 30
             if game.next_room:
-                game.next_room.y += 8
+                game.next_room.y += 30
             if self.y + 64 + 10 * 64 > utils.world_size[1] and game.next_room is None:
                 game.next_room = game.world[game.x - 1][game.y].room_image
                 game.next_room.y -= 12 * 64
                 game.next_room.load_map()
                 game.player.rect.y -= -1 * 7 * 64
-
         elif direction == 'down' and self.y > - 13 * 64:
-            self.y -= 8
+            self.y -= 30
             if game.next_room:
-                game.next_room.y -= 8
+                game.next_room.y -= 30
             if self.y < -64 and game.next_room is None:
                 game.next_room = game.world[game.x + 1][game.y].room_image
                 game.next_room.y += 12 * 64
                 game.next_room.load_map()
                 game.player.rect.y -= 1 * 7 * 64
+
+        elif direction == 'right' and self.x + 64 > 0 - 17 * 64:
+            self.x -= 30
+            if game.next_room:
+                game.next_room.x -= 30
+            if self.x < -64 and game.next_room is None:
+                game.next_room = game.world[game.x][game.y + 1].room_image
+                game.next_room.x += 17 * 64
+                game.next_room.load_map()
+                game.player.rect.x = 120
+
+        elif direction == 'left' and self.x < utils.world_size[0] + 64:
+            self.x += 30
+            if game.next_room:
+                game.next_room.x += 30
+            if self.x > 5 * 64 and game.next_room is None:
+                game.next_room = game.world[game.x][game.y - 1].room_image
+                game.next_room.x += -17 * 64
+                game.next_room.load_map()
+                game.player.rect.x = 750
+
         else:
             if direction in ('up', 'down'):
                 game.x += value
-                #game.player.rect.y -= value * 7 * 64
-                game.directions = None
-            self.change_room(game, direction)
+            elif direction in ('right', 'left'):
+                game.y += value
+            game.directions = None
+            self.change_room(game)
 
-    def change_room(self, game, direction):
+    def change_room(self, game):
         game.room = game.world[game.x][game.y]
         game.room_image = game.room.room_image
         game.player.can_move = True

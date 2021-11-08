@@ -4,6 +4,7 @@ import utils
 from map import Spritesheet
 from map_generator import map_generator
 from utils import FPSCounter
+from enemy import Enemy
 
 successes, failures = pygame.init()
 print(f"Initializing pygame: {successes} successes and {failures} failures.")
@@ -39,8 +40,8 @@ class Game:
         self.clock = pygame.time.Clock()
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 3
-        world_width, world_height = 1, 3
+        num_of_rooms = 4
+        world_width, world_height = 2, 2
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
@@ -48,9 +49,6 @@ class Game:
         self.next_room = None
         self.directions = None
 
-    def collided(self, sprite, other):
-        """Check if the hitbox of one sprite collides with rect of another sprite."""
-        return sprite.hitbox.colliderect(other.rect)
 
     def game_over(self):
         self.init_all()
@@ -105,18 +103,15 @@ class Game:
             self.player.can_move = False
             self.room_image.load_level(self, *self.directions)
 
+
     def run_game(self):
         self.init_all()
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             # self.particle_surface.fill((0, 0, 0, 0))
-            print(self.clock.get_fps())
-            # if self.map2 is not None:
-            #     self.map2.load_map()
-            #     self.map2.draw_map(self.screen)
-            self.input()
 
+            self.input()
             # for enemy in self.enemy_list:  # Why not self.all_enemy???
             #     enemy.move(dt)
             #     for bullet in self.bullet_list:
@@ -128,7 +123,6 @@ class Game:
             #         enemy.kill()
             #         self.enemy_list.remove(enemy)
             #         self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
-
             self.update_groups()
             # for enemy in self.enemy_list:
             #     if pygame.sprite.collide_mask(enemy, self.player):
