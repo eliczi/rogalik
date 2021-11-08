@@ -1,10 +1,24 @@
 import pygame
+from collections import namedtuple
+# world_size = namedtuple('Size', ['width','length'])
+import os
+import csv
 
 world_size = (21 * 64, 14 * 64)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 basic_entity_size = (64, 64)
 wall_list = (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3)
+
+
+def read_csv(filename):
+    mapa = []
+    with open(os.path.join(filename)) as data:
+        data = csv.reader(data, delimiter=',')
+        for row in data:
+            mapa.append(list(row))
+            mapa.append(list(row))
+    return mapa
 
 
 def collided(sprite, other):

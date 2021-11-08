@@ -5,10 +5,9 @@ from map import TileMap
 
 
 class Room:
-    def __init__(self, x, y, starting):
+    def __init__(self, x, y):
         self.x = x  # position in game world
         self.y = y
-        self.starting = starting  # starting room
         self.neighbours = []  # neighbouring rooms coordinates
         self.doors = []  # door locations
         self.type = None  # type of the room, to be added
@@ -16,10 +15,10 @@ class Room:
         self.room_image = None  # TileMap
 
     def __repr__(self):
-        return f'({self.x}, {self.y})'  # str(self)?
+        return f'({self.x}, {self.y}), {self.type}'  # str(self)?
 
     def __str__(self):
-        return f'({self.x}, {self.y})'
+        return self.__repr__()
 
     def position_to_direction(self, position):
         direction = None
@@ -73,10 +72,11 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     start = None
     while room_counter < num_of_rooms:  # this while loop populates game world with one possible room-layout
         if first_room:
-            start = world[x][y] = Room(x, y, True)
+            start = world[x][y] = Room(x, y)
+            world[x][y].type = 'starting_room'
             first_room = False
         else:
-            world[x][y] = Room(x, y, False)
+            world[x][y] = Room(x, y)
         empty_spaces = check_free_space()
         if empty_spaces:
             new_room = random.choice(empty_spaces)
@@ -142,9 +142,17 @@ def map_generator(num_of_rooms, width, height, spritesheet):
                     print(0, end=' ')
             print('')
 
+    def assign_type():
+        types = ['power_up', 'normal', 'boss', 'shop']
+        for row in world:
+            for room in row:
+                if isinstance(room, Room) and room.type is None:
+                    room.type = random.choices(types, weights=[0.2, 0.6, 0.05, 0.15], k=1)
+
+    assign_type()
     add_neighbors()
     add_room_map()
     add_graphics()
-    print_world()
+    # print_world()
 
     return world, start

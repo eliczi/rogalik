@@ -40,15 +40,14 @@ class Game:
         self.clock = pygame.time.Clock()
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 4
-        world_width, world_height = 2, 2
+        num_of_rooms = 10
+        world_width, world_height = 4, 4
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
         self.room_image = self.room.room_image
         self.next_room = None
         self.directions = None
-
 
     def game_over(self):
         self.init_all()
@@ -71,6 +70,9 @@ class Game:
         self.room_image.draw_map(self.screen)
         if self.next_room:
             self.next_room.draw_map(self.screen)
+        textsurface = self.myfont.render(str(self.room.type), False, (255, 255, 255))
+        self.screen.blit(textsurface,(500,500))
+
 
     def input(self):
         self.player.input()
@@ -97,12 +99,9 @@ class Game:
     def next_level(self):
         if self.directions is None:
             self.directions = self.room_image.detect_passage(self.player)
-        if self.next_room:
-            self.room_image.load_level(self, *self.directions)
-        elif self.directions:
+        if self.directions:
             self.player.can_move = False
             self.room_image.load_level(self, *self.directions)
-
 
     def run_game(self):
         self.init_all()
@@ -110,7 +109,9 @@ class Game:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             # self.particle_surface.fill((0, 0, 0, 0))
-
+            for i in range(25):
+                pygame.draw.line(self.screen, (255, 255, 255), (64 * i, 0), (64 * i, 1600), 1)
+                pygame.draw.line(self.screen, (255, 255, 255), (0, i * 64), (1600, 64 * i), 1)
             self.input()
             # for enemy in self.enemy_list:  # Why not self.all_enemy???
             #     enemy.move(dt)
@@ -135,7 +136,6 @@ class Game:
             # self.update_particles()
             # self.draw_particles()
             # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
-
             self.next_level()
             self.counter += 1
             # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)

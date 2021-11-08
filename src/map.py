@@ -41,17 +41,20 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap:
-    def __init__(self, filename, spritesheet, map_size=(15 * 64, 12 * 64)):
+    def __init__(self, filename, spritesheet):
+        self.map_width = len(filename[0]) + 2  # offset
+        self.map_height = len(filename) + 2
+        self.map_size = (self.map_width * 64, self.map_height * 64)
+
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
         self.door = namedtuple('Door', ['direction', 'value', 'tile'])
         self.entrances = []
         self.tiles = self.load_tiles(filename)
-        self.map_surface = pygame.Surface(map_size)
-        self.rect = self.map_surface.get_rect()
+        self.map_surface = pygame.Surface(self.map_size)
         self.map_surface.set_colorkey((0, 0, 0))
-        self.x, self.y = 3 * 64, 64
+        self.x, self.y = 3 * 64, 64  # position of screen surface
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
@@ -62,27 +65,19 @@ class TileMap:
             tile.draw(self.map_surface)
             # pygame.draw.rect(self.map_surface, (0, 0, 255), tile.rect, 1)
 
-    def read_csv(self, filename):
-        mapa = []
-        with open(os.path.join(filename)) as data:
-            data = csv.reader(data, delimiter=',')
-            for row in data:
-                mapa.append(list(row))
-        return mapa
-
     def get_location(self, number):
         a = number // 15
         b = number % 15
         return b * 16, a * 16
 
     def add_entrance(self, tile):
-        if tile.rect.x / 64 == 7 and tile.rect.y / 64 == 2:
+        if tile.rect.y / 64 == 2:
             self.entrances.append(self.door('up', -1, tile))
-        if tile.rect.x / 64 == 7 and tile.rect.y / 64 == 10:
+        if tile.rect.y / 64 == 10:
             self.entrances.append(self.door('down', 1, tile))
-        if tile.rect.x / 64 == 1 and tile.rect.y / 64 == 6:
+        if tile.rect.x / 64 == 1:
             self.entrances.append(self.door('left', -1, tile))
-        if tile.rect.x / 64 == 13 and tile.rect.y / 64 == 6:
+        if tile.rect.x / 64 == 13:
             self.entrances.append(self.door('right', 1, tile))
 
     def load_tiles(self, filename):
@@ -101,46 +96,44 @@ class TileMap:
             y += self.tile_size
         return tiles
 
+    def initialise_next_room(self, game, value, direction):
+        if direction in ('up', 'down'):
+            game.next_room = game.world[game.x + value][game.y].room_image
+            game.next_room.y += value * 12 * 64
+            game.player.rect.y -= value * 7 * 64
+        else:
+            game.next_room = game.world[game.x][game.y + value].room_image
+            game.next_room.x += value * 17 * 64
+            game.player.rect.x -= value * 10.5 * 64
+        game.next_room.load_map()
+
+    def move_rooms(self, direction, value, game):
+        if direction in ('up', 'down'):
+            self.y -= value * 30
+            if game.next_room:
+                game.next_room.y -= value * 30
+        else:
+            self.x -= value * 30
+            if game.next_room:
+                game.next_room.x -= value * 30
+
     def animation(self, direction, game, value):
         if direction == 'up' and self.y < utils.world_size[1] + 64:
-            self.y += 30
-            if game.next_room:
-                game.next_room.y += 30
-            if self.y + 64 + 10 * 64 > utils.world_size[1] and game.next_room is None:
-                game.next_room = game.world[game.x - 1][game.y].room_image
-                game.next_room.y -= 12 * 64
-                game.next_room.load_map()
-                game.player.rect.y -= -1 * 7 * 64
+            self.move_rooms(direction, value, game)
+            if self.y + self.map_height * 64 - 64 > utils.world_size[1] and game.next_room is None:
+                self.initialise_next_room(game, value, direction)
         elif direction == 'down' and self.y > - 13 * 64:
-            self.y -= 30
-            if game.next_room:
-                game.next_room.y -= 30
-            if self.y < -64 and game.next_room is None:
-                game.next_room = game.world[game.x + 1][game.y].room_image
-                game.next_room.y += 12 * 64
-                game.next_room.load_map()
-                game.player.rect.y -= 1 * 7 * 64
-
+            self.move_rooms(direction, value, game)
+            if self.y < - 64 and game.next_room is None:
+                self.initialise_next_room(game, value, direction)
         elif direction == 'right' and self.x + 64 > 0 - 17 * 64:
-            self.x -= 30
-            if game.next_room:
-                game.next_room.x -= 30
+            self.move_rooms(direction, value, game)
             if self.x < -64 and game.next_room is None:
-                game.next_room = game.world[game.x][game.y + 1].room_image
-                game.next_room.x += 17 * 64
-                game.next_room.load_map()
-                game.player.rect.x = 120
-
+                self.initialise_next_room(game, value, direction)
         elif direction == 'left' and self.x < utils.world_size[0] + 64:
-            self.x += 30
-            if game.next_room:
-                game.next_room.x += 30
+            self.move_rooms(direction, value, game)
             if self.x > 5 * 64 and game.next_room is None:
-                game.next_room = game.world[game.x][game.y - 1].room_image
-                game.next_room.x += -17 * 64
-                game.next_room.load_map()
-                game.player.rect.x = 750
-
+                self.initialise_next_room(game, value, direction)
         else:
             if direction in ('up', 'down'):
                 game.x += value
@@ -164,3 +157,6 @@ class TileMap:
         for door in self.entrances:
             if any(door.tile.rect.collidepoint(point) for point in collide_points):
                 return door.direction, door.value
+
+
+
