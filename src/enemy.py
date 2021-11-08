@@ -14,8 +14,9 @@ def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
     pygame.draw.rect(surf, health_c, rect)
 
 
-class Enemy():
+class Enemy:
     def __init__(self, game, speed, max_hp, name):
+        self.old_velocity = self.velocity
         self.name = name
         self.animation_database = load_animation_sprites('../assets/goblin/')
         self.game = game
@@ -39,7 +40,8 @@ class Enemy():
         self.enemy_animation = entity_animation(self)
         self.spawn()
 
-    def getMaskRect(self, surf, top: int = 0, left: int = 0) -> None:
+    @staticmethod
+    def get_mask_rect(self, surf, top: int = 0, left: int = 0) -> None:
         surf_mask = pygame.mask.from_surface(surf)
         rect_list = surf_mask.get_bounding_rects()
         surf_mask_rect = rect_list[0].unionall(rect_list)
@@ -47,8 +49,7 @@ class Enemy():
         return surf_mask_rect
 
     def set_side(self):
-        enemy_side = self.max_hp / 10
-        return enemy_side
+        return self.max_hp / 10
 
     def spawn(self):
         self.rect.x = 250
@@ -61,11 +62,9 @@ class Enemy():
         self.enemy_animation()
         self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
 
-    def move(self, dtick = 0.06):
+    def move(self, dtick=0.06):
         threshold = random.randrange(1, 20)
         if self.step >= threshold:
-            self.old_velocity = self.velocity
-
             # self.velocity[0] = random.randint(-self.speed, self.speed) * dtick
             # self.velocity[1] = random.randint(-self.speed, self.speed) * dtick
             self.move_towards_player(self.game.player, dtick)  # zmiana
@@ -108,6 +107,7 @@ class Enemy():
 class EnemySlow(Enemy):
     def __init__(self, game, speed, max_hp, name, *groups):
         super().__init__(game, speed, max_hp, name, *groups)
+        self.old_velocity = self.velocity
 
     def move(self, dtick):
         """
@@ -117,7 +117,6 @@ class EnemySlow(Enemy):
         :return:
         :rtype:
         """
-        self.old_velocity = self.velocity
         self.velocity[0] = random.randint(-(self.max_hp - self.hp), (self.max_hp - self.hp)) / 200
         self.velocity[1] = random.randint(-(self.max_hp - self.hp), (self.max_hp - self.hp)) / 200
 
@@ -127,8 +126,7 @@ class EnemySlow(Enemy):
         :return:
         :rtype:
         """
-        enemy_side = int(self.hp / 10)
-        return enemy_side
+        return int(self.hp / 10)
 
     def update_size(self):
         """
