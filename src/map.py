@@ -65,19 +65,20 @@ class TileMap:
             tile.draw(self.map_surface)
             # pygame.draw.rect(self.map_surface, (0, 0, 255), tile.rect, 1)
 
-    def get_location(self, number):
+    @staticmethod
+    def get_location(number):
         a = number // 15
         b = number % 15
         return b * 16, a * 16
 
     def add_entrance(self, tile):
-        if tile.rect.y / 64 == 2:
+        if tile.rect.y == 128:
             self.entrances.append(self.door('up', -1, tile))
-        if tile.rect.y / 64 == 10:
+        if tile.rect.y == 640:
             self.entrances.append(self.door('down', 1, tile))
-        if tile.rect.x / 64 == 1:
+        if tile.rect.x == 64:
             self.entrances.append(self.door('left', -1, tile))
-        if tile.rect.x / 64 == 13:
+        if tile.rect.x == 832:
             self.entrances.append(self.door('right', 1, tile))
 
     def load_tiles(self, filename):
@@ -96,7 +97,8 @@ class TileMap:
             y += self.tile_size
         return tiles
 
-    def initialise_next_room(self, game, value, direction):
+    @staticmethod
+    def initialise_next_room(game, value, direction):
         if direction in ('up', 'down'):
             game.next_room = game.world[game.x + value][game.y].room_image
             game.next_room.y += value * 12 * 64
@@ -108,14 +110,15 @@ class TileMap:
         game.next_room.load_map()
 
     def move_rooms(self, direction, value, game):
+        anim_speed = 60
         if direction in ('up', 'down'):
-            self.y -= value * 30
+            self.y -= value * anim_speed
             if game.next_room:
-                game.next_room.y -= value * 30
+                game.next_room.y -= value * anim_speed
         else:
-            self.x -= value * 30
+            self.x -= value * anim_speed
             if game.next_room:
-                game.next_room.x -= value * 30
+                game.next_room.x -= value * anim_speed
 
     def animation(self, direction, game, value):
         if direction == 'up' and self.y < utils.world_size[1] + 64:
@@ -157,6 +160,3 @@ class TileMap:
         for door in self.entrances:
             if any(door.tile.rect.collidepoint(point) for point in collide_points):
                 return door.direction, door.value
-
-
-

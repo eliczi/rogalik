@@ -61,8 +61,8 @@ def entity_animation(entity):
 
     return update
 
-def map_animation():
 
+def map_animation():
     def initialise_next_room(self, game, value, direction):
         if direction in ('up', 'down'):
             game.next_room = game.world[game.x + value][game.y].room_image

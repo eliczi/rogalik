@@ -12,9 +12,11 @@ print(f"Initializing pygame: {successes} successes and {failures} failures.")
 
 class Game:
     def __init__(self):
+        self.SIZE = utils.world_size
+        self.display = pygame.display.set_mode(self.SIZE)
         self.counter = 0
         self.FPS = 60
-        self.SIZE = utils.world_size
+
         self.myfont = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
         self.player = None
         self.screen = None
@@ -34,7 +36,6 @@ class Game:
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
-        self.display = pygame.display.set_mode(self.SIZE)
         self.screen = pygame.Surface(self.SIZE)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
@@ -114,6 +115,8 @@ class Game:
 
     def run_game(self):
         self.init_all()
+        # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
+        x, y = 0, 0
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
@@ -147,8 +150,6 @@ class Game:
             # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
             self.next_level()
             self.counter += 1
-            # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
-            x, y = 0, 0
             self.display.blit(self.screen, (0, 0))
             pygame.display.update()
 
