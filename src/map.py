@@ -100,25 +100,28 @@ class TileMap:
     @staticmethod
     def initialise_next_room(game, value, direction):
         if direction in ('up', 'down'):
-            game.next_room = game.world[game.x + value][game.y].room_image
-            game.next_room.y += value * 12 * 64
+            game.next_room = game.world[game.x + value][game.y]
+            game.next_room_image = game.next_room.room_image
+            game.next_room_image.y += value * 12 * 64
             game.player.rect.y -= value * 7 * 64
         else:
-            game.next_room = game.world[game.x][game.y + value].room_image
-            game.next_room.x += value * 17 * 64
+            game.next_room = game.world[game.x][game.y + value]
+            game.next_room_image = game.next_room.room_image
+            game.next_room_image.x += value * 17 * 64
             game.player.rect.x -= value * 10.5 * 64
-        game.next_room.load_map()
+
+        game.next_room_image.load_map()
 
     def move_rooms(self, direction, value, game):
         anim_speed = 60
         if direction in ('up', 'down'):
             self.y -= value * anim_speed
             if game.next_room:
-                game.next_room.y -= value * anim_speed
+                game.next_room_image.y -= value * anim_speed
         else:
             self.x -= value * anim_speed
             if game.next_room:
-                game.next_room.x -= value * anim_speed
+                game.next_room_image.x -= value * anim_speed
 
     def animation(self, direction, game, value):
         if direction == 'up' and self.y < utils.world_size[1] + 64:

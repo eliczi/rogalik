@@ -5,7 +5,7 @@ from map import Spritesheet
 from map_generator import map_generator
 from mini_map import MiniMap
 from utils import FPSCounter
-from enemy import Enemy
+from enemy import Enemy, add_enemies
 
 successes, failures = pygame.init()
 print(f"Initializing pygame: {successes} successes and {failures} failures.")
@@ -35,6 +35,7 @@ class Game:
         self.y = None
         self.directions = None
         self.mini_map = None
+        self.next_room_image = None
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
@@ -44,7 +45,7 @@ class Game:
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 4
-        world_width, world_height = 3,3
+        world_width, world_height = 2, 2
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
@@ -59,24 +60,30 @@ class Game:
         self.run_game()
 
     def update_groups(self):
+        for e in self.enemy_list:
+            e.update()
         self.player.update()
         self.bullet_list.update()
 
+    def draw_enemies(self):
+        for e in self.enemy_list:
+            e.draw()
 
     def draw_groups(self):
         self.room_image.load_map()
         if self.next_room:
-            self.next_room.load_map()
-            self.player.draw(self.next_room.map_surface)
+            self.next_room_image.load_map()
+            self.player.draw(self.next_room_image.map_surface)
         else:
             self.player.draw(self.room_image.map_surface)
+        self.draw_enemies()
         for bullet in self.bullet_list:
             bullet.draw()
         self.room_image.draw_map(self.screen)
         if self.next_room:
-            self.next_room.draw_map(self.screen)
-        textsurface = self.myfont.render(self.room.type, False, (255, 255, 255))
-        self.screen.blit(textsurface, (500, 500))
+            self.next_room_image.draw_map(self.screen)
+        text_surface = self.myfont.render(self.room.type, False, (255, 255, 255))
+        self.screen.blit(text_surface, (500, 500))
         self.mini_map.draw(self.screen)
 
     def input(self):
@@ -110,8 +117,15 @@ class Game:
             self.player.can_move = False
             self.room_image.load_level(self, *self.directions)
 
+    def update_game(self):
+        if self.next_room:
+            self.enemy_list = self.next_room.enemy_list
+        else:
+            self.enemy_list = self.room.enemy_list
+
     def run_game(self):
         self.init_all()
+        add_enemies(self)
         # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
         x, y = 0, 0
         while self.running:
@@ -134,6 +148,7 @@ class Game:
             #         self.enemy_list.remove(enemy)
             #         self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
             self.update_groups()
+            self.update_game()
             # for enemy in self.enemy_list:
             #     if pygame.sprite.collide_mask(enemy, self.player):
             #         self.player.hp -= 10

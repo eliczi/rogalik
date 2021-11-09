@@ -2,7 +2,9 @@ import random
 import pygame
 import math
 import os
+from map_generator import Room
 from animation import load_animation_sprites, entity_animation
+import typing
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -15,15 +17,14 @@ def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
 
 
 class Enemy:
-    def __init__(self, game, speed, max_hp, name):
-        self.old_velocity = self.velocity
-        self.name = name
+    def __init__(self, game, speed, max_hp, room):
         self.animation_database = load_animation_sprites('../assets/goblin/')
         self.game = game
         self.max_hp = max_hp
+        self.room = room
         self.hp = self.max_hp
-        enemy_side = int(self.set_side())
-        self.image_size = (15 * enemy_side, 15 * enemy_side)
+
+        self.image_size = (64, 64)
         self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/right_idle0.png").convert_alpha(),
                                             self.image_size)
         self.mask = pygame.mask.from_surface(self.image)
@@ -41,7 +42,7 @@ class Enemy:
         self.spawn()
 
     @staticmethod
-    def get_mask_rect(self, surf, top: int = 0, left: int = 0) -> None:
+    def get_mask_rect(surf, top: int = 0, left: int = 0) -> None:
         surf_mask = pygame.mask.from_surface(surf)
         rect_list = surf_mask.get_bounding_rects()
         surf_mask_rect = rect_list[0].unionall(rect_list)
@@ -52,9 +53,9 @@ class Enemy:
         return self.max_hp / 10
 
     def spawn(self):
-        self.rect.x = 250
-        self.rect.y = 250
-        self.hitbox = self.getMaskRect(self.image, *self.rect.topleft)
+        self.rect.x = 350
+        self.rect.y = 350
+        self.hitbox = self.get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox = self.hitbox
 
     def update(self):
@@ -100,8 +101,9 @@ class Enemy:
             draw_health_bar(surf, health_rect.topleft, health_rect.size,
                             (0, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
 
-    def draw(self, surf):
-        surf.blit(self.image, self.rect.topleft)
+    def draw(self):
+        if self.room == self.game.room or self.room == self.game.next_room:
+            self.room.room_image.map_surface.blit(self.image, self.rect)
 
 
 class EnemySlow(Enemy):
@@ -110,30 +112,13 @@ class EnemySlow(Enemy):
         self.old_velocity = self.velocity
 
     def move(self, dtick):
-        """
-
-        :param dtick:
-        :type dtick:
-        :return:
-        :rtype:
-        """
         self.velocity[0] = random.randint(-(self.max_hp - self.hp), (self.max_hp - self.hp)) / 200
         self.velocity[1] = random.randint(-(self.max_hp - self.hp), (self.max_hp - self.hp)) / 200
 
     def set_side(self):
-        """
-
-        :return:
-        :rtype:
-        """
         return int(self.hp / 10)
 
     def update_size(self):
-        """
-
-        :return:
-        :rtype:
-        """
         pos_x = self.rect.x
         pos_y = self.rect.y
         self.image = pygame.transform.smoothscale(self.image, (self.set_side(), self.set_side()))
@@ -142,10 +127,13 @@ class EnemySlow(Enemy):
         self.rect.y = pos_y
 
     def update(self):
-        """
-
-        :return:
-        :rtype:
-        """
         self.update_size()
         self.rect.move_ip(*self.velocity)
+
+
+def add_enemies(game):
+    for row in game.world:
+        for room in row:
+            if isinstance(room, Room) and room.type == 'normal':
+                room.enemy_list.append(Enemy(game, 10, 100, room))
+

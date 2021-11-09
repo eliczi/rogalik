@@ -14,12 +14,14 @@ class Room:
         self.room_map = None  # list of sprite identifiers
         self.room_image = None  # TileMap
         self.discovered = False
+        self.enemy_list = [] # list of enemies at that room
 
     def __repr__(self):
         return f'({self.x}, {self.y}), {self.type}'  # str(self)?
 
     def __str__(self):
         return self.__repr__()
+
 
     def position_to_direction(self, position):
         direction = None
@@ -155,6 +157,6 @@ def map_generator(num_of_rooms, width, height, spritesheet):
     add_neighbors()
     add_room_map()
     add_graphics()
-    print_world()
+    #print_world()
 
     return world, start
