@@ -13,6 +13,7 @@ class Room:
         self.type = None  # type of the room, to be added
         self.room_map = None  # list of sprite identifiers
         self.room_image = None  # TileMap
+        self.discovered = False
 
     def __repr__(self):
         return f'({self.x}, {self.y}), {self.type}'  # str(self)?
@@ -74,6 +75,7 @@ def map_generator(num_of_rooms, width, height, spritesheet):
         if first_room:
             start = world[x][y] = Room(x, y)
             world[x][y].type = 'starting_room'
+            world[x][y].discovered = True
             first_room = False
         else:
             world[x][y] = Room(x, y)
@@ -147,12 +149,12 @@ def map_generator(num_of_rooms, width, height, spritesheet):
         for row in world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 0.6, 0.05, 0.15], k=1)
+                    room.type = random.choices(types, weights=[0.2, 0.6, 0.05, 0.15], k=1)[0]
 
     assign_type()
     add_neighbors()
     add_room_map()
     add_graphics()
-    # print_world()
+    print_world()
 
     return world, start

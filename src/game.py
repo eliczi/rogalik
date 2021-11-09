@@ -3,6 +3,7 @@ from player import Player
 import utils
 from map import Spritesheet
 from map_generator import map_generator
+from mini_map import MiniMap
 from utils import FPSCounter
 from enemy import Enemy
 
@@ -33,6 +34,7 @@ class Game:
         self.x = None
         self.y = None
         self.directions = None
+        self.mini_map = None
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
@@ -42,13 +44,14 @@ class Game:
         # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 4
-        world_width, world_height = 3, 2
+        world_width, world_height = 3,3
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
         self.room_image = self.room.room_image
         self.next_room = None
         self.directions = None
+        self.mini_map = MiniMap(world_width, world_height)
 
     def game_over(self):
         self.init_all()
@@ -59,14 +62,6 @@ class Game:
         self.player.update()
         self.bullet_list.update()
 
-    def minim_map(self):
-        block_height = 40
-        block_width = 40
-        width = len(self.world[0])
-        height = len(self.world)
-        for x in range(2):
-            for y in range(2):
-                pygame.draw.rect(self.screen, (255, 255, 255), (5 + x * 45, 0 + y * 45,block_width, block_height, ))
 
     def draw_groups(self):
         self.room_image.load_map()
@@ -80,9 +75,9 @@ class Game:
         self.room_image.draw_map(self.screen)
         if self.next_room:
             self.next_room.draw_map(self.screen)
-        textsurface = self.myfont.render(str(self.room.type), False, (255, 255, 255))
+        textsurface = self.myfont.render(self.room.type, False, (255, 255, 255))
         self.screen.blit(textsurface, (500, 500))
-        self.minim_map()
+        self.mini_map.draw(self.screen)
 
     def input(self):
         self.player.input()
@@ -92,6 +87,8 @@ class Game:
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.game_over()
+        if pressed[pygame.K_TAB]:
+            self.mini_map.draw(self.screen)
         if pressed[pygame.K_ESCAPE]:
             self.running = False
 
@@ -121,9 +118,9 @@ class Game:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             # self.particle_surface.fill((0, 0, 0, 0))
-            for i in range(25):
-                pygame.draw.line(self.screen, (255, 255, 255), (64 * i, 0), (64 * i, 1600), 1)
-                pygame.draw.line(self.screen, (255, 255, 255), (0, i * 64), (1600, 64 * i), 1)
+            # for i in range(50):
+            #     pygame.draw.line(self.screen, (255, 255, 255), (32 * i, 0), (32 * i, 1600), 1)
+            #     pygame.draw.line(self.screen, (255, 255, 255), (0, i * 32), (1600, 32 * i), 1)
             self.input()
             # for enemy in self.enemy_list:  # Why not self.all_enemy???
             #     enemy.move(dt)
@@ -149,6 +146,7 @@ class Game:
             # self.draw_particles()
             # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
             self.next_level()
+            self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
             pygame.display.update()
