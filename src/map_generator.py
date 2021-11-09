@@ -147,16 +147,16 @@ def map_generator(num_of_rooms, width, height, spritesheet):
             print('')
 
     def assign_type():
-        types = ['power_up', 'normal', 'boss', 'shop']
+        types = ['power_up', 'normal', 'boss', 'chest']
         for row in world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 0.6, 0.05, 0.15], k=1)[0]
+                    room.type = random.choices(types, weights=[0.2, 1, 0.15, 0.15], k=1)[0]
 
     assign_type()
     add_neighbors()
     add_room_map()
     add_graphics()
-    #print_world()
+    print_world()
 
     return world, start

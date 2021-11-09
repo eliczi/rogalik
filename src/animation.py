@@ -50,7 +50,14 @@ def entity_animation(entity):
 
     def animation():
         """s"""
-        if moving():
+        if entity.hurt:
+            entity.animation_frame = 0
+            entity.counter += 1
+            if entity.counter > 15:
+                entity.hurt = False
+                entity.counter = 0
+            idle_animation('HURT')
+        elif moving():
             idle_animation('WALK')
         else:
             idle_animation('IDLE')

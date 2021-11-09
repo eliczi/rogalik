@@ -17,7 +17,6 @@ class Game:
         self.display = pygame.display.set_mode(self.SIZE)
         self.counter = 0
         self.FPS = 60
-
         self.myfont = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
         self.player = None
         self.screen = None
@@ -42,10 +41,10 @@ class Game:
         self.screen = pygame.Surface(self.SIZE)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
-        # self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
+        self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 4
-        world_width, world_height = 2, 2
+        num_of_rooms = 10
+        world_width, world_height = 4,4
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
@@ -117,7 +116,7 @@ class Game:
             self.player.can_move = False
             self.room_image.load_level(self, *self.directions)
 
-    def update_game(self):
+    def update_enemy_list(self):
         if self.next_room:
             self.enemy_list = self.next_room.enemy_list
         else:
@@ -131,35 +130,31 @@ class Game:
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
-            # self.particle_surface.fill((0, 0, 0, 0))
+            #self.particle_surface.fill((0, 0, 0, 0))
             # for i in range(50):
             #     pygame.draw.line(self.screen, (255, 255, 255), (32 * i, 0), (32 * i, 1600), 1)
             #     pygame.draw.line(self.screen, (255, 255, 255), (0, i * 32), (1600, 32 * i), 1)
-            self.input()
-            # for enemy in self.enemy_list:  # Why not self.all_enemy???
-            #     enemy.move(dt)
+
+            # for enemy in self.enemy_list:
+            #
             #     for bullet in self.bullet_list:
             #         bullet.collision_enemy(enemy)
-            #     if enemy.hp > 0:
-            #         enemy.draw_health(self.screen)
-            #
-            #     else:
-            #         enemy.kill()
-            #         self.enemy_list.remove(enemy)
-            #         self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
+
+            #self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
+            self.input()
             self.update_groups()
-            self.update_game()
-            # for enemy in self.enemy_list:
-            #     if pygame.sprite.collide_mask(enemy, self.player):
-            #         self.player.hp -= 10
-            #     if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking:
-            #         enemy.hurt = True
-            #         enemy.hp -= self.player.weapon.damage
+            self.update_enemy_list()
+            for enemy in self.enemy_list:
+                if pygame.sprite.collide_mask(enemy, self.player):
+                    self.player.hp -= 10
+                if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking:
+                    enemy.hurt = True
+                    enemy.hp -= self.player.weapon.damage
             self.draw_groups()
             # Update and draw particles,
             # self.update_particles()
             # self.draw_particles()
-            # self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
+
             self.next_level()
             self.mini_map.current_room(self.room)
             self.counter += 1

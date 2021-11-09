@@ -45,7 +45,6 @@ class TileMap:
         self.map_width = len(filename[0]) + 2  # offset
         self.map_height = len(filename) + 2
         self.map_size = (self.map_width * 64, self.map_height * 64)
-
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []

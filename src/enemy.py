@@ -25,13 +25,14 @@ class Enemy:
         self.hp = self.max_hp
 
         self.image_size = (64, 64)
-        self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/right_idle0.png").convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/idle0.png").convert_alpha(),
                                             self.image_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
         self.hitbox = None  # Get rect of some size as 'image'.
         self.speed = speed
         self.velocity = [0, 0]
+        self.old_velocity = [0, 0]
         self.step = 400
         self.direction = "UP"
         self.hurt = False
@@ -39,6 +40,7 @@ class Enemy:
         self.animation_frame = 0
         self.animation_direction = 'right'
         self.enemy_animation = entity_animation(self)
+        self.counter = 0
         self.spawn()
 
     @staticmethod
@@ -64,8 +66,9 @@ class Enemy:
         self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
 
     def move(self, dtick=0.06):
+        self.old_velocity = self.velocity
         threshold = random.randrange(1, 20)
-        if self.step >= threshold:
+        if self.step >= 1:
             # self.velocity[0] = random.randint(-self.speed, self.speed) * dtick
             # self.velocity[1] = random.randint(-self.speed, self.speed) * dtick
             self.move_towards_player(self.game.player, dtick)  # zmiana
@@ -77,6 +80,9 @@ class Enemy:
         # Find direction vector (dx, dy) between enemy and player.
         dirvect = pygame.math.Vector2(player.rect.x - self.rect.x,
                                       player.rect.y - self.rect.y)
+
+        self.animation_direction = 'left' if dirvect[0] < 0 else 'right'
+        self.velocity = dirvect
         if dirvect.length_squared() > 0:
             dirvect.normalize()
             # Move along this normalized vector towards the player at current speed.
@@ -93,7 +99,9 @@ class Enemy:
 
     def collision(self, collided):
         pass
-
+        enemy.kill()
+        self.enemy_list.remove(enemy)
+        self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
     def draw_health(self, surf):
         if self.hp < self.max_hp:
             health_rect = pygame.Rect(0, 0, 20, 5)
@@ -101,8 +109,9 @@ class Enemy:
             draw_health_bar(surf, health_rect.topleft, health_rect.size,
                             (0, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
 
-    def draw(self):
+    def draw(self): # if current room or the next room
         if self.room == self.game.room or self.room == self.game.next_room:
+            self.draw_health(self.room.room_image.map_surface)
             self.room.room_image.map_surface.blit(self.image, self.rect)
 
 

@@ -18,6 +18,8 @@ class Player:
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.velocity = [0, 0]
         self.speed = 100
+        self.hp = 100
+        self.hurt = False
         self.direction = ''
         self.animation_direction = 'right'  # Default animation direction
         self.animation_frame = 0  # current animation frame

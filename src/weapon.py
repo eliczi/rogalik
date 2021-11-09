@@ -11,7 +11,6 @@ class Weapon:
         self.name = name
         self.original_image = None
         self.image = None
-        self.mask = None
         self.rect = None
         self.rect_mask = None
         self.hitbox = None
@@ -28,10 +27,9 @@ class Weapon:
         """Load weapon image and initialize instance variables"""
         self.original_image = pygame.image.load('../assets/weapon/' + self.name + '.png')
         self.original_image = pygame.transform.scale(self.original_image, self.image_size)
-        self.mask = pygame.mask.from_surface(self.original_image)
-        self.rect = self.mask.get_rect()
+        self.hitbox = pygame.mask.from_surface(self.original_image)
+        self.rect = self.hitbox.get_rect()
         self.rect_mask = get_mask_rect(self.original_image, *self.rect.topleft)
-        self.hitbox = self.rect_mask
         self.image = self.original_image
 
     def collision(self, collision_obj):
@@ -48,8 +46,9 @@ class Weapon:
         self.image_size = tuple(int(self.game.zoom_level * x) for x in self.image_size)
 
     def rotate(self):
-
         mx, my = pygame.mouse.get_pos()
+        mx -= 256 # because we are rendering player on map_surface
+        my -= 128
         dx = mx - self.game.player.hitbox.centerx
         dy = my - self.game.player.hitbox.centery
         if self.swing_side == 1:
@@ -67,7 +66,7 @@ class Weapon:
 
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
         # Update mask
-        self.mask = pygame.mask.from_surface(self.image)
+        self.hitbox = pygame.mask.from_surface(self.image)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -90,7 +89,6 @@ class Weapon:
     # TODO Rename this here and in `update`
     def _extracted_from_update_11(self):
         self.angle += 20 * self.swing_side
-
         position = self.game.player.hitbox.center
         # Rotate the image.
         self.image = pygame.transform.rotozoom(self.original_image, self.angle, 1)
@@ -100,5 +98,5 @@ class Weapon:
         self.rect = self.image.get_rect(center=position + offset_rotated)
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
         # Update mask
-        self.mask = pygame.mask.from_surface(self.image)
+        self.hitbox = pygame.mask.from_surface(self.image)
         self.counter += 1
