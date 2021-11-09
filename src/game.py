@@ -41,7 +41,7 @@ class Game:
         self.screen = pygame.Surface(self.SIZE)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
-        self.particle_surface = pygame.Surface((1200 // 4, 600 // 4), pygame.SRCALPHA).convert_alpha()
+        self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4), pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 10
         world_width, world_height = 4,4
@@ -130,7 +130,7 @@ class Game:
         while self.running:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
-            #self.particle_surface.fill((0, 0, 0, 0))
+            self.particle_surface.fill((0, 0, 0, 0))
             # for i in range(50):
             #     pygame.draw.line(self.screen, (255, 255, 255), (32 * i, 0), (32 * i, 1600), 1)
             #     pygame.draw.line(self.screen, (255, 255, 255), (0, i * 32), (1600, 32 * i), 1)
@@ -140,7 +140,7 @@ class Game:
             #     for bullet in self.bullet_list:
             #         bullet.collision_enemy(enemy)
 
-            #self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
+
             self.input()
             self.update_groups()
             self.update_enemy_list()
@@ -152,9 +152,9 @@ class Game:
                     enemy.hp -= self.player.weapon.damage
             self.draw_groups()
             # Update and draw particles,
-            # self.update_particles()
-            # self.draw_particles()
-
+            self.update_particles()
+            self.draw_particles()
+            self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
             self.next_level()
             self.mini_map.current_room(self.room)
             self.counter += 1

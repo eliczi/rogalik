@@ -5,6 +5,7 @@ import os
 from map_generator import Room
 from animation import load_animation_sprites, entity_animation
 import typing
+from particles import DeathParticle
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -36,11 +37,13 @@ class Enemy:
         self.step = 400
         self.direction = "UP"
         self.hurt = False
+        self.dead = False
         self.counter = 0
         self.animation_frame = 0
         self.animation_direction = 'right'
         self.enemy_animation = entity_animation(self)
         self.counter = 0
+        self.death_counter = 30
         self.spawn()
 
     @staticmethod
@@ -61,9 +64,11 @@ class Enemy:
         self.hitbox = self.hitbox
 
     def update(self):
-        self.move()
+        self.collision()
+        if not self.dead:
+            self.move()
+            self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
         self.enemy_animation()
-        self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
 
     def move(self, dtick=0.06):
         self.old_velocity = self.velocity
@@ -97,11 +102,16 @@ class Enemy:
         self.velocity[0] = dist_to_target_x / self.speed * dtick * 10
         self.velocity[1] = dist_to_target_y / self.speed * dtick * 10
 
-    def collision(self, collided):
-        pass
-        enemy.kill()
-        self.enemy_list.remove(enemy)
-        self.particles.append(DeathParticle(self, *tuple(ti / 4 for ti in enemy.rect.center)))
+    def collision(self):
+        if self.hp < 0 and self.animation_frame == 0:
+            self.dead = True
+            self.animation_frame = 0
+        if self.death_counter == 0:
+            self.game.enemy_list.remove(self)
+            position = ((self.rect.x + 256) // 4, (self.rect.y + 1.5 * 64) // 4)
+            self.game.particles.append(DeathParticle(self.game, *position))
+            del self
+
     def draw_health(self, surf):
         if self.hp < self.max_hp:
             health_rect = pygame.Rect(0, 0, 20, 5)
@@ -109,7 +119,7 @@ class Enemy:
             draw_health_bar(surf, health_rect.topleft, health_rect.size,
                             (0, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
 
-    def draw(self): # if current room or the next room
+    def draw(self):  # if current room or the next room
         if self.room == self.game.room or self.room == self.game.next_room:
             self.draw_health(self.room.room_image.map_surface)
             self.room.room_image.map_surface.blit(self.image, self.rect)
@@ -145,4 +155,3 @@ def add_enemies(game):
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
                 room.enemy_list.append(Enemy(game, 10, 100, room))
-

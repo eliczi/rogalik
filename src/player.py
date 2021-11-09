@@ -20,6 +20,7 @@ class Player:
         self.speed = 100
         self.hp = 100
         self.hurt = False
+        self.dead = False
         self.direction = ''
         self.animation_direction = 'right'  # Default animation direction
         self.animation_frame = 0  # current animation frame

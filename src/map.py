@@ -51,6 +51,7 @@ class TileMap:
         self.door = namedtuple('Door', ['direction', 'value', 'tile'])
         self.entrances = []
         self.tiles = self.load_tiles(filename)
+
         self.map_surface = pygame.Surface(self.map_size)
         self.map_surface.set_colorkey((0, 0, 0))
         self.x, self.y = 3 * 64, 64  # position of screen surface

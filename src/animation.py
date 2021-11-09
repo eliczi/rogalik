@@ -6,7 +6,7 @@ import utils
 def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
-    animation_data = {"IDLE": [], "WALK": [], "RUN": [], 'HURT': []}
+    animation_data = {"IDLE": [], "WALK": [], "RUN": [], 'HURT': [], 'DEAD': []}
 
     animation_states = os.listdir(path)  # Lists all the subdirectories in specified path
     for state in animation_states:
@@ -48,9 +48,22 @@ def entity_animation(entity):
             entity.image = entity.animation_database[state][int(entity.animation_frame)]
             entity.image = pygame.transform.flip(entity.image, 1, 0)
 
+    def death_animation(state):
+        entity.animation_frame += 0.8 / 15
+        if entity.animation_frame >= 4:
+            entity.death_counter = 0
+            entity.animation_frame = 0
+        if entity.animation_direction == 'left':
+            entity.image = entity.animation_database[state][int(entity.animation_frame)]
+        elif entity.animation_direction == 'right':
+            entity.image = entity.animation_database[state][int(entity.animation_frame)]
+            entity.image = pygame.transform.flip(entity.image, 1, 0)
+
     def animation():
         """s"""
-        if entity.hurt:
+        if entity.dead:
+            death_animation('DEAD')
+        elif entity.hurt:
             entity.animation_frame = 0
             entity.counter += 1
             if entity.counter > 15:

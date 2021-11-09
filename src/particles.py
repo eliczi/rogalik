@@ -126,7 +126,7 @@ class DeathParticle(Particle):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
         self.color = (192, 192, 192)
-        self.radius = random.randint(5, 10)
+        self.radius = random.randint(5, 7)
         self.life = random.randint(30, 50)
         self.counter = 0  # to slow down animation speed
 
