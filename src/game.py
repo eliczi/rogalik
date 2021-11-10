@@ -136,17 +136,16 @@ class Game:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             self.particle_surface.fill((0, 0, 0, 0))
-
             self.input()
             self.update_groups()
             self.update_enemy_list()
 
             for enemy in self.enemy_list:
-                if pygame.sprite.collide_mask(enemy, self.player):
+                # if 0.6 second has passed
+                if pygame.sprite.collide_mask(enemy, self.player) and self.player.hurt is False and pygame.time.get_ticks() - self.player.time > 600:
+                    self.player.time = self.game_time
                     self.player.hurt = True
-                    self.player.hp -= 10
                 if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking and self.game_time - enemy.time > 200:
-                    print(enemy.time)
                     enemy.time = self.game_time
                     enemy.hurt = True
                     enemy.hp -= self.player.weapon.damage
@@ -159,6 +158,10 @@ class Game:
             self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
+            dupa = pygame.Surface(utils.world_size, pygame.SRCALPHA)
+            dupa.fill((0, 0, 0, 50))
+            self.display.blit(dupa, (0,0))
+
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
 

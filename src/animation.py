@@ -20,7 +20,7 @@ def load_animation_sprites(path):
     return animation_data
 
 
-#def entity_animation(entity):
+# def entity_animation(entity):
 
 class EntityAnimation:
     def __init__(self, entity):
@@ -44,7 +44,7 @@ class EntityAnimation:
         if self.entity.animation_frame >= 4:
             self.entity.animation_frame = 0
 
-    def idle_animation(self,state):
+    def idle_animation(self, state):
         """Animation if idle"""
         self.update_animation_frame()
         if self.entity.animation_direction == 'left':
@@ -53,29 +53,27 @@ class EntityAnimation:
             self.entity.image = self.entity.animation_database[state][int(self.entity.animation_frame)]
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
-    def death_animation(self,state):
+    def death_animation(self):
         self.entity.animation_frame += 1.0 / 15
         if self.entity.animation_frame >= 4:
             self.entity.death_counter = 0
-            #self.entity.animation_frame = 0
-        if self.entity.animation_frame <=4:
+        if self.entity.animation_frame <= 4:
             if self.entity.animation_direction == 'left':
-                self.entity.image = self.entity.animation_database[state][int(self.entity.animation_frame)]
+                self.entity.image = self.entity.animation_database['DEAD'][int(self.entity.animation_frame)]
             elif self.entity.animation_direction == 'right':
-                self.entity.image = self.entity.animation_database[state][int(self.entity.animation_frame)]
+                self.entity.image = self.entity.animation_database['DEAD'][int(self.entity.animation_frame)]
                 self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
     def animation(self):
         """s"""
         if self.entity.dead:
-            self.death_animation('DEAD')
+            self.death_animation()
         elif self.entity.hurt:
             self.entity.animation_frame = 0
-            self.entity.counter += 1
-            if self.entity.counter > 15:
-                self.entity.hurt = False
-                self.entity.counter = 0
             self.idle_animation('HURT')
+            # if 0.3 seconds have passed
+            if pygame.time.get_ticks() - self.entity.time > 300:
+                self.entity.hurt = False
         elif self.moving():
             self.idle_animation('WALK')
         else:
@@ -85,7 +83,8 @@ class EntityAnimation:
         self.update_animation_direction()
         self.animation()
 
-#return update
+
+# return update
 
 
 def map_animation():

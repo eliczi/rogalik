@@ -42,7 +42,6 @@ class Enemy:
         self.animation_frame = 0
         self.animation_direction = 'right'
         self.enemy_animation = EntityAnimation(self)
-        self.counter = 0
         self.death_counter = 30
         self.last_clock = None
         self.current_clock = pygame.time.get_ticks()
@@ -75,19 +74,14 @@ class Enemy:
 
     def move(self, dtick=0.06):
         self.old_velocity = self.velocity
-        threshold = random.randrange(1, 20)
-        # if self.step >= 1:
-        # self.velocity[0] = random.randint(-self.speed, self.speed) * dtick
-        # self.velocity[1] = random.randint(-self.speed, self.speed) * dtick
         self.move_towards_player(self.game.player, dtick)  # zmiana
-        # self.step = 0
-        # self.find_target(dtick, self.game.player)
-        # self.step += 1
 
     def move_towards_player(self, player, dtick):
         # Find direction vector (dx, dy) between enemy and player.
         dirvect = pygame.math.Vector2(player.rect.x - self.rect.x,
                                       player.rect.y - self.rect.y)
+        dirvect = pygame.math.Vector2(player.rect.bottomleft[0] - self.rect.x,
+                                      player.rect.bottomleft[1] - 50 - self.rect.y)
 
         self.animation_direction = 'left' if dirvect[0] < 0 else 'right'
         self.velocity = dirvect
@@ -169,4 +163,4 @@ def add_enemies(game):
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
                 room.enemy_list.append(Enemy(game, 15, 100, room))
-                room.enemy_list.append(Enemy(game, 15, 100, room))
+

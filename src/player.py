@@ -24,12 +24,13 @@ class Player:
         self.direction = ''
         self.animation_direction = 'right'  # Default animation direction
         self.animation_frame = 0  # current animation frame
-        self.weapon = Weapon(self.game, 50, 'sword')
+        self.weapon = Weapon(self.game, 25, 'sword')
         self.attacking = False
         self.attacked = False
         self.can_move = True
         self.player_animation = EntityAnimation(self)
         self.counter = 0
+        self.time = 0
 
     def input(self):
         """s"""
