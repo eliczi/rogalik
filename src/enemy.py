@@ -3,7 +3,7 @@ import pygame
 import math
 import os
 from map_generator import Room
-from animation import load_animation_sprites, entity_animation
+from animation import load_animation_sprites, EntityAnimation #entity_animation
 import typing
 from particles import DeathParticle
 
@@ -41,7 +41,7 @@ class Enemy:
         self.counter = 0
         self.animation_frame = 0
         self.animation_direction = 'right'
-        self.enemy_animation = entity_animation(self)
+        self.enemy_animation = EntityAnimation(self)
         self.counter = 0
         self.death_counter = 30
         self.spawn()
@@ -58,8 +58,8 @@ class Enemy:
         return self.max_hp / 10
 
     def spawn(self):
-        self.rect.x = 350
-        self.rect.y = 350
+        self.rect.x = random.randint(250, 600)
+        self.rect.y = random.randint(250, 600)
         self.hitbox = self.get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox = self.hitbox
 
@@ -68,18 +68,18 @@ class Enemy:
         if not self.dead:
             self.move()
             self.hitbox = pygame.Rect(self.rect.x + 19, self.rect.y + 26, 37, 52)
-        self.enemy_animation()
+        self.enemy_animation.update()
 
     def move(self, dtick=0.06):
         self.old_velocity = self.velocity
         threshold = random.randrange(1, 20)
-        if self.step >= 1:
+        #if self.step >= 1:
             # self.velocity[0] = random.randint(-self.speed, self.speed) * dtick
             # self.velocity[1] = random.randint(-self.speed, self.speed) * dtick
-            self.move_towards_player(self.game.player, dtick)  # zmiana
-            self.step = 0
+        self.move_towards_player(self.game.player, dtick)  # zmiana
+        #self.step = 0
             # self.find_target(dtick, self.game.player)
-        self.step += 1
+        #self.step += 1
 
     def move_towards_player(self, player, dtick):
         # Find direction vector (dx, dy) between enemy and player.
@@ -98,17 +98,17 @@ class Enemy:
     def find_target(self, dtick, target):
         dist_to_target_x = target.rect.x - self.rect.x
         dist_to_target_y = target.rect.x - self.rect.y
-
         self.velocity[0] = dist_to_target_x / self.speed * dtick * 10
         self.velocity[1] = dist_to_target_y / self.speed * dtick * 10
 
     def collision(self):
-        if self.hp < 0 and self.animation_frame == 0:
+        if self.hp <= 0 and self.dead is False:
             self.dead = True
             self.animation_frame = 0
         if self.death_counter == 0:
+            print(self.rect.x, self.rect.y)
             self.game.enemy_list.remove(self)
-            position = ((self.rect.x + 256) // 4, (self.rect.y + 1.5 * 64) // 4)
+            position = ((self.rect.x) // 4 + 64, (self.rect.y) // 4 + 32)
             self.game.particles.append(DeathParticle(self.game, *position))
             del self
 
@@ -149,9 +149,16 @@ class EnemySlow(Enemy):
         self.update_size()
         self.rect.move_ip(*self.velocity)
 
+class EnemyManager:
+    def __init__(self, game):
+        self.game = game
+
 
 def add_enemies(game):
     for row in game.world:
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
-                room.enemy_list.append(Enemy(game, 10, 100, room))
+                room.enemy_list.append(Enemy(game, 15, 100, room))
+                room.enemy_list.append(Enemy(game, 15, 100, room))
+
+

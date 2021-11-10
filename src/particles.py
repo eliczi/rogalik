@@ -130,6 +130,8 @@ class DeathParticle(Particle):
         self.life = random.randint(30, 50)
         self.counter = 0  # to slow down animation speed
 
+
+
     def update(self):
         self.x += random.randint(-1, 1)
         self.y += random.randint(-1, 1)

@@ -15,11 +15,11 @@ class Game:
     def __init__(self):
         self.SIZE = utils.world_size
         self.display = pygame.display.set_mode(self.SIZE)
+        self.screen = None
         self.counter = 0
         self.FPS = 60
-        self.myfont = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
+        self.my_font = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
         self.player = None
-        self.screen = None
         self.clock = None
         self.enemy_list = []
         self.bullet_list = None
@@ -42,6 +42,7 @@ class Game:
         self.player = Player(self)
         self.clock = pygame.time.Clock()
         self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4), pygame.SRCALPHA).convert_alpha()
+        print(self.particle_surface)
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 10
         world_width, world_height = 4,4
@@ -81,7 +82,7 @@ class Game:
         self.room_image.draw_map(self.screen)
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
-        text_surface = self.myfont.render(self.room.type, False, (255, 255, 255))
+        text_surface = self.my_font.render(self.room.type, False, (255, 255, 255))
         self.screen.blit(text_surface, (500, 500))
         self.mini_map.draw(self.screen)
 
@@ -131,14 +132,6 @@ class Game:
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             self.particle_surface.fill((0, 0, 0, 0))
-            # for i in range(50):
-            #     pygame.draw.line(self.screen, (255, 255, 255), (32 * i, 0), (32 * i, 1600), 1)
-            #     pygame.draw.line(self.screen, (255, 255, 255), (0, i * 32), (1600, 32 * i), 1)
-
-            # for enemy in self.enemy_list:
-            #
-            #     for bullet in self.bullet_list:
-            #         bullet.collision_enemy(enemy)
 
 
             self.input()
@@ -151,7 +144,6 @@ class Game:
                     enemy.hurt = True
                     enemy.hp -= self.player.weapon.damage
             self.draw_groups()
-            # Update and draw particles,
             self.update_particles()
             self.draw_particles()
             self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
