@@ -12,7 +12,6 @@ class Spritesheet(object):
 
     # Load a specific image from a specific rectangle
     def image_at(self, rectangle, colorkey=None):
-        """Loads image from x,y,x+offset,y+offset"""
         rect = pygame.Rect(rectangle)
         image = pygame.Surface(rect.size).convert_alpha()
         image.blit(self.sheet, (0, 0), rect)
@@ -26,7 +25,7 @@ class Spritesheet(object):
 class Tile(pygame.sprite.Sprite):
     def __init__(self, rectangle, x, y, spritesheet):
         pygame.sprite.Sprite.__init__(self)
-        self.image = spritesheet.image_at(rectangle)
+        self.image = spritesheet.image_at(rectangle).convert_alpha()
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
@@ -51,24 +50,23 @@ class TileMap:
         self.door = namedtuple('Door', ['direction', 'value', 'tile'])
         self.entrances = []
         self.tiles = self.load_tiles(filename)
-
         self.map_surface = pygame.Surface(self.map_size)
         self.map_surface.set_colorkey((0, 0, 0))
-        self.x, self.y = 3 * 64, 64  # position of screen surface
+        self.x, self.y = 2 * 64, 64  # position of screen surface
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
-        self.map_surface.fill(utils.BLACK)
+        self.map_surface.fill(utils.WHITE)
         for tile in self.tiles:
             tile.draw(self.map_surface)
             # pygame.draw.rect(self.map_surface, (0, 0, 255), tile.rect, 1)
 
     @staticmethod
     def get_location(number):
-        a = number // 15
-        b = number % 15
+        a = number // 32
+        b = number % 32
         return b * 16, a * 16
 
     def add_entrance(self, tile):
@@ -90,9 +88,11 @@ class TileMap:
             for tile in row:
                 tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
                 if int(tile) in (-1, 75):
-                    self.add_entrance(tiles[-1])
+                    pass
+                    #self.add_entrance(tiles[-1])
                 if int(tile) in utils.wall_list:
-                    self.wall_list.append(tiles[-1])
+                    pass
+                    #self.wall_list.append(tiles[-1])
                 x += self.tile_size
             y += self.tile_size
         return tiles

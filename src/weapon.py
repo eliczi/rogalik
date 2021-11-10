@@ -22,6 +22,7 @@ class Weapon:
         self.angle_change_factor = 8.5 * 1.5
         self.counter = 0
         self.swing_side = 1
+        self.sound = True
 
     def load_image(self):  # Change name of the function
         """Load weapon image and initialize instance variables"""

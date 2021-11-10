@@ -66,6 +66,7 @@ class Player:
             self.set_velocity(vel_list)
 
         if pygame.mouse.get_pressed()[0] and self.game.counter > 30:
+            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1

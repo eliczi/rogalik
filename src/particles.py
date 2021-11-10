@@ -3,6 +3,10 @@ import random
 from math import sin
 
 
+class ParticleManager:
+    def __init__(self):
+        self.particles = []
+
 class Particle:
     def __init__(self, game, x, y):
         self.game = game

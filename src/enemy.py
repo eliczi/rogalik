@@ -19,12 +19,11 @@ def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
 
 class Enemy:
     def __init__(self, game, speed, max_hp, room):
-        self.animation_database = load_animation_sprites('../assets/goblin/')
+        self.animation_database = load_animation_sprites('../assets/imp/')
         self.game = game
         self.max_hp = max_hp
         self.room = room
         self.hp = self.max_hp
-
         self.image_size = (64, 64)
         self.image = pygame.transform.scale(pygame.image.load("../assets/goblin/idle/idle0.png").convert_alpha(),
                                             self.image_size)
@@ -47,6 +46,7 @@ class Enemy:
         self.current_clock = pygame.time.get_ticks()
         self.spawn()
         self.time = 0
+        self.sound = pygame.mixer.Sound('../assets/sound/hit.wav')
 
     @staticmethod
     def get_mask_rect(surf, top: int = 0, left: int = 0) -> None:
@@ -78,8 +78,8 @@ class Enemy:
 
     def move_towards_player(self, player, dtick):
         # Find direction vector (dx, dy) between enemy and player.
-        dirvect = pygame.math.Vector2(player.rect.x - self.rect.x,
-                                      player.rect.y - self.rect.y)
+        # dirvect = pygame.math.Vector2(player.rect.x - self.rect.x,
+        #                               player.rect.y - self.rect.y)
         dirvect = pygame.math.Vector2(player.rect.bottomleft[0] - self.rect.x,
                                       player.rect.bottomleft[1] - 50 - self.rect.y)
 
@@ -103,6 +103,7 @@ class Enemy:
             self.dead = True
             self.animation_frame = 0
         if self.death_counter == 0:
+            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/death.wav'))
             self.game.enemy_list.remove(self)
             position = ((self.rect.x) // 4 + 48, (self.rect.y) // 4 + 20)
             self.game.particles.append(DeathParticle(self.game, *position))
@@ -159,8 +160,10 @@ class EnemyManager:
 
 
 def add_enemies(game):
-    for row in game.world:
+    for row in game.world.world:
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
                 room.enemy_list.append(Enemy(game, 15, 100, room))
+
+
 

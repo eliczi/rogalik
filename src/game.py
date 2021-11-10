@@ -2,13 +2,14 @@ import pygame
 from player import Player
 import utils
 from map import Spritesheet
-from map_generator import map_generator
+from map_generator import map_generator, World
 from mini_map import MiniMap
 from utils import FPSCounter
 from enemy import Enemy, add_enemies
-
-successes, failures = pygame.init()
-print(f"Initializing pygame: {successes} successes and {failures} failures.")
+from background import BackgroundCircle
+from menu import MainMenu
+pygame.init()
+pygame.mixer.init()
 
 
 class Game:
@@ -17,7 +18,6 @@ class Game:
         self.display = pygame.display.set_mode(self.SIZE)
         self.screen = None
         self.counter = 0
-        self.FPS = 60
         self.my_font = pygame.font.Font('../assets/font/Minecraft.ttf', 15)
         self.player = None
         self.clock = None
@@ -36,6 +36,10 @@ class Game:
         self.mini_map = None
         self.next_room_image = None
         self.game_time = None
+        self.particle_manager = None
+        self.menu = MainMenu(self)
+        self.music = pygame.mixer.music.load('../assets/sound/music.wav',)
+        #pygame.mixer.music.play(-1)
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
@@ -44,13 +48,21 @@ class Game:
         self.clock = pygame.time.Clock()
         self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
                                                pygame.SRCALPHA).convert_alpha()
-        ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
-        num_of_rooms = 10
+        ss = Spritesheet('../assets/spritesheet.png')
+        num_of_rooms = 2
         world_width, world_height = 4, 4
-        self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
-        self.x, self.y = start_map.x, start_map.y
-        self.room = self.world[start_map.x][start_map.y]
-        self.room_image = self.room.room_image
+        #self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
+        self.world = World(num_of_rooms, world_width, world_height)
+        for row in self.world.world:
+            for room in row:
+                if room is not None and room.type == 'starting_room':
+                    self.x, self.y = room.x, room.y
+                    self.room = room
+
+        #self.x, self.y = start_map.x, start_map.y
+        #self.room = self.world[start_map.x][start_map.y]
+        print(self.room.tile_map)
+        self.room_image = self.room.tile_map
         self.next_room = None
         self.directions = None
         self.mini_map = MiniMap(world_width, world_height)
@@ -82,8 +94,8 @@ class Game:
         self.draw_enemies()
         for bullet in self.bullet_list:
             bullet.draw()
-
         self.room_image.draw_map(self.screen)
+
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
         text_surface = self.my_font.render(self.room.type, False, (255, 255, 255))
@@ -111,9 +123,6 @@ class Game:
         for particle in self.particles:
             particle.draw()
 
-    def main_menu(self):
-        pass
-
     def next_level(self):
         if self.directions is None:
             self.directions = self.room_image.detect_passage(self.player)
@@ -130,9 +139,9 @@ class Game:
     def run_game(self):
         self.init_all()
         add_enemies(self)
-        # pygame.draw.line(self.screen, (255, 25, 125), (0,0), (0 + self.counter * 3, 1600), 3)
-        x, y = 0, 0
         while self.running:
+
+            #self.menu.show(self.display)
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             self.particle_surface.fill((0, 0, 0, 0))
@@ -145,7 +154,9 @@ class Game:
                 if pygame.sprite.collide_mask(enemy, self.player) and self.player.hurt is False and pygame.time.get_ticks() - self.player.time > 600:
                     self.player.time = self.game_time
                     self.player.hurt = True
-                if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking and self.game_time - enemy.time > 200:
+                    pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
+                if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking and self.game_time - enemy.time > 200 and enemy.dead is False:
+                    pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
                     enemy.time = self.game_time
                     enemy.hurt = True
                     enemy.hp -= self.player.weapon.damage
@@ -158,15 +169,8 @@ class Game:
             self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
-            dupa = pygame.Surface(utils.world_size, pygame.SRCALPHA)
-            dupa.fill((0, 0, 0, 50))
-            self.display.blit(dupa, (0,0))
-
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
-
-
-
         pygame.quit()
         print("Exited the game loop. Game will quit...")
 

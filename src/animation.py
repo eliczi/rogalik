@@ -54,14 +54,19 @@ class EntityAnimation:
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
     def death_animation(self):
+        state = 'DEAD'
         self.entity.animation_frame += 1.0 / 15
         if self.entity.animation_frame >= 4:
             self.entity.death_counter = 0
+        if self.entity.animation_frame < 1:
+            state = 'HURT'
+        else:
+            state = 'DEAD'
         if self.entity.animation_frame <= 4:
             if self.entity.animation_direction == 'left':
-                self.entity.image = self.entity.animation_database['DEAD'][int(self.entity.animation_frame)]
+                self.entity.image = self.entity.animation_database[state][int(self.entity.animation_frame)]
             elif self.entity.animation_direction == 'right':
-                self.entity.image = self.entity.animation_database['DEAD'][int(self.entity.animation_frame)]
+                self.entity.image = self.entity.animation_database[state][int(self.entity.animation_frame)]
                 self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
     def animation(self):
