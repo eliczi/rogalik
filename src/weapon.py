@@ -63,9 +63,8 @@ class Weapon:
         offset_rotated = self.offset.rotate(-self.angle)
         # Create a new rect with the center of the sprite + the offset.
         self.rect = self.image.get_rect(center=position + offset_rotated)
-
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
-        # Update mask
+        # Update hitbox
         self.hitbox = pygame.mask.from_surface(self.image)
 
     def draw(self, surface):
@@ -78,25 +77,19 @@ class Weapon:
             self.game.player.attacking = False
             self.game.player.attacked = True
             self.counter = 0
-
         # Animation/mask hitbox
         if self.game.player.attacking and self.counter <= 10:
-            self._extracted_from_update_11()
+            self.swing()
         else:
             self.rotate()
             self.game.player.attacked = True
 
-    # TODO Rename this here and in `update`
-    def _extracted_from_update_11(self):
+    def swing(self):
         self.angle += 20 * self.swing_side
         position = self.game.player.hitbox.center
-        # Rotate the image.
         self.image = pygame.transform.rotozoom(self.original_image, self.angle, 1)
-        # Rotate the offset vector.
         offset_rotated = self.offset.rotate(-self.angle)
-        # Create a new rect with the center of the sprite + the offset.
         self.rect = self.image.get_rect(center=position + offset_rotated)
         self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
-        # Update mask
         self.hitbox = pygame.mask.from_surface(self.image)
         self.counter += 1

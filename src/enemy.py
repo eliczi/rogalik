@@ -3,7 +3,7 @@ import pygame
 import math
 import os
 from map_generator import Room
-from animation import load_animation_sprites, EntityAnimation #entity_animation
+from animation import load_animation_sprites, EntityAnimation  # entity_animation
 import typing
 from particles import DeathParticle
 
@@ -44,7 +44,10 @@ class Enemy:
         self.enemy_animation = EntityAnimation(self)
         self.counter = 0
         self.death_counter = 30
+        self.last_clock = None
+        self.current_clock = pygame.time.get_ticks()
         self.spawn()
+        self.time = 0
 
     @staticmethod
     def get_mask_rect(surf, top: int = 0, left: int = 0) -> None:
@@ -73,13 +76,13 @@ class Enemy:
     def move(self, dtick=0.06):
         self.old_velocity = self.velocity
         threshold = random.randrange(1, 20)
-        #if self.step >= 1:
-            # self.velocity[0] = random.randint(-self.speed, self.speed) * dtick
-            # self.velocity[1] = random.randint(-self.speed, self.speed) * dtick
+        # if self.step >= 1:
+        # self.velocity[0] = random.randint(-self.speed, self.speed) * dtick
+        # self.velocity[1] = random.randint(-self.speed, self.speed) * dtick
         self.move_towards_player(self.game.player, dtick)  # zmiana
-        #self.step = 0
-            # self.find_target(dtick, self.game.player)
-        #self.step += 1
+        # self.step = 0
+        # self.find_target(dtick, self.game.player)
+        # self.step += 1
 
     def move_towards_player(self, player, dtick):
         # Find direction vector (dx, dy) between enemy and player.
@@ -106,9 +109,8 @@ class Enemy:
             self.dead = True
             self.animation_frame = 0
         if self.death_counter == 0:
-            print(self.rect.x, self.rect.y)
             self.game.enemy_list.remove(self)
-            position = ((self.rect.x) // 4 + 64, (self.rect.y) // 4 + 32)
+            position = ((self.rect.x) // 4 + 48, (self.rect.y) // 4 + 20)
             self.game.particles.append(DeathParticle(self.game, *position))
             del self
 
@@ -119,11 +121,18 @@ class Enemy:
             draw_health_bar(surf, health_rect.topleft, health_rect.size,
                             (0, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
 
+    def draw_shadow(self, surface): # draw shadows before self.image for all entities
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 20]
+        surface.blit(shape_surf, position)
+
     def draw(self):  # if current room or the next room
         if self.room == self.game.room or self.room == self.game.next_room:
             self.draw_health(self.room.room_image.map_surface)
             self.room.room_image.map_surface.blit(self.image, self.rect)
-
 
 class EnemySlow(Enemy):
     def __init__(self, game, speed, max_hp, name, *groups):
@@ -149,6 +158,7 @@ class EnemySlow(Enemy):
         self.update_size()
         self.rect.move_ip(*self.velocity)
 
+
 class EnemyManager:
     def __init__(self, game):
         self.game = game
@@ -160,5 +170,3 @@ def add_enemies(game):
             if isinstance(room, Room) and room.type == 'normal':
                 room.enemy_list.append(Enemy(game, 15, 100, room))
                 room.enemy_list.append(Enemy(game, 15, 100, room))
-
-

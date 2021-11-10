@@ -35,17 +35,18 @@ class Game:
         self.directions = None
         self.mini_map = None
         self.next_room_image = None
+        self.game_time = None
 
     def init_all(self):
         self.bullet_list = pygame.sprite.Group()
         self.screen = pygame.Surface(self.SIZE)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
-        self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4), pygame.SRCALPHA).convert_alpha()
-        print(self.particle_surface)
+        self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
+                                               pygame.SRCALPHA).convert_alpha()
         ss = Spritesheet('../assets/spritesheet/dungeon_.png.')
         num_of_rooms = 10
-        world_width, world_height = 4,4
+        world_width, world_height = 4, 4
         self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.x, self.y = start_map.x, start_map.y
         self.room = self.world[start_map.x][start_map.y]
@@ -71,6 +72,8 @@ class Game:
 
     def draw_groups(self):
         self.room_image.load_map()
+        for enemy in self.enemy_list:
+            enemy.draw_shadow(self.room_image.map_surface)
         if self.next_room:
             self.next_room_image.load_map()
             self.player.draw(self.next_room_image.map_surface)
@@ -79,6 +82,7 @@ class Game:
         self.draw_enemies()
         for bullet in self.bullet_list:
             bullet.draw()
+
         self.room_image.draw_map(self.screen)
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
@@ -133,16 +137,20 @@ class Game:
             self.screen.fill(utils.BLACK)
             self.particle_surface.fill((0, 0, 0, 0))
 
-
             self.input()
             self.update_groups()
             self.update_enemy_list()
+
             for enemy in self.enemy_list:
                 if pygame.sprite.collide_mask(enemy, self.player):
+                    self.player.hurt = True
                     self.player.hp -= 10
-                if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking:
+                if pygame.sprite.collide_mask(self.player.weapon, enemy) and self.player.attacking and self.game_time - enemy.time > 200:
+                    print(enemy.time)
+                    enemy.time = self.game_time
                     enemy.hurt = True
                     enemy.hp -= self.player.weapon.damage
+
             self.draw_groups()
             self.update_particles()
             self.draw_particles()
@@ -151,7 +159,10 @@ class Game:
             self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
+            self.game_time = pygame.time.get_ticks()
             pygame.display.update()
+
+
 
         pygame.quit()
         print("Exited the game loop. Game will quit...")

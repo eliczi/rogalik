@@ -24,11 +24,12 @@ class Player:
         self.direction = ''
         self.animation_direction = 'right'  # Default animation direction
         self.animation_frame = 0  # current animation frame
-        self.weapon = Weapon(self.game, 10, 'sword')
+        self.weapon = Weapon(self.game, 50, 'sword')
         self.attacking = False
         self.attacked = False
         self.can_move = True
         self.player_animation = EntityAnimation(self)
+        self.counter = 0
 
     def input(self):
         """s"""
@@ -102,21 +103,17 @@ class Player:
             self.hitbox.move_ip(*self.velocity)
         self.update_hitbox()
 
-    def draw_shadow(self, surface, radius):
+    def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, 25, 10 ))
+        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7 )) # - self.animation_frame % 4
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        position = [self.hitbox.bottomleft[0] - 10, self.hitbox.bottomleft[1] - 5]
-
+        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
         surface.blit(shape_surf, position)
 
     def draw(self, screen):
         """S"""
-        # shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA)
-        # pygame.draw.rect(shape_surf, (255, 0, 0, 128), shape_surf.get_rect())
-        # screen.blit(shape_surf, self.hitbox.bottomleft)
-        self.draw_shadow(screen, 25)
+        self.draw_shadow(screen)
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
         # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
