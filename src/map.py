@@ -10,15 +10,15 @@ class Spritesheet(object):
     def __init__(self, filename):
         self.sheet = pygame.image.load(filename).convert_alpha()
 
-    # Load a specific image from a specific rectangle
     def image_at(self, rectangle, colorkey=None):
         rect = pygame.Rect(rectangle)
-        image = pygame.Surface(rect.size).convert_alpha()
+        image = pygame.Surface(rect.size, pygame.SRCALPHA).convert_alpha()
         image.blit(self.sheet, (0, 0), rect)
-        if colorkey is not None:
-            if colorkey is -1:
-                colorkey = image.get_at((0, 0))
-            image.set_colorkey(colorkey, pygame.RLEACCEL)
+        # if colorkey is not None:
+        #     if colorkey is -1:
+        #         colorkey = image.get_at((0, 0))
+        #     colorkey = (0, 0, 0)
+        # image.set_colorkey((255, 255, 255), pygame.RLEACCEL)
         return image
 
 
@@ -29,39 +29,49 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
-        self.wall_type = None  # if entrance, type =
+        self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
-    def new_image(self, image):
-        self.image = image
-        self.image = pygame.transform.scale(self.image, (64, 64))
-
 
 class TileMap:
     def __init__(self, filename, spritesheet):
-        self.map_width = len(filename[0]) + 2  # offset
-        self.map_height = len(filename) + 2
+        self.map_width = len(filename[0][0]) + 2  # offset
+        self.map_height = len(filename[0]) + 2
         self.map_size = (self.map_width * 64, self.map_height * 64)
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
         self.door = namedtuple('Door', ['direction', 'value', 'tile'])
         self.entrances = []
-        self.tiles = self.load_tiles(filename)
-        self.map_surface = pygame.Surface(self.map_size)
-        self.map_surface.set_colorkey((0, 0, 0))
+        self.tiles = []
+        self.load_tiles(filename)
+        self.original_map_surface = pygame.Surface(self.map_size).convert_alpha()
+        self.original_map_surface.set_colorkey((0, 0, 0))
+        self.map_surface = None
+        # self.map_surface = pygame.Surface(self.map_size).convert_alpha()
+        # self.map_surface.set_colorkey((0, 0, 0))
         self.x, self.y = 2 * 64, 64  # position of screen surface
+        self.load_map()
 
     def draw_map(self, surface):
+        for layer in self.tiles:
+            for tile in layer:
+                if tile.hitbox:
+                    pygame.draw.rect(self.map_surface, (255, 0, 255), tile.hitbox, 1)
+        # self.map_surface = self.original_map_surface.copy()
         surface.blit(self.map_surface, (self.x, self.y))
 
     def load_map(self):
-        self.map_surface.fill(utils.WHITE)
-        for tile in self.tiles:
-            tile.draw(self.map_surface)
-            # pygame.draw.rect(self.map_surface, (0, 0, 255), tile.rect, 1)
+
+        self.original_map_surface.fill(utils.BLACK)
+        for layer in self.tiles:
+            for tile in layer:
+                tile.draw(self.original_map_surface)
+
+        self.map_surface = self.original_map_surface.copy()
 
     @staticmethod
     def get_location(number):
@@ -80,22 +90,21 @@ class TileMap:
             self.entrances.append(self.door('right', 1, tile))
 
     def load_tiles(self, filename):
-        tiles = []
-        room_map = filename
-        x, y = 0, 64
-        for row in room_map:
-            x = 64
-            for tile in row:
-                tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
-                if int(tile) in (-1, 75):
-                    pass
-                    #self.add_entrance(tiles[-1])
-                if int(tile) in utils.wall_list:
-                    pass
-                    #self.wall_list.append(tiles[-1])
-                x += self.tile_size
-            y += self.tile_size
-        return tiles
+        for file in filename:
+            tiles = []
+            x, y = 0, 64
+            for row in file:
+                x = 64
+                for tile in row:
+                    tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
+                    if int(tile) in (-1, 75):
+                        pass
+                        # self.add_entrance(tiles[-1])
+                    if int(tile) in utils.wall_list:
+                        self.wall_list.append(tiles[-1])
+                    x += self.tile_size
+                y += self.tile_size
+            self.tiles.append(tiles)
 
     @staticmethod
     def initialise_next_room(game, value, direction):

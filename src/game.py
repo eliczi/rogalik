@@ -2,9 +2,8 @@ import pygame
 from player import Player
 import utils
 from map import Spritesheet
-from map_generator import map_generator, World
+from map_generator import World
 from mini_map import MiniMap
-from utils import FPSCounter
 from enemy import Enemy, add_enemies
 from background import BackgroundCircle
 from menu import MainMenu
@@ -48,8 +47,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
                                                pygame.SRCALPHA).convert_alpha()
-        ss = Spritesheet('../assets/spritesheet.png')
-        num_of_rooms = 2
+        num_of_rooms = 1
         world_width, world_height = 4, 4
         #self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
         self.world = World(num_of_rooms, world_width, world_height)
@@ -61,7 +59,6 @@ class Game:
 
         #self.x, self.y = start_map.x, start_map.y
         #self.room = self.world[start_map.x][start_map.y]
-        print(self.room.tile_map)
         self.room_image = self.room.tile_map
         self.next_room = None
         self.directions = None
@@ -140,7 +137,6 @@ class Game:
         self.init_all()
         add_enemies(self)
         while self.running:
-
             #self.menu.show(self.display)
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
@@ -148,7 +144,10 @@ class Game:
             self.input()
             self.update_groups()
             self.update_enemy_list()
-
+            # for i in range(25):
+            #     for y in range(20):
+            #         pygame.draw.line(self.screen, (255, 255, 255), (0 + i * 64, 0), (0 + i * 64, 1600), 1)
+            #         pygame.draw.line(self.screen, (255, 255, 255), (0,0 + i * 64), (1600,0 + i * 64), 1)
             for enemy in self.enemy_list:
                 # if 0.6 second has passed
                 if pygame.sprite.collide_mask(enemy, self.player) and self.player.hurt is False and pygame.time.get_ticks() - self.player.time > 600:
@@ -169,6 +168,7 @@ class Game:
             self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
+            #print(self.clock.get_fps())
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
         pygame.quit()

@@ -88,8 +88,14 @@ class Player:
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
         collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
         for wall in self.game.room_image.wall_list:
-            if any(wall.rect.collidepoint(point) for point in collide_points):
+            if any(wall.hitbox.collidepoint(point) for point in collide_points): # any(wall.rect.collidepoint(point) for point in collide_points) or
                 self.velocity = [0, 0]
+            # elif pygame.sprite.collide_mask(wall, self):
+            #     if self.direction =='LEFT':
+            #         self.velocity = [1, 0]
+            #     if self.direction =='UP':
+            #         self.velocity = [0, 1]
+
 
     def update_hitbox(self):
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
@@ -118,8 +124,8 @@ class Player:
         self.draw_shadow(screen)
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
-        # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
-        # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
+        #pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
+        pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         """s"""

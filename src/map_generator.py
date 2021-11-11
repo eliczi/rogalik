@@ -11,8 +11,8 @@ class Room:
         self.neighbours = []  # neighbouring rooms coordinates
         self.doors = []  # door locations
         self.type = None  # type of the room
-        self.room_map = None  # csv file of Tile identifiers
-        self.tile_map= None  # TileMap
+        self.room_map = []  # csv file of Tile identifiers
+        self.tile_map = None  # TileMap
         self.discovered = False  # player been in this room
         self.enemy_list = []  # list of enemies at that room
 
@@ -57,8 +57,12 @@ class World:
         self.generate_rooms()
         self.assign_type()
         self.add_neighbors()
-        self.add_room_map('dupa1')
-        self.add_room_map('dupa2')
+        self.add_room_map('test4')
+        self.add_room_map('test3')
+        self.add_room_map('test2')
+        self.add_room_map('test1')
+
+
         self.add_graphics()
         self.print_world()
 
@@ -122,7 +126,7 @@ class World:
                     for door in room.doors:
                         if door == 'up':
                             room_map[1][7] = -1
-                    room.room_map = room_map
+                    room.room_map.append(room_map)
 
     def add_graphics(self):
         for row in self.world:
