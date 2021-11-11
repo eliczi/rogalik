@@ -47,8 +47,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
                                                pygame.SRCALPHA).convert_alpha()
-        num_of_rooms = 4
-        world_width, world_height = 2,2
+        num_of_rooms = 5
+        world_width, world_height = 4,4
         self.world = World(num_of_rooms, world_width, world_height)
         for row in self.world.world:
             for room in row:
@@ -59,7 +59,7 @@ class Game:
         self.room_image = self.room.tile_map
         self.next_room = None
         self.directions = None
-        self.mini_map = MiniMap(world_width, world_height)
+        self.mini_map = MiniMap(self, world_width, world_height)
         # for row in self.world.world:
         #     for room in row:
         #         room.tile_map.load_map()
@@ -162,9 +162,9 @@ class Game:
                     enemy.hp -= self.player.weapon.damage
 
             self.draw_groups()
-            #self.update_particles()
-            #self.draw_particles()
-            #self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
+            self.update_particles()
+            self.draw_particles()
+            self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
             self.next_level()
             self.mini_map.current_room(self.room)
             self.counter += 1

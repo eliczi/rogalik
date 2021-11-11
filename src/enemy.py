@@ -163,8 +163,8 @@ def add_enemies(game):
     for row in game.world.world:
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
-                pass
-                #room.enemy_list.append(Enemy(game, 15, 100, room))
+                room.enemy_list.append(Enemy(game, 15, 100, room))
+                room.enemy_list.append(Enemy(game, 15, 100, room))
 
 
 

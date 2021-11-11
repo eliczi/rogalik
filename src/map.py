@@ -74,8 +74,6 @@ class TileMap:
             for tile in layer:
                 tile.draw(self.original_map_surface)
 
-        self.map_surface = self.original_map_surface.copy()
-
     @staticmethod
     def get_location(number):
         a = number // 32
