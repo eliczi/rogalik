@@ -136,10 +136,10 @@ class Game:
     def run_game(self):
         self.init_all()
         add_enemies(self)
-
+        dupa = []
         while self.running:
             #self.menu.show(self.display)
-            self.clock.tick(120)
+            self.clock.tick(60)
             self.screen.fill(utils.BLACK)
             self.particle_surface.fill((0, 0, 0, 0))
             self.input()
@@ -162,16 +162,17 @@ class Game:
                     enemy.hp -= self.player.weapon.damage
 
             self.draw_groups()
-            self.update_particles()
-            self.draw_particles()
-            self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
+            #self.update_particles()
+            #self.draw_particles()
+            #self.screen.blit(pygame.transform.scale(self.particle_surface, self.SIZE), (0, 0))
             self.next_level()
             self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
-            print(self.clock.get_fps())
+            dupa.append(self.clock.get_fps())
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
+        print(sum(dupa)/len(dupa))
         pygame.quit()
         print("Exited the game loop. Game will quit...")
 
