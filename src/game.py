@@ -47,9 +47,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.particle_surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
                                                pygame.SRCALPHA).convert_alpha()
-        num_of_rooms = 1
-        world_width, world_height = 4, 4
-        #self.world, start_map = map_generator(num_of_rooms, world_width, world_height, ss)
+        num_of_rooms = 4
+        world_width, world_height = 2,2
         self.world = World(num_of_rooms, world_width, world_height)
         for row in self.world.world:
             for room in row:
@@ -57,12 +56,13 @@ class Game:
                     self.x, self.y = room.x, room.y
                     self.room = room
 
-        #self.x, self.y = start_map.x, start_map.y
-        #self.room = self.world[start_map.x][start_map.y]
         self.room_image = self.room.tile_map
         self.next_room = None
         self.directions = None
         self.mini_map = MiniMap(world_width, world_height)
+        # for row in self.world.world:
+        #     for room in row:
+        #         room.tile_map.load_map()
 
     def game_over(self):
         self.init_all()
@@ -80,11 +80,12 @@ class Game:
             e.draw()
 
     def draw_groups(self):
-        self.room_image.load_map()
+        self.room_image.clear_map()
         for enemy in self.enemy_list:
             enemy.draw_shadow(self.room_image.map_surface)
+
         if self.next_room:
-            self.next_room_image.load_map()
+            self.next_room_image.clear_map()
             self.player.draw(self.next_room_image.map_surface)
         else:
             self.player.draw(self.room_image.map_surface)
@@ -92,7 +93,6 @@ class Game:
         for bullet in self.bullet_list:
             bullet.draw()
         self.room_image.draw_map(self.screen)
-
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
         text_surface = self.my_font.render(self.room.type, False, (255, 255, 255))
@@ -136,9 +136,10 @@ class Game:
     def run_game(self):
         self.init_all()
         add_enemies(self)
+
         while self.running:
             #self.menu.show(self.display)
-            self.clock.tick(60)
+            self.clock.tick(120)
             self.screen.fill(utils.BLACK)
             self.particle_surface.fill((0, 0, 0, 0))
             self.input()
@@ -168,7 +169,7 @@ class Game:
             self.mini_map.current_room(self.room)
             self.counter += 1
             self.display.blit(self.screen, (0, 0))
-            #print(self.clock.get_fps())
+            print(self.clock.get_fps())
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
         pygame.quit()

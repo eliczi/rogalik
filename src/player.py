@@ -32,6 +32,7 @@ class Player:
         self.counter = 0
         self.time = 0
 
+
     def input(self):
         """s"""
         pressed = pygame.key.get_pressed()
@@ -103,6 +104,7 @@ class Player:
 
     def update(self) -> None:
         """s"""
+
         self.weapon.update()
         self.player_animation.update()
         self.wall_collision()
@@ -125,7 +127,7 @@ class Player:
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
         #pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
-        pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
+        #pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         """s"""

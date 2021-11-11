@@ -19,7 +19,7 @@ def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
 
 class Enemy:
     def __init__(self, game, speed, max_hp, room):
-        self.animation_database = load_animation_sprites('../assets/imp/')
+        self.animation_database = load_animation_sprites('../assets/demon/')
         self.game = game
         self.max_hp = max_hp
         self.room = room
@@ -126,8 +126,8 @@ class Enemy:
 
     def draw(self):  # if current room or the next room
         if self.room == self.game.room or self.room == self.game.next_room:
-            self.draw_health(self.room.room_image.map_surface)
-            self.room.room_image.map_surface.blit(self.image, self.rect)
+            self.draw_health(self.room.tile_map.map_surface)
+            self.room.tile_map.map_surface.blit(self.image, self.rect)
 
 class EnemySlow(Enemy):
     def __init__(self, game, speed, max_hp, name, *groups):
@@ -163,7 +163,8 @@ def add_enemies(game):
     for row in game.world.world:
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
-                room.enemy_list.append(Enemy(game, 15, 100, room))
+                pass
+                #room.enemy_list.append(Enemy(game, 15, 100, room))
 
 
 
