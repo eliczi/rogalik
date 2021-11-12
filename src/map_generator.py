@@ -47,7 +47,8 @@ class Room:
 
 
 class World:
-    def __init__(self, num_of_rooms, width, height):
+    def __init__(self, game, num_of_rooms, width, height):
+        self.game = game
         self.num_of_rooms = num_of_rooms
         self.width = width
         self.height = height
@@ -142,7 +143,7 @@ class World:
                 if isinstance(room, Room):
                     room.tile_map = TileMap(room, room.room_map, Spritesheet('../assets/spritesheet.png'))
                     if room.type == 'chest':
-                        room.objects.append(Chest(room))
+                        room.objects.append(Chest(self.game, room))
 
     def print_world(self):
         for row in self.world:

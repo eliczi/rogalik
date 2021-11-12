@@ -145,6 +145,27 @@ class DeathParticle(Particle):
                            (self.x + random.randint(-1, 1), self.y + random.randint(-1, 1)), self.radius)
 
 
+class ChestParticle(Particle):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y)
+        self.color = [(232, 209, 58), (255, 255, 255), (232, 67, 58)]
+        self.radius = 1
+        self.life = 1
+        self.counter = 0
+
+    def update(self):
+        if random.randint(0, 6) == 5:
+            self.x += random.randint(-2, 2)
+            self.y += random.randint(-2, -1)
+            self.life -= 0.15
+        if self.life <= 0:
+            self.game.particle_manager.particle_list.remove(self)
+
+    def draw(self, surface):
+        color = random.choice(self.color)
+        pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
+
+
 class ParticleManager:
     def __init__(self, game):
         self.game = game
@@ -155,6 +176,7 @@ class ParticleManager:
     def update_particles(self):
         for particle in self.particle_list:
             particle.update()
+        self.draw_particles()
 
     def add_particle(self, particle):
         self.particle_list.append(particle)

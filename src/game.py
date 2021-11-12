@@ -32,6 +32,7 @@ class Game:
         self.menu = MainMenu(self)
         # self.music = pygame.mixer.music.load('../assets/sound/music.wav',)
         # pygame.mixer.music.play(-1)
+        self.can_open_chest = False
 
     def init_all(self):
         self.screen = pygame.Surface(utils.world_size)
@@ -39,7 +40,7 @@ class Game:
         self.clock = pygame.time.Clock()
         num_of_rooms = 6
         world_width, world_height = 3, 3
-        self.world = World(num_of_rooms, world_width, world_height)
+        self.world = World(self, num_of_rooms, world_width, world_height)
         self.x, self.y = self.world.starting_room.x, self.world.starting_room.y
         self.room = self.world.starting_room
         self.room_image = self.room.tile_map
@@ -88,6 +89,10 @@ class Game:
             self.mini_map.draw(self.screen)
         if pressed[pygame.K_ESCAPE]:
             self.running = False
+        if pressed[pygame.K_e] and self.can_open_chest:
+            for o in self.room.objects:
+                o.open_chest()
+                self.can_open_chest = False
 
     def next_level(self):
         if self.directions is None:
@@ -106,18 +111,18 @@ class Game:
             self.screen.fill(utils.BLACK)
             for o in self.room.objects:
                 o.detect_collision(self.player)
+                o.update()
             self.input()
             self.update_groups()
             self.draw_groups()
             self.particle_manager.update_particles()
-            self.particle_manager.draw_particles()
             self.enemy_manager.test()
             self.next_level()
             self.mini_map.set_current_room(self.room)
             self.display.blit(self.screen, (0, 0))
-            fps.append(self.clock.get_fps())
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
+            fps.append(self.clock.get_fps())
         print(f'Average FPS: {sum(fps) / len(fps)}')
         pygame.quit()
         print("Exited the game loop. Game will quit...")
