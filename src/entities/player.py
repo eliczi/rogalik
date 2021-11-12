@@ -1,16 +1,16 @@
 from math import sqrt
 import pygame
-from src.weapon import Weapon
-from ..utils import get_mask_rect
-from .. import utils
-from ..animation import load_animation_sprites, EntityAnimation  # entity_animation
+from weapon import Weapon
+from utils import get_mask_rect
+import utils
+from animation import load_animation_sprites, EntityAnimation  # entity_animation
 
 
 class Player:
     def __init__(self, game):
         self.game = game
         self.animation_database = load_animation_sprites('../assets/player/')
-        self.image = pygame.transform.scale(pygame.image.load("../../assets/player/idle/idle0.png").convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load("../assets/player/idle/idle0.png").convert_alpha(),
                                             utils.basic_entity_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(
@@ -66,7 +66,7 @@ class Player:
             self.set_velocity(vel_list)
 
         if pygame.mouse.get_pressed()[0] and self.game.counter > 30:
-            pygame.mixer.Sound.play(pygame.mixer.Sound('../../assets/sound/sword.wav'))
+            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1

@@ -1,9 +1,10 @@
 import random
 import pygame
-from .. import utils
-from src.animation import load_animation_sprites, EntityAnimation  # entity_animation
+import utils
+from animation import load_animation_sprites, EntityAnimation  # entity_animation
 import typing
-from src.particles import DeathParticle
+from map_generator import Room
+from particles import DeathParticle
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -22,7 +23,7 @@ class Enemy:
         self.max_hp = max_hp  # maximum hp
         self.hp = self.max_hp  # current hp
         self.room = room  # room in which monster resides
-        self.image = pygame.transform.scale(pygame.image.load("../../assets/demon/idle/idle0.png").convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load("../assets/demon/idle/idle0.png").convert_alpha(),
                                             utils.basic_entity_size)
         self.mask = pygame.mask.from_surface(self.image)  # mask for calculating collisions
         self.rect = self.mask.get_rect()  # image rectangle, size
@@ -36,7 +37,7 @@ class Enemy:
         self.enemy_animation = EntityAnimation(self)
         self.death_counter = 30
         self.time = 0
-        self.sound = pygame.mixer.Sound('../../assets/sound/hit.wav')
+        self.sound = pygame.mixer.Sound('../assets/sound/hit.wav')
         self.spawn()
 
     def spawn(self):
@@ -77,7 +78,7 @@ class Enemy:
             self.dead = True
             self.enemy_animation.animation_frame = 0
         if self.death_counter == 0:
-            pygame.mixer.Sound.play(pygame.mixer.Sound('../../assets/sound/death.wav'))
+            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/death.wav'))
             self.game.enemy_list.remove(self)
             position = ((self.rect.x) // 4 + 48, (self.rect.y) // 4 + 20)
             self.game.particles.append(DeathParticle(self.game, *position))
