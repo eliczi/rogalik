@@ -34,7 +34,7 @@ class MiniMap:
     def add_room(self, room):
         self.visited_rooms.add((room.x, room.y))
 
-    def current_room(self, room):
+    def set_current_room(self, room):
         self.add_room(room)
         self.current_x, self.current_y = room.x, room.y
 

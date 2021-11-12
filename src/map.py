@@ -37,7 +37,8 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap:
-    def __init__(self, filename, spritesheet):
+    def __init__(self, room, filename, spritesheet, ):
+        self.room = room
         self.map_width = len(filename[0][0]) + 2  # offset
         self.map_height = len(filename[0]) + 2
         self.map_size = (self.map_width * 64, self.map_height * 64)
@@ -63,6 +64,8 @@ class TileMap:
             self.x = 128
 
     def draw_map(self, surface):
+        for o in self.room.objects:
+            o.draw()
         surface.blit(self.map_surface, (self.x, self.y))
 
     def clear_map(self):
@@ -73,6 +76,7 @@ class TileMap:
         for layer in self.tiles:
             for tile in layer:
                 tile.draw(self.original_map_surface)
+        self.map_surface = self.original_map_surface
 
     @staticmethod
     def get_location(number):

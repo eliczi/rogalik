@@ -88,7 +88,6 @@ class Weapon:
     def swing(self):
         self.angle += 20 * self.swing_side
         position = self.game.player.hitbox.center
-
         self.image = pygame.transform.rotozoom(self.original_image, self.angle, 1)
         offset_rotated = self.offset.rotate(-self.angle)
         self.rect = self.image.get_rect(center=position + offset_rotated)

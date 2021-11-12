@@ -104,6 +104,8 @@ class Game:
             # self.menu.show(self.display)
             self.clock.tick(60)
             self.screen.fill(utils.BLACK)
+            for o in self.room.objects:
+                o.detect_collision(self.player)
             self.input()
             self.update_groups()
             self.draw_groups()
@@ -111,7 +113,7 @@ class Game:
             self.particle_manager.draw_particles()
             self.enemy_manager.test()
             self.next_level()
-            self.mini_map.current_room(self.room)
+            self.mini_map.set_current_room(self.room)
             self.display.blit(self.screen, (0, 0))
             fps.append(self.clock.get_fps())
             self.game_time = pygame.time.get_ticks()

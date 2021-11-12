@@ -2,6 +2,7 @@ import random
 import csv
 import copy
 from map import TileMap, Spritesheet
+from chest import Chest
 
 
 class Room:
@@ -15,6 +16,7 @@ class Room:
         self.tile_map = None  # TileMap
         self.discovered = False  # player been in this room
         self.enemy_list = []  # list of enemies at that room
+        self.objects = []  # various objects like powerups or chests or weapons
 
     def __repr__(self):
         return f'({self.x}, {self.y}), {self.type})'  # str(self)?
@@ -138,7 +140,9 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room):
-                    room.tile_map = TileMap(room.room_map, Spritesheet('../assets/spritesheet.png'))
+                    room.tile_map = TileMap(room, room.room_map, Spritesheet('../assets/spritesheet.png'))
+                    if room.type == 'chest':
+                        room.objects.append(Chest(room))
 
     def print_world(self):
         for row in self.world:
@@ -154,4 +158,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 1, 0.15, 0.15], k=1)[0]
+                    room.type = random.choices(types, weights=[0.2, 0, 0.15, 1], k=1)[0]
