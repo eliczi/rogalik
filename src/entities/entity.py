@@ -34,6 +34,10 @@ class Entity:
         for wall in self.game.room_image.wall_list:
             if any(wall.hitbox.collidepoint(point) for point in collide_points):
                 self.velocity = [0, 0]
+        for obj in self.game.room.objects:
+            if any(obj.hitbox.collidepoint(point) for point in collide_points):
+                self.velocity = [0, 0]
+
 
     def update_hitbox(self):
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)

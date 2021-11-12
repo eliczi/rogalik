@@ -24,7 +24,7 @@ class Chest:
         return image
 
     def chest_particles(self):
-        if random.randint(0, 15) == 5 and not self.open:
+        if random.randint(0, 30) == 5 and not self.open:
             position = ((self.rect.midtop[0]) // 4 + random.randint(30, 34), (self.rect.midtop[1]) // 4 + 15)
             self.game.particle_manager.add_particle(ChestParticle(self.game, *position))
 

@@ -159,4 +159,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 0, 0.15, 1], k=1)[0]
+                    room.type = random.choices(types, weights=[0.2, 1, 0.15, 1], k=1)[0]

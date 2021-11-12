@@ -72,8 +72,8 @@ class Player(Entity):
         self.draw_shadow(screen)
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
-        pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
-        pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
+        # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
+        # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         """s"""

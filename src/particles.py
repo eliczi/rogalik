@@ -148,7 +148,7 @@ class DeathParticle(Particle):
 class ChestParticle(Particle):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
-        self.color = [(232, 209, 58), (255, 255, 255), (232, 67, 58)]
+        self.color = [(232, 209, 58, 125), (255, 255, 255, 124), (232, 67, 58, 125)]
         self.radius = 1
         self.life = 1
         self.counter = 0
@@ -174,9 +174,10 @@ class ParticleManager:
                                       pygame.SRCALPHA).convert_alpha()
 
     def update_particles(self):
-        for particle in self.particle_list:
-            particle.update()
-        self.draw_particles()
+        if self.particle_list:
+            for particle in self.particle_list:
+                particle.update()
+            self.draw_particles()
 
     def add_particle(self, particle):
         self.particle_list.append(particle)
@@ -185,4 +186,4 @@ class ParticleManager:
         self.surface.fill((0, 0, 0, 0))
         for particle in self.particle_list:
             particle.draw(self.surface)
-        self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))
+        #self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))
