@@ -1,8 +1,9 @@
-import random
 import pygame
+import random
+import typing
+
 import utils
 from animation import load_animation_sprites, EntityAnimation  # entity_animation
-import typing
 from map_generator import Room
 from particles import DeathParticle
 from .entity import Entity

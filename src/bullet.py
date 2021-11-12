@@ -1,6 +1,7 @@
-import pygame
 import math
+import pygame
 import random
+
 from particles import EnemyHitParticle, WallHitParticle
 
 

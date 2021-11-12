@@ -1,6 +1,7 @@
 import pygame
-from animation import load_animation_sprites, EntityAnimation
+
 import utils
+from animation import load_animation_sprites, EntityAnimation
 from utils import get_mask_rect
 
 

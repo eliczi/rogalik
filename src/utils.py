@@ -1,8 +1,8 @@
-import pygame
-from collections import namedtuple
+import csv
 # world_size = namedtuple('Size', ['width','length'])
 import os
-import csv
+import pygame
+from collections import namedtuple
 
 world_size = (21 * 64, 14 * 64)
 BLACK = (0, 0, 0)

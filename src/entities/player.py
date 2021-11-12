@@ -1,9 +1,10 @@
-from math import sqrt
 import pygame
-from weapon import Weapon
-from utils import get_mask_rect
+from math import sqrt
+
 import utils
 from animation import load_animation_sprites, EntityAnimation  # entity_animation
+from utils import get_mask_rect
+from weapon import Weapon
 from .entity import Entity
 
 

@@ -1,8 +1,9 @@
-import random
-import csv
 import copy
-from map import TileMap, Spritesheet
+import csv
+import random
+
 from chest import Chest
+from map import TileMap, Spritesheet
 
 
 class Room:
