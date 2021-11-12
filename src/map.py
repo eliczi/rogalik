@@ -122,16 +122,17 @@ class TileMap:
             game.next_room = game.world.world[game.x][game.y + value]
             game.next_room_image = game.next_room.tile_map
             game.next_room_image.x = utils.world_size[0]
-            game.player.rect.x -= value * 7 * 64
+            game.player.rect.x = 112
         elif direction == 'left':
             game.next_room = game.world.world[game.x][game.y + value]
             game.next_room_image = game.next_room.tile_map
             game.next_room_image.x = 0 - 17 * 64
-            game.player.rect.x -= value * 7 * 64
-       # game.next_room_image.load_map()
+            game.player.rect.x = 910
+
+    # game.next_room_image.load_map()
 
     def move_rooms(self, direction, value, game):
-        anim_speed = 832 / 12 # 12
+        anim_speed = 832 / 12  # 12
         if direction in ('up', 'down'):
             self.y -= value * anim_speed
             if game.next_room:

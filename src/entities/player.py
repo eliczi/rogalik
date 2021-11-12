@@ -20,13 +20,13 @@ class Player(Entity):
         """s"""
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_w]:
-            self.direction = 'UP'
+            self.direction = 'up'
         if pressed[pygame.K_s]:
-            self.direction = 'DOWN'
+            self.direction = 'down'
         if pressed[pygame.K_a]:
-            self.direction = 'LEFT'
+            self.direction = 'left'
         if pressed[pygame.K_d]:
-            self.direction = 'RIGHT'
+            self.direction = 'right'
 
         constant_dt = 0.06
         vel_up = [0, -self.speed * constant_dt]
@@ -49,68 +49,31 @@ class Player(Entity):
         else:
             self.set_velocity(vel_list)
 
-        if pygame.mouse.get_pressed()[0] and self.game.counter > 30:
+        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 300:
+            self.time = pygame.time.get_ticks()
             pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             self.game.counter = 0
 
-    def set_velocity(self, velocity):
-        """s"""
-        self.velocity = velocity
-
-    def player_size(self):
-        """S"""
-        image_size = tuple(int(self.game.zoom_level * x) for x in utils.basic_entity_size)
-        self.image = pygame.transform.scale(self.image, image_size)
-
-    def wall_collision(self):
-        """Sets player's velocity to zero if it would collide with walls
-           In other words, prevents player from colliding with walls"""
-
-        test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
-        collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
-        for wall in self.game.room_image.wall_list:
-            if any(wall.hitbox.collidepoint(point) for point in
-                   collide_points):  # any(wall.rect.collidepoint(point) for point in collide_points) or
-                self.velocity = [0, 0]
-            # elif pygame.sprite.collide_mask(wall, self):
-            #     if self.direction =='LEFT':
-            #         self.velocity = [1, 0]
-            #     if self.direction =='UP':
-            #         self.velocity = [0, 1]
-
-    def update_hitbox(self):
-        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
-        self.hitbox.midbottom = self.rect.midbottom
-
     def update(self) -> None:
         """s"""
-
         self.weapon.update()
-        self.player_animation.update()
+        self.entity_animation.update()
         self.wall_collision()
         if self.can_move:
             self.rect.move_ip(*self.velocity)
             self.hitbox.move_ip(*self.velocity)
         self.update_hitbox()
 
-    def draw_shadow(self, surface):
-        color = (0, 0, 0, 120)
-        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
-        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
-        surface.blit(shape_surf, position)
-
     def draw(self, screen):
         """S"""
         self.draw_shadow(screen)
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
-        # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
-        # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
+        pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
+        pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         """s"""

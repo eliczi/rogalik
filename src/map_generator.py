@@ -51,6 +51,7 @@ class World:
         self.height = height
         self.world = [[None for x in range(width)] for y in range(height)]  # populate world with
         self.x, self.y = random.randint(0, height - 1), random.randint(0, width - 1)  # current world coordinates
+        self.starting_room = None
         self.create_world()
 
     def create_world(self):
@@ -86,7 +87,7 @@ class World:
         room_counter = 0  # counts current number of rooms
         while room_counter < self.num_of_rooms:  # this while loop populates game world with one possible room-layout
             if room_counter == 0:
-                self.world[self.x][self.y] = Room(self.x, self.y)
+                self.starting_room = self.world[self.x][self.y] = Room(self.x, self.y)
                 self.world[self.x][self.y].type = 'starting_room'
             else:
                 self.world[self.x][self.y] = Room(self.x, self.y)
@@ -154,5 +155,3 @@ class World:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
                     room.type = random.choices(types, weights=[0.2, 1, 0.15, 0.15], k=1)[0]
-
-

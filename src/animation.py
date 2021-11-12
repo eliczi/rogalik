@@ -7,7 +7,6 @@ def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
     animation_data = {"IDLE": [], "WALK": [], "RUN": [], 'HURT': [], 'DEAD': []}
-
     animation_states = os.listdir(path)  # Lists all the subdirectories in specified path
     for state in animation_states:
         sub_states = os.listdir(path + state)
@@ -16,11 +15,8 @@ def load_animation_sprites(path):
             animation_image = pygame.image.load(path + state + '/' + sub_state).convert_alpha()
             animation_image = pygame.transform.scale(animation_image, utils.basic_entity_size)
             animation_data[key].append(animation_image)
-
     return animation_data
 
-
-# def entity_animation(entity):
 
 class EntityAnimation:
     def __init__(self, entity):
@@ -34,12 +30,6 @@ class EntityAnimation:
             return True
         return False
 
-    def update_animation_direction(self):
-        if self.entity.direction == 'RIGHT':
-            self.animation_direction = 'right'
-        elif self.entity.direction == 'LEFT':
-            self.animation_direction = 'left'
-
     def update_animation_frame(self):
         """sss"""
         self.animation_frame += 1.5 / 15
@@ -49,9 +39,9 @@ class EntityAnimation:
     def idle_animation(self, state):
         """Animation if idle"""
         self.update_animation_frame()
-        if self.animation_direction == 'left':
+        if self.entity.direction == 'left':
             self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
-        elif self.animation_direction == 'right':
+        elif self.entity.direction == 'right':
             self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
@@ -65,9 +55,9 @@ class EntityAnimation:
         else:
             state = 'DEAD'
         if self.animation_frame <= 4:
-            if self.animation_direction == 'left':
+            if self.entity.direction == 'left':
                 self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
-            elif self.animation_direction == 'right':
+            elif self.entity.direction == 'right':
                 self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
                 self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
@@ -87,9 +77,4 @@ class EntityAnimation:
             self.idle_animation('IDLE')
 
     def update(self):
-        self.update_animation_direction()
         self.animation()
-
-
-# return update
-

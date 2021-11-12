@@ -1,6 +1,5 @@
 import pygame
 from animation import load_animation_sprites, EntityAnimation
-from weapon import Weapon
 import utils
 from utils import get_mask_rect
 
@@ -17,10 +16,33 @@ class Entity:
         self.velocity = [0, 0]
         self.hurt = False
         self.dead = False
-        self.direction = ''
+        self.direction = 'right'
         self.can_move = True
-        self.player_animation = EntityAnimation(self)
+        self.entity_animation = EntityAnimation(self)
         self.counter = 0
         self.time = 0
 
+    def set_velocity(self, new_velocity):
+        self.velocity = new_velocity
 
+    def wall_collision(self):
+        """Sets player's velocity to zero if it would collide with walls
+           In other words, prevents player from colliding with walls"""
+
+        test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
+        collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
+        for wall in self.game.room_image.wall_list:
+            if any(wall.hitbox.collidepoint(point) for point in collide_points):
+                self.velocity = [0, 0]
+
+    def update_hitbox(self):
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.hitbox.midbottom = self.rect.midbottom
+
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
+        surface.blit(shape_surf, position)

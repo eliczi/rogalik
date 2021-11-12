@@ -1,11 +1,8 @@
 import pygame
 import random
 from math import sin
+import utils
 
-
-class ParticleManager:
-    def __init__(self):
-        self.particles = []
 
 class Particle:
     def __init__(self, game, x, y):
@@ -26,8 +23,8 @@ class EnemyHitParticle(Particle):
         if self.radius <= 0:
             self.game.particles.remove(self)
 
-    def draw(self):
-        pygame.draw.circle(self.game.screen, self.color, (self.x, self.y), self.radius)
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
 
 class WallHitParticle(Particle):
@@ -44,8 +41,8 @@ class WallHitParticle(Particle):
         if self.radius <= 0:
             self.game.particles.remove(self)
 
-    def draw(self):
-        pygame.draw.circle(self.game.screen, self.color, (self.x, self.y), self.radius)
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
 
 class Fire(Particle):
@@ -105,22 +102,22 @@ class Fire(Particle):
         else:
             self.counter += 1
 
-    def draw(self):
+    def draw(self, surface):
 
         alpha = 255
 
-        pygame.draw.circle(self.game.particle_surface,
+        pygame.draw.circle(surface,
                            self.color[self.i] + (alpha,),
                            (self.draw_x, self.draw_y),
                            self.radius, 0)
         if self.i == 0:
-            pygame.draw.circle(self.game.particle_surface,
+            pygame.draw.circle(surface,
                                (0, 0, 0, 0),
                                (self.draw_x + random.randint(-1, 1),
                                 self.draw_y - 4),
                                self.radius * (((self.max_life - self.life) / self.max_life) / 0.88), 0)
         else:
-            pygame.draw.circle(self.game.particle_surface,
+            pygame.draw.circle(surface,
                                self.color[self.i - 1] + (alpha,),
                                (self.draw_x + random.randint(-1, 1), self.draw_y - 3),
                                self.radius / 1.5, 0)
@@ -134,17 +131,36 @@ class DeathParticle(Particle):
         self.life = random.randint(30, 50)
         self.counter = 0  # to slow down animation speed
 
-
-
     def update(self):
         self.x += random.randint(-1, 1)
         self.y += random.randint(-1, 1)
         self.radius += 0.05
         self.life -= 1
         if self.life <= 0:
-            self.game.particles.remove(self)
+            self.game.particle_manager.particle_list.remove(self)
 
-    def draw(self):
-        pygame.draw.circle(self.game.particle_surface, self.color, (self.x, self.y), self.radius)
-        pygame.draw.circle(self.game.particle_surface, (0, 0, 0, 0),
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
+        pygame.draw.circle(surface, (0, 0, 0, 0),
                            (self.x + random.randint(-1, 1), self.y + random.randint(-1, 1)), self.radius)
+
+
+class ParticleManager:
+    def __init__(self, game):
+        self.game = game
+        self.particle_list = []
+        self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
+                                      pygame.SRCALPHA).convert_alpha()
+
+    def update_particles(self):
+        for particle in self.particle_list:
+            particle.update()
+
+    def add_particle(self, particle):
+        self.particle_list.append(particle)
+
+    def draw_particles(self):
+        self.surface.fill((0, 0, 0, 0))
+        for particle in self.particle_list:
+            particle.draw(self.surface)
+        self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))
