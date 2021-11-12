@@ -1,11 +1,9 @@
 import pygame
-from player import Player
+from entities.player import Player
 import utils
-from map import Spritesheet
 from map_generator import World
 from mini_map import MiniMap
-from enemy import Enemy, add_enemies
-from background import BackgroundCircle
+from entities.enemy import add_enemies
 from menu import MainMenu
 pygame.init()
 pygame.mixer.init()

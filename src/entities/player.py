@@ -1,16 +1,16 @@
 from math import sqrt
 import pygame
-from weapon import Weapon
-from utils import get_mask_rect
-import utils
-from animation import load_animation_sprites, EntityAnimation  # entity_animation
+from src.weapon import Weapon
+from ..utils import get_mask_rect
+from .. import utils
+from ..animation import load_animation_sprites, EntityAnimation  # entity_animation
 
 
 class Player:
     def __init__(self, game):
         self.game = game
         self.animation_database = load_animation_sprites('../assets/player/')
-        self.image = pygame.transform.scale(pygame.image.load("../assets/player/idle/idle0.png").convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load("../../assets/player/idle/idle0.png").convert_alpha(),
                                             utils.basic_entity_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(
@@ -31,7 +31,6 @@ class Player:
         self.player_animation = EntityAnimation(self)
         self.counter = 0
         self.time = 0
-
 
     def input(self):
         """s"""
@@ -67,7 +66,7 @@ class Player:
             self.set_velocity(vel_list)
 
         if pygame.mouse.get_pressed()[0] and self.game.counter > 30:
-            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
+            pygame.mixer.Sound.play(pygame.mixer.Sound('../../assets/sound/sword.wav'))
             self.attacking = True
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
@@ -89,14 +88,14 @@ class Player:
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
         collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
         for wall in self.game.room_image.wall_list:
-            if any(wall.hitbox.collidepoint(point) for point in collide_points): # any(wall.rect.collidepoint(point) for point in collide_points) or
+            if any(wall.hitbox.collidepoint(point) for point in
+                   collide_points):  # any(wall.rect.collidepoint(point) for point in collide_points) or
                 self.velocity = [0, 0]
             # elif pygame.sprite.collide_mask(wall, self):
             #     if self.direction =='LEFT':
             #         self.velocity = [1, 0]
             #     if self.direction =='UP':
             #         self.velocity = [0, 1]
-
 
     def update_hitbox(self):
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
@@ -116,7 +115,7 @@ class Player:
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7 )) # - self.animation_frame % 4
+        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
         position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
         surface.blit(shape_surf, position)
@@ -126,8 +125,8 @@ class Player:
         self.draw_shadow(screen)
         screen.blit(self.image, self.rect)
         self.weapon.draw(screen)
-        #pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
-        #pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
+        # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
+        # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 
     def render(self):  # Render weapon
         """s"""
