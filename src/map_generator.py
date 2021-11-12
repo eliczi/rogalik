@@ -53,7 +53,7 @@ class World:
         self.num_of_rooms = num_of_rooms
         self.width = width
         self.height = height
-        self.world = [[None for x in range(width)] for y in range(height)]  # populate world with
+        self.world = [[None for _ in range(width)] for _ in range(height)]  # populate world with
         self.x, self.y = random.randint(0, height - 1), random.randint(0, width - 1)  # current world coordinates
         self.starting_room = None
         self.create_world()
@@ -85,7 +85,7 @@ class World:
         return free_space
 
     def reset_world(self):  # resets game world
-        self.world = [[None for x in range(self.width)] for y in range(self.height)]
+        self.world = [[None for _ in range(self.width)] for _ in range(self.height)]
 
     def generate_rooms(self):
         room_counter = 0  # counts current number of rooms
@@ -127,15 +127,15 @@ class World:
                 if isinstance(room, Room):
                     room_map = copy.deepcopy(basic_map)  # csv file
                     for door in room.doors:
-                        if door == 'up':
-                            room_map[1][7] = -10
                         if door == 'down':
                             room_map[9][7] = -10
                             room_map[8][7] = 129
-                        if door == 'right':
-                            room_map[5][14] = 163
-                        if door == 'left':
+                        elif door == 'left':
                             room_map[5][0] = 163
+                        elif door == 'right':
+                            room_map[5][14] = 163
+                        elif door == 'up':
+                            room_map[1][7] = -10
                     room.room_map.append(room_map)
 
     def add_graphics(self):

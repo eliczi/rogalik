@@ -27,9 +27,7 @@ class EntityAnimation:
 
     def moving(self) -> bool:
         """s"""
-        if sum(self.entity.velocity):
-            return True
-        return False
+        return bool(sum(self.entity.velocity))
 
     def update_animation_frame(self):
         """sss"""
@@ -51,10 +49,7 @@ class EntityAnimation:
         self.animation_frame += 1.0 / 15
         if self.animation_frame >= 4:
             self.entity.death_counter = 0
-        if self.animation_frame < 1:
-            state = 'HURT'
-        else:
-            state = 'DEAD'
+        state = 'HURT' if self.animation_frame < 1 else 'DEAD'
         if self.animation_frame <= 4:
             if self.entity.direction == 'left':
                 self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
