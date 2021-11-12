@@ -4,33 +4,17 @@ from weapon import Weapon
 from utils import get_mask_rect
 import utils
 from animation import load_animation_sprites, EntityAnimation  # entity_animation
+from .entity import Entity
 
 
-class Player:
+class Player(Entity):
     def __init__(self, game):
-        self.game = game
-        self.animation_database = load_animation_sprites('../assets/player/')
-        self.image = pygame.transform.scale(pygame.image.load("../assets/player/idle/idle0.png").convert_alpha(),
-                                            utils.basic_entity_size)
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect(
-            center=(500, 400))  # (center=self.game.screen.get_rect().center)  # mask -> image
-        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
-        self.velocity = [0, 0]
+        Entity.__init__(self, game, 'player')
         self.speed = 100
         self.hp = 100
-        self.hurt = False
-        self.dead = False
-        self.direction = ''
-        self.animation_direction = 'right'  # Default animation direction
-        self.animation_frame = 0  # current animation frame
         self.weapon = Weapon(self.game, 25, 'sword')
         self.attacking = False
         self.attacked = False
-        self.can_move = True
-        self.player_animation = EntityAnimation(self)
-        self.counter = 0
-        self.time = 0
 
     def input(self):
         """s"""
