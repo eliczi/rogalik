@@ -48,7 +48,7 @@ class Weapon:
 
     def rotate(self):
         mx, my = pygame.mouse.get_pos()
-        mx -= 256 # because we are rendering player on map_surface
+        mx -= 256  # because we are rendering player on map_surface
         my -= 128
         dx = mx - self.game.player.hitbox.centerx
         dy = my - self.game.player.hitbox.centery
