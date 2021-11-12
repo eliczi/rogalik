@@ -29,7 +29,7 @@ class Chest:
         if player.rect.colliderect(self.rect):
             self.update_animation_frame()
             self.update()
-            print('dupa')
+            print('ZESRALES SIE!!!!')
 
     def update_animation_frame(self):
         self.animation_frame = 2
