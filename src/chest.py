@@ -45,7 +45,7 @@ class Chest:
         # pygame.draw.rect(self.surface, (255, 123, 234), self.rect, 2)
 
     def detect_collision(self, player):
-        self.game.can_open_chest = bool(player.hitbox.colliderect(self.rect))
+        self.game.can_open_chest = bool(player.rect.colliderect(self.rect))
 
     def open_chest(self):
         self.open = True
