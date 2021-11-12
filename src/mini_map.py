@@ -52,7 +52,6 @@ class MiniMap:
 
     def update(self, world, room):
         self.current_room(room)
-        pass
 
     def draw_near(self):
         pass

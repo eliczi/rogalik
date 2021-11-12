@@ -1,7 +1,8 @@
 import pygame
+import random
+
 import utils
 from particles import ChestParticle
-import random
 
 
 class Chest:
@@ -19,7 +20,10 @@ class Chest:
 
     @staticmethod
     def load_image():
-        image = pygame.image.load(f'../assets/chest/full/chest_full0.png').convert_alpha()
+        image = pygame.image.load(
+            '../assets/chest/full/chest_full0.png'
+        ).convert_alpha()
+
         image = pygame.transform.scale(image, utils.basic_entity_size)
         return image
 
@@ -41,10 +45,7 @@ class Chest:
         # pygame.draw.rect(self.surface, (255, 123, 234), self.rect, 2)
 
     def detect_collision(self, player):
-        if player.hitbox.colliderect(self.rect):
-            self.game.can_open_chest = True
-        else:
-            self.game.can_open_chest = False
+        self.game.can_open_chest = bool(player.hitbox.colliderect(self.rect))
 
     def open_chest(self):
         self.open = True

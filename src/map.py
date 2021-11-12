@@ -1,9 +1,9 @@
 import csv
 import os
 import pygame
+from collections import namedtuple
 
 import utils
-from collections import namedtuple
 
 
 class Spritesheet(object):

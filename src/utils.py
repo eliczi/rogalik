@@ -1,8 +1,8 @@
-import pygame
-from collections import namedtuple
+import csv
 # world_size = namedtuple('Size', ['width','length'])
 import os
-import csv
+import pygame
+from collections import namedtuple
 
 world_size = (21 * 64, 14 * 64)
 BLACK = (0, 0, 0)
@@ -29,8 +29,8 @@ def collided(sprite, other):
 
 
 def draw_text(self, text, size, x, y):
-    font = pygame.font.SysFont('Comic Sans MS', size)
-    text_surface = font.render(text, True, WHITE)
+    font_main = pygame.font.SysFont('Comic Sans MS', size)
+    text_surface = font_main.render(text, True, WHITE)
     text_rect = text_surface.get_rect()
     text_rect.center = (x, y)
     self.screen.blit(text_surface, text_rect)
@@ -125,10 +125,10 @@ class PlayerInfo:
 
 
 class FPSCounter:
-    def __init__(self, game, surface, font, clock, pos):
+    def __init__(self, game, surface, font_main, clock, pos):
         self.game = game
         self.surface = surface
-        self.font = font
+        self.font = font_main
         self.clock = clock
         self.pos = pos
         self.fps_text = self.font.render(str(self.game.clock.get_fps()) + "FPS", False, (0, 0, 0))

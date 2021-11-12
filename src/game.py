@@ -1,10 +1,11 @@
 import pygame
-from entities.player import Player
+
 import utils
-from map_generator import World
-from mini_map import MiniMap
 from entities.enemy import add_enemies, EnemyManager
+from entities.player import Player
+from map_generator import World
 from menu import MainMenu
+from mini_map import MiniMap
 from particles import ParticleManager
 
 pygame.init()
