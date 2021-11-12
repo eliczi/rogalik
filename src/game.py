@@ -23,7 +23,6 @@ class Game:
         self.room_image = None
         self.next_room = None
         self.next_room_image = None
-
         self.running = True
         self.world = None
         self.x, self.y = None, None
@@ -35,7 +34,6 @@ class Game:
         # pygame.mixer.music.play(-1)
 
     def init_all(self):
-        self.bullet_list = pygame.sprite.Group()
         self.screen = pygame.Surface(utils.world_size)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
@@ -97,7 +95,6 @@ class Game:
         if self.directions:
             self.player.can_move = False
             self.room_image.load_level(self, *self.directions)
-
 
     def run_game(self):
         self.init_all()

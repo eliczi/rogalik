@@ -49,7 +49,7 @@ class Player(Entity):
         else:
             self.set_velocity(vel_list)
 
-        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 300:
+        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600:
             self.time = pygame.time.get_ticks()
             pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
