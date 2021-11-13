@@ -10,10 +10,11 @@ class ShowName:
     def __init__(self, weapon):
         self.weapon = weapon
         self.line_length = 0
-        self.maximum_line_length = None
         self.time = 0
         self.text = self.weapon.name
+        self.text_length = len(self.text)
         self.text_position = None
+        self.counter = 0
 
     @staticmethod
     def time_passed(time, amount):
@@ -27,12 +28,12 @@ class ShowName:
 
     def draw_text(self, surface):
         length = len(self.text)
-        text_surface = pygame.font.Font(utils.font, 15).render(self.text, False, (255, 255, 255))
+        text_surface = pygame.font.Font(utils.font, 15).render(self.text[:self.counter], False, (255, 255, 255))
         surface.blit(text_surface, self.text_position)
 
     def draw_text_line(self, surface, rect):
         starting_position = [rect.topleft[0], rect.topleft[1]]  # starting position of diagonal line
-        for _ in range(5):  # we draw rectangle in diagonal line, so the line looks pixelated
+        for _ in range(5):  # we draw rectangles in diagonal line, so the line looks pixelated
             starting_position[0] -= 5
             starting_position[1] -= 5
             pygame.draw.rect(surface, (255, 255, 255), (starting_position[0], starting_position[1], 5, 5))
@@ -40,13 +41,15 @@ class ShowName:
         starting_position[1] += 2  # adjustment of vertical position
         end_position = [starting_position[0] - self.line_length, starting_position[1]]
         pygame.draw.line(surface, (255, 255, 255), starting_position, end_position, 5)
-        if self.line_length <= 65 and self.time_passed(self.time, 60):
+        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 60):
             self.time = pygame.time.get_ticks()
-            self.line_length += 15
+            self.line_length += 8
+            self.counter += 1
         self.text_position = (end_position[0], end_position[1] - 20)
 
     def reset_line_length(self):
         self.line_length = 0
+        self.counter = 0
 
 
 class Weapon:
