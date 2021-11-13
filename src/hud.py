@@ -8,7 +8,8 @@ class Hud:
     def __init__(self, game):
         self.game = game
         self.hud_frame = pygame.image.load('../assets/hud_frame.png').convert_alpha()
-        self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4], [708 + 8, self.position[1] + 4]]
+        self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4],
+                                [708 + 8, self.position[1] + 4]]
 
     def draw_items(self):
         if self.game.player.items:
@@ -17,6 +18,10 @@ class Hud:
                 # position = (self.position[0] + 4, self.position[1] + 4)
                 # pygame.draw.rect(self.game.screen, (255, 255, 255, 120), (*position, 64, 64))
                 self.game.screen.blit(item.hud_image, position)
+
+    def update(self):
+        if self.game.player.items:
+            pass
 
     def draw(self):
         self.draw_items()

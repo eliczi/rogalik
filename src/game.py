@@ -93,12 +93,6 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4:
-
-                    print('up')
-                elif event.button == 5:
-                    print('down')
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
