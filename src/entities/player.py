@@ -40,10 +40,10 @@ class Player(Entity):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
-                    print(self.items.index(self.weapon) - 1)
+                    self.shift_items_left()
                     self.weapon = self.items[self.items.index(self.weapon) - 1]
                 elif event.button == 5:
-                    print((self.items.index(self.weapon) + 1) % len(self.items))
+                    self.shift_items_right()
                     self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
 
         constant_dt = 0.06
@@ -73,6 +73,12 @@ class Player(Entity):
             self.attacking = True
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
             self.game.counter = 0
+
+    def shift_items_right(self):
+        self.items = [self.items[-1]] + self.items[:-1]
+
+    def shift_items_left(self):
+        self.items = self.items[1:] + [self.items[0]]
 
     def update(self) -> None:
         """s"""
