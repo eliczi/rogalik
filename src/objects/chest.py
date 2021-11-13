@@ -3,8 +3,7 @@ import random
 
 import utils
 from particles import ChestParticle
-from weapon import Weapon
-
+from objects.weapon import Weapon
 
 class Chest:
     def __init__(self, game, room):
@@ -25,6 +24,7 @@ class Chest:
     def load_image():
         image = pygame.image.load(
             '../assets/chest/full/chest_full0.png'
+            #'../../assets/chest/full/chest_full0.png'
         ).convert_alpha()
 
         image = pygame.transform.scale(image, utils.basic_entity_size)

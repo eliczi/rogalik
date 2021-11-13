@@ -1,10 +1,7 @@
 import pygame
 from math import sqrt
 
-import utils
-from animation import load_animation_sprites, EntityAnimation  # entity_animation
-from utils import get_mask_rect
-from weapon import Weapon
+from objects.weapon import Weapon
 from .entity import Entity
 
 
@@ -41,9 +38,11 @@ class Player(Entity):
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
                     self.shift_items_left()
+                    print(self.items)
                     self.weapon = self.items[self.items.index(self.weapon) - 1]
                 elif event.button == 5:
                     self.shift_items_right()
+                    print(self.items)
                     self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
 
         constant_dt = 0.06

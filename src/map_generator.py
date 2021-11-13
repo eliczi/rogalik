@@ -2,9 +2,9 @@ import copy
 import csv
 import random
 
-from chest import Chest
+from objects.chest import Chest
 from map import TileMap, Spritesheet
-from weapon import Weapon
+from objects.weapon import Weapon
 
 
 class Room:
