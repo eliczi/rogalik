@@ -24,6 +24,8 @@ class Weapon:
         self.counter = 0
         self.swing_side = 1
         self.sound = True
+        self.value = 2
+        self.counter = 0
 
     def load_image(self):  # Change name of the function
         """Load weapon image and initialize instance variables"""
@@ -35,7 +37,7 @@ class Weapon:
         # self.hitbox = pygame.mask.from_surface(self.original_image)
         # self.rect = self.hitbox.get_rect()
         self.image = self.image_picked
-        #self.image = self.original_image
+        # self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.x = 300
         self.rect.y = 300
@@ -76,10 +78,14 @@ class Weapon:
     def update(self):
         """Update weapon position and state"""
         # If player attacks with weapon, it rotates
-        if self.rect.y >= 280:
-            self.rect.y += 5
-        elif self.rect.y < 300:
-            self.rect.y -= 5
+        if self.counter % 30 == 0:
+            self.rect.y += self.value
+        if self.rect.y >= 310:
+            self.value = -5
+        elif self.rect.y < 290:
+            self.value = 5
+        self.counter += 1
+        print(self.rect.y)
         if self.player:
             if self.counter == 10:
                 self.game.player.attacking = False
