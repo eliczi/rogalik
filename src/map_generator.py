@@ -153,7 +153,7 @@ class World:
                     elif room.type == 'starting_room':
                         room.objects.append(Weapon(self.game, 24, 'anime_sword', (36, 90), room, (300, 300)))
                         room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
-                        room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 320)))
+                        room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
                         room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
 
     def print_world(self):

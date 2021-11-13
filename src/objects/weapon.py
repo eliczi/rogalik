@@ -4,9 +4,10 @@ from pygame.math import Vector2
 
 from utils import get_mask_rect
 import utils
-
+from PIL import Image
 
 class ShowName:
+    # TODO drawing animation dependent on player position
     def __init__(self, weapon):
         self.weapon = weapon
         self.line_length = 0
@@ -28,8 +29,7 @@ class ShowName:
         self.draw_text(surface)
 
     def draw_text(self, surface):
-        length = len(self.text)
-        text_surface = pygame.font.Font(utils.font, 15).render(self.text[:self.counter], False, (255, 255, 255))
+        text_surface = pygame.font.Font(utils.font, 15).render(self.text[:self.counter], True, (255, 255, 255))
         surface.blit(text_surface, self.text_position)
 
     def draw_text_line(self, surface, rect):
@@ -42,7 +42,7 @@ class ShowName:
         starting_position[1] += 2  # adjustment of vertical position
         end_position = [starting_position[0] - self.line_length, starting_position[1]]
         pygame.draw.line(surface, (255, 255, 255), starting_position, end_position, 5)
-        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 60):
+        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 40):
             self.time = pygame.time.get_ticks()
             self.line_length += 8
             self.counter += 1
@@ -85,23 +85,21 @@ class Weapon:
         self.time = 0
         self.show_name = ShowName(self)
 
-    def load_image(self):  # Change name of the function
+    def load_image(self):
         """Load weapon image and initialize instance variables"""
+        self.size = tuple(3 * x for x in Image.open(f'../assets/weapon/{self.name}/{self.name}.png').size)
         self.original_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
         self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
         self.hud_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
-        self.text_bottom = pygame.image.load(f'../assets/weapon/text_bottom.png').convert_alpha()
+
         self.hitbox = get_mask_rect(self.original_image, 0, 0)
-        # self.hitbox = pygame.mask.from_surface(self.original_image)
-        # self.rect = self.hitbox.get_rect()
-        self.image = self.image_picked
-        # self.image = self.original_image
+        self.image = self.original_image
         self.rect = self.image.get_rect()
 
     def detect_collision(self, player):
-        if self.game.player.hitbox.colliderect(self.rect):
+        if self.game.player.rect.colliderect(self.rect):
             self.image = self.image_picked
             self.interaction = True
         else:
@@ -130,25 +128,10 @@ class Weapon:
         # Update hitbox
         # self.hitbox = pygame.mask.from_surface(self.image)
 
-    @staticmethod
-    def time_passed(time, amount):
-        """Wait 'amount' amount of time"""
-        if pygame.time.get_ticks() - time > amount:
-            return True
-
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-        # pygame.draw.rect(surface, (255, 0, 0), self.rect, 2)
         if self.interaction:
             self.show_name.draw(surface, self.rect)
-            # self.show_name.draw_text_line(surface, self.rect)
-            # position = (self.rect.topleft[0], self.rect.topleft[1])
-            # text_positoin = (self.rect.topleft[0] - 64, self.rect.topleft[1] - 45)
-            # surface.blit(self.text_surface, text_positoin)
-            # surface.blit(self.text_bottom, position)
-        # pygame.draw.rect(self.surface, (255, 0, 12), self.rect, 1)
-        # pygame.draw.rect(self.game.screen, (255, 123, 12), self.hitbox, 2)
-        # surface.blit(self.image, self.rect)
 
     def interact(self):
         self.counter = 0
@@ -176,7 +159,7 @@ class Weapon:
         if self.player is None:
             if self.counter % 30 == 0:
                 self.rect.y += self.value
-            if self.rect.y >= 305:
+            if self.rect.y >= 300:
                 self.value = -5
             elif self.rect.y < 295:
                 self.value = 5

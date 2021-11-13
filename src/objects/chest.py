@@ -49,9 +49,16 @@ class Chest:
 
     def detect_collision(self, player):
         self.game.can_open_chest = bool(player.rect.colliderect(self.rect))
+        if player.rect.colliderect(self.rect) and self.interaction:
+            self.image = pygame.image.load('../assets/chest/full/chest_picked.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, (64, 64))
+        elif self.interaction:
+            self.image = pygame.image.load(f'../assets/chest/full/chest_full0.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
 
     def interact(self):
         self.open = True
+        self.interaction = False
         #self.drop_items()
 
     def drop_items(self):
