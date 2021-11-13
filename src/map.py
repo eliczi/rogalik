@@ -64,8 +64,6 @@ class TileMap:
             self.x = 128
 
     def draw_map(self, surface):
-        for o in self.room.objects:
-            o.draw()
         surface.blit(self.map_surface, (self.x, self.y))
 
     def clear_map(self):

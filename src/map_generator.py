@@ -4,6 +4,7 @@ import random
 
 from chest import Chest
 from map import TileMap, Spritesheet
+from weapon import Weapon
 
 
 class Room:
@@ -68,6 +69,7 @@ class World:
         self.add_room_map('test1')
         self.add_graphics()
         self.print_world()
+        self.assign_objects()
 
     @staticmethod
     def check_boundary(coordinate, world_param):  # checks if coordinate doesnt exceed world boundary
@@ -143,8 +145,15 @@ class World:
             for room in row:
                 if isinstance(room, Room):
                     room.tile_map = TileMap(room, room.room_map, Spritesheet('../assets/spritesheet.png'))
+
+    def assign_objects(self):
+        for row in self.world:
+            for room in row:
+                if isinstance(room, Room):
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
+                    elif room.type == 'starting_room':
+                        room.objects.append(Weapon(self.game, room, 24, 'weapon_anime_sword'))
 
     def print_world(self):
         for row in self.world:
@@ -160,4 +169,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 1, 0.15, 1], k=1)[0]
+                    room.type = random.choices(types, weights=[0.2, 10, 0.15, 5], k=1)[0]

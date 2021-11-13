@@ -13,7 +13,7 @@ class Player(Entity):
         Entity.__init__(self, game, 'player')
         self.speed = 100
         self.hp = 100
-        self.weapon = Weapon(self.game, 25, 'sword')
+        self.weapon = None#Weapon(self.game, 25, 'sword')
         self.attacking = False
         self.attacked = False
 
@@ -50,7 +50,7 @@ class Player(Entity):
         else:
             self.set_velocity(vel_list)
 
-        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600:
+        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600 and self.weapon:
             self.time = pygame.time.get_ticks()
             pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
@@ -60,7 +60,8 @@ class Player(Entity):
 
     def update(self) -> None:
         """s"""
-        self.weapon.update()
+        if self.weapon:
+            self.weapon.update()
         self.entity_animation.update()
         self.wall_collision()
         if self.can_move:
@@ -68,11 +69,12 @@ class Player(Entity):
             self.hitbox.move_ip(*self.velocity)
         self.update_hitbox()
 
-    def draw(self, screen):
+    def draw(self, surface):
         """S"""
-        self.draw_shadow(screen)
-        screen.blit(self.image, self.rect)
-        self.weapon.draw(screen)
+        self.draw_shadow(surface)
+        surface.blit(self.image, self.rect)
+        if self.weapon:
+            self.weapon.draw(surface)
         # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
         # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
 

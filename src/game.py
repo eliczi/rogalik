@@ -62,6 +62,10 @@ class Game:
 
     def draw_groups(self):
         self.room_image.clear_map()
+        for o in self.room.objects:
+            o.detect_collision(self.player)
+            o.update()
+            o.draw(self.room_image.map_surface)
         if self.next_room:
             self.next_room_image.clear_map()
             self.player.draw(self.next_room_image.map_surface)
@@ -69,14 +73,15 @@ class Game:
             self.player.draw(self.room_image.map_surface)
 
         self.enemy_manager.draw_enemies()
+
         self.room_image.draw_map(self.screen)
 
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
 
         text_surface = pygame.font.Font(utils.font, 15).render(self.room.type, False, (255, 255, 255))
-        self.screen.blit(text_surface, (500, 500))
-        self.mini_map.draw(self.screen)
+        #self.screen.blit(text_surface, (500, 500))
+        #self.mini_map.draw(self.screen)
 
     def input(self):
         self.player.input()
@@ -92,8 +97,9 @@ class Game:
             self.running = False
         if pressed[pygame.K_e] and self.can_open_chest:
             for o in self.room.objects:
-                o.open_chest()
-                self.can_open_chest = False
+                if o.name == 'chest':
+                    o.open_chest()
+                    self.can_open_chest = False
 
     def next_level(self):
         if self.directions is None:
@@ -108,14 +114,13 @@ class Game:
         fps = []
         while self.running:
             # self.menu.show(self.display)
-            self.clock.tick(60)
+            self.clock.tick(120)
             self.screen.fill(utils.BLACK)
             self.input()
-            for o in self.room.objects:
-                o.detect_collision(self.player)
-                o.update()
+
             self.update_groups()
             self.draw_groups()
+
             self.particle_manager.update_particles()
             self.enemy_manager.test()
             self.next_level()
@@ -123,7 +128,7 @@ class Game:
             self.display.blit(self.screen, (0, 0))
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
-            print(self.clock.get_fps())
+            #print(self.clock.get_fps())
             fps.append(self.clock.get_fps())
         print(f'Average FPS: {sum(fps) / len(fps)}')
         pygame.quit()

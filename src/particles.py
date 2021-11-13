@@ -153,6 +153,7 @@ class ChestParticle(Particle):
         self.radius = 1
         self.life = 1
         self.counter = 0
+        self.surface = pygame.Surface((64, 128)).convert_alpha()
 
     def update(self):
         if random.randint(0, 6) == 5:
@@ -165,6 +166,8 @@ class ChestParticle(Particle):
     def draw(self, surface):
         color = random.choice(self.color)
         pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
+        # self.surface = pygame.transform.scale(self.surface, (256, 512))
+        # self.game.screen.blit(self.surface, (250, 250))
 
 
 class ParticleManager:
@@ -187,4 +190,4 @@ class ParticleManager:
         self.surface.fill((0, 0, 0, 0))
         for particle in self.particle_list:
             particle.draw(self.surface)
-        #self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))
+        self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))

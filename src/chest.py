@@ -3,10 +3,12 @@ import random
 
 import utils
 from particles import ChestParticle
+from weapon import Weapon
 
 
 class Chest:
     def __init__(self, game, room):
+        self.name = 'chest'
         self.game = game
         self.room = room
         self.image = self.load_image()
@@ -42,13 +44,20 @@ class Chest:
 
     def draw(self):
         self.surface.blit(self.image, self.rect)
-        # pygame.draw.rect(self.surface, (255, 123, 234), self.rect, 2)
 
     def detect_collision(self, player):
         self.game.can_open_chest = bool(player.hitbox.colliderect(self.rect))
 
     def open_chest(self):
         self.open = True
+        #self.drop_items()
+
+    def drop_items(self):
+        pass
+        self.room.objects.append(self.items[0])
+        self.room.object.pop()
 
     def __repr__(self):
         return f'Chest in room {self.room}'
+
+
