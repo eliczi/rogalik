@@ -150,22 +150,23 @@ class ChestParticle(Particle):
     def __init__(self, game, x, y):
         super().__init__(game, x, y)
         self.color = [(232, 209, 58, 125), (255, 255, 255, 124), (232, 67, 58, 125)]
-        self.radius = 1
+        self.radius = 4
         self.life = 1
         self.counter = 0
-        self.surface = pygame.Surface((64, 128)).convert_alpha()
+        #self.surface = pygame.Surface((64, 128)).convert_alpha()
 
     def update(self):
         if random.randint(0, 6) == 5:
-            self.x += random.randint(-2, 2)
-            self.y += random.randint(-2, -1)
+            self.x += random.randint(-8, 8)
+            self.y += random.randint(-8, -2)
             self.life -= 0.15
         if self.life <= 0:
             self.game.particle_manager.particle_list.remove(self)
 
     def draw(self, surface):
         color = random.choice(self.color)
-        pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
+        pygame.draw.rect(surface, color, (self.x, self.y, 8, 8))
+        #pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
         # self.surface = pygame.transform.scale(self.surface, (256, 512))
         # self.game.screen.blit(self.surface, (250, 250))
 
@@ -174,8 +175,9 @@ class ParticleManager:
     def __init__(self, game):
         self.game = game
         self.particle_list = []
-        self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
-                                      pygame.SRCALPHA).convert_alpha()
+        self.surface = self.game.screen
+        # self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
+        #                               pygame.SRCALPHA).convert_alpha()
 
     def update_particles(self):
         if self.particle_list:
@@ -187,7 +189,7 @@ class ParticleManager:
         self.particle_list.append(particle)
 
     def draw_particles(self):
-        self.surface.fill((0, 0, 0, 0))
+        #self.surface.fill((0, 0, 0, 0))
         for particle in self.particle_list:
             particle.draw(self.surface)
-        self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))
+        #self.game.screen.blit(pygame.transform.scale(self.surface, utils.world_size), (0, 0))

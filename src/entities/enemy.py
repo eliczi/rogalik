@@ -118,12 +118,13 @@ class EnemyManager:
             if pygame.sprite.collide_mask(enemy, self.game.player) and self.game.player.hurt is False and pygame.time.get_ticks() - self.game.player.time > 600:
                 self.game.player.time = self.game.game_time
                 self.game.player.hurt = True
-                pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
-            if pygame.sprite.collide_mask(self.game.player.weapon, enemy) and self.game.player.attacking and self.game.game_time - enemy.time > 200 and enemy.dead is False:
-                pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
-                enemy.time = self.game.game_time
-                enemy.hurt = True
-                enemy.hp -= self.game.player.weapon.damage
+                #pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
+            if self.game.player.weapon:
+                if pygame.sprite.collide_mask(self.game.player.weapon, enemy) and self.game.player.attacking and self.game.game_time - enemy.time > 200 and enemy.dead is False:
+                    #pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
+                    enemy.time = self.game.game_time
+                    enemy.hurt = True
+                    enemy.hp -= self.game.player.weapon.damage
 
     def add_enemies(self):
         for row in self.game.world.world:

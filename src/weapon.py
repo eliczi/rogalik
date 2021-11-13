@@ -3,22 +3,27 @@ import pygame
 from pygame.math import Vector2
 
 from utils import get_mask_rect
+from collections import namedtuple
 
 
 class Weapon:
-    def __init__(self, game, room, damage, name):
+    def __init__(self, game, damage, name, size, room=None, position=None):
         self.game = game
-        self.room = room
         self.damage = damage
         self.name = name
+        self.size = size
+        self.room = room
         self.player = None
         self.original_image = None
-        self.image = None
         self.image_picked = None
+        self.hud_image = None
+        self.image = None
         self.rect = None
         self.hitbox = None
         self.image_size = (16, 108)
         self.load_image()
+        if position:
+            self.rect.x, self.rect.y = position[0], position[1]
         self.angle = 0
         self.offset = Vector2(0, -50)
         self.counter = 0
@@ -26,27 +31,32 @@ class Weapon:
         self.sound = True
         self.value = 2
         self.counter = 0
+        self.states = ('not_picked', 'picked', 'hovering')
+        # self.state = namedtuple('State', ['picked', 'not_picked', 'hovering'])
+        self.interaction = False
+        print(self.rect, name)
 
     def load_image(self):  # Change name of the function
         """Load weapon image and initialize instance variables"""
-        self.original_image = pygame.image.load(f'../assets/weapon/{self.name}.png').convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (36, 90))
-        self.image_picked = pygame.image.load(f'../assets/weapon/picked_{self.name}.png').convert_alpha()
-        self.image_picked = pygame.transform.scale(self.image_picked, (36, 90))
+        self.original_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}.png').convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, self.size)
+        self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
+        self.image_picked = pygame.transform.scale(self.image_picked, self.size)
+        self.hud_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
         self.hitbox = get_mask_rect(self.original_image, 0, 0)
         # self.hitbox = pygame.mask.from_surface(self.original_image)
         # self.rect = self.hitbox.get_rect()
         self.image = self.image_picked
         # self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.x = 300
-        self.rect.y = 300
 
     def detect_collision(self, player):
         if self.game.player.hitbox.colliderect(self.rect):
             self.image = self.image_picked
+            self.interaction = True
         else:
             self.image = self.original_image
+            self.interaction = False
 
     def rotate(self):
         mx, my = pygame.mouse.get_pos()
@@ -75,17 +85,39 @@ class Weapon:
         # pygame.draw.rect(self.game.screen, (255, 123, 12), self.hitbox, 2)
         # surface.blit(self.image, self.rect)
 
+    def interact(self):
+        self.player = self.game.player
+        self.game.player.items.append(self)
+        self.game.player.weapon = self
+        self.room.objects.remove(self)
+
+        # self.game.player.weapon = self
+    def drop(self):
+        self.rect.x = self.player.rect.x
+        self.rect.y = self.player.rect.y
+        self.game.player.items.remove(self)
+        self.game.player.weapon = None
+        self.room.objects.append(self)
+        if self.player.items:
+            self.player.weapon = self.player.items[-1]
+        self.player = None
+
+
+    def hovering(self):
+        if self.player == None:
+            if self.counter % 30 == 0:
+                self.rect.y += self.value
+            if self.rect.y >= 305:
+                self.value = -5
+            elif self.rect.y < 295:
+                self.value = 5
+            self.counter += 1
+
     def update(self):
         """Update weapon position and state"""
         # If player attacks with weapon, it rotates
-        if self.counter % 30 == 0:
-            self.rect.y += self.value
-        if self.rect.y >= 310:
-            self.value = -5
-        elif self.rect.y < 290:
-            self.value = 5
-        self.counter += 1
-        print(self.rect.y)
+        self.hovering()
+
         if self.player:
             if self.counter == 10:
                 self.game.player.attacking = False
@@ -97,6 +129,7 @@ class Weapon:
             else:
                 self.rotate()
                 self.game.player.attacked = True
+
 
     def swing(self):
         self.angle += 20 * self.swing_side

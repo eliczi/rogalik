@@ -73,9 +73,7 @@ class World:
 
     @staticmethod
     def check_boundary(coordinate, world_param):  # checks if coordinate doesnt exceed world boundary
-        if coordinate >= world_param or coordinate < 0:
-            return False
-        return True
+        return coordinate < world_param and coordinate >= 0
 
     def check_free_space(self):  # returns free neighbouring spaces
         free_space = []
@@ -153,7 +151,9 @@ class World:
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
                     elif room.type == 'starting_room':
-                        room.objects.append(Weapon(self.game, room, 24, 'weapon_anime_sword'))
+                        room.objects.append(Weapon(self.game, 24, 'anime_sword', (36, 90), room, (300, 300)))
+                        room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
+                        room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 320)))
 
     def print_world(self):
         for row in self.world:
@@ -169,4 +169,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 10, 0.15, 5], k=1)[0]
+                    room.type = random.choices(types, weights=[0.2, 1, 0.15, 5], k=1)[0]

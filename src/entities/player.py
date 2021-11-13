@@ -13,9 +13,10 @@ class Player(Entity):
         Entity.__init__(self, game, 'player')
         self.speed = 100
         self.hp = 100
-        self.weapon = None#Weapon(self.game, 25, 'sword')
+        self.weapon = None
         self.attacking = False
         self.attacked = False
+        self.items = []
 
     def input(self):
         """s"""
@@ -28,6 +29,14 @@ class Player(Entity):
             self.direction = 'left'
         if pressed[pygame.K_d]:
             self.direction = 'right'
+        if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300:
+            self.time = pygame.time.get_ticks()
+            for o in self.game.room.objects:
+                if o.interaction:
+                    o.interact()
+        if pressed[pygame.K_q] and self.weapon and pygame.time.get_ticks() - self.time > 300:
+            self.time = pygame.time.get_ticks()
+            self.weapon.drop()
 
         constant_dt = 0.06
         vel_up = [0, -self.speed * constant_dt]
@@ -52,7 +61,7 @@ class Player(Entity):
 
         if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600 and self.weapon:
             self.time = pygame.time.get_ticks()
-            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
+            # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
             self.attacked = False
             self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1

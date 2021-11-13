@@ -19,6 +19,7 @@ class Chest:
         self.surface = self.room.tile_map.map_surface
         self.open = False
         self.items = []  # items in chest
+        self.interaction = True
 
     @staticmethod
     def load_image():
@@ -31,7 +32,7 @@ class Chest:
 
     def chest_particles(self):
         if random.randint(0, 30) == 5 and not self.open:
-            position = ((self.rect.midtop[0]) // 4 + random.randint(30, 34), (self.rect.midtop[1]) // 4 + 15)
+            position = (self.rect.x + 2.5 * 64, self.rect.y + 64)
             self.game.particle_manager.add_particle(ChestParticle(self.game, *position))
 
     def update(self):
@@ -42,13 +43,14 @@ class Chest:
                 f'../assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
 
-    def draw(self):
-        self.surface.blit(self.image, self.rect)
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+        #self.surface.blit(self.image, self.rect)
 
     def detect_collision(self, player):
         self.game.can_open_chest = bool(player.rect.colliderect(self.rect))
 
-    def open_chest(self):
+    def interact(self):
         self.open = True
         #self.drop_items()
 

@@ -7,6 +7,7 @@ from map_generator import World
 from menu import MainMenu
 from mini_map import MiniMap
 from particles import ParticleManager
+from hud import Hud
 
 pygame.init()
 pygame.mixer.init()
@@ -18,8 +19,8 @@ class Game:
         self.screen = None
         self.player = None
         self.clock = None
-        self.enemy_manager = EnemyManager(self)
-        self.particle_manager = ParticleManager(self)
+        self.enemy_manager = None
+        self.particle_manager = None
         self.room = None
         self.room_image = None
         self.next_room = None
@@ -31,12 +32,16 @@ class Game:
         self.mini_map = None
         self.game_time = None
         self.menu = MainMenu(self)
+        self.fps = 60
         # self.music = pygame.mixer.music.load('../assets/sound/music.wav',)
         # pygame.mixer.music.play(-1)
         self.can_open_chest = False
+        self.hud = Hud(self)
 
     def init_all(self):
         self.screen = pygame.Surface(utils.world_size)
+        self.enemy_manager = EnemyManager(self)
+        self.particle_manager = ParticleManager(self)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
         num_of_rooms = 6
@@ -80,14 +85,20 @@ class Game:
             self.next_room_image.draw_map(self.screen)
 
         text_surface = pygame.font.Font(utils.font, 15).render(self.room.type, False, (255, 255, 255))
-        #self.screen.blit(text_surface, (500, 500))
-        #self.mini_map.draw(self.screen)
+        self.screen.blit(text_surface, (500, 500))
+        self.mini_map.draw(self.screen)
 
     def input(self):
         self.player.input()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:
+
+                    print('up')
+                elif event.button == 5:
+                    print('down')
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
@@ -96,11 +107,7 @@ class Game:
             self.mini_map.draw(self.screen)
         if pressed[pygame.K_ESCAPE]:
             self.running = False
-        if pressed[pygame.K_e] and self.can_open_chest:
-            for o in self.room.objects:
-                if o.name == 'chest':
-                    o.open_chest()
-                    self.can_open_chest = False
+
 
     def next_level(self):
         if self.directions is None:
@@ -115,21 +122,20 @@ class Game:
         fps = []
         while self.running:
             # self.menu.show(self.display)
-            self.clock.tick(120)
+            self.clock.tick(self.fps)
             self.screen.fill(utils.BLACK)
             self.input()
-
             self.update_groups()
             self.draw_groups()
-
             self.particle_manager.update_particles()
             self.enemy_manager.test()
             self.next_level()
             self.mini_map.set_current_room(self.room)
+            self.hud.draw()
             self.display.blit(self.screen, (0, 0))
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
-            #print(self.clock.get_fps())
+            # print(self.clock.get_fps())
             fps.append(self.clock.get_fps())
         print(f'Average FPS: {sum(fps) / len(fps)}')
         pygame.quit()
