@@ -88,6 +88,7 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.game_over()

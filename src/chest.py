@@ -46,7 +46,7 @@ class Chest:
         self.surface.blit(self.image, self.rect)
 
     def detect_collision(self, player):
-        self.game.can_open_chest = bool(player.hitbox.colliderect(self.rect))
+        self.game.can_open_chest = bool(player.rect.colliderect(self.rect))
 
     def open_chest(self):
         self.open = True
