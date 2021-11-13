@@ -26,7 +26,6 @@ class Player(Entity):
         if pressed[pygame.K_d]:
             self.direction = 'right'
         if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300:
-            print(self.items)
             self.time = pygame.time.get_ticks()
             for o in self.game.room.objects:
                 if o.interaction:
@@ -38,11 +37,9 @@ class Player(Entity):
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
                     self.shift_items_left()
-                    print(self.items)
                     self.weapon = self.items[self.items.index(self.weapon) - 1]
                 elif event.button == 5:
                     self.shift_items_right()
-                    print(self.items)
                     self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
 
         constant_dt = 0.06

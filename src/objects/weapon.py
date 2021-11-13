@@ -86,7 +86,7 @@ class Weapon:
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.size = tuple(3 * x for x in Image.open(f'../assets/weapon/{self.name}/picked_{self.name}.png').size)
+        self.size = tuple(3 * x for x in Image.open(f'../assets/weapon/{self.name}/{self.name}.png').size)
         self.original_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
         self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
@@ -98,7 +98,7 @@ class Weapon:
         self.rect = self.image.get_rect()
 
     def detect_collision(self, player):
-        if self.game.player.hitbox.colliderect(self.rect):
+        if self.game.player.rect.colliderect(self.rect):
             self.image = self.image_picked
             self.interaction = True
         else:
