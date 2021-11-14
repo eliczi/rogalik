@@ -4,6 +4,8 @@ import random
 import utils
 from particles import ChestParticle
 from objects.weapon import Weapon
+from .flask import Flask
+
 
 class Chest:
     def __init__(self, game, room):
@@ -17,7 +19,7 @@ class Chest:
         self.animation_frame = 0
         self.surface = self.room.tile_map.map_surface
         self.open = False
-        self.items = []  # items in chest
+        self.items = [Flask(game, 'green_flask', (48, 48), room)]  # items in chest
         self.interaction = True
         self.counter = 0
 
@@ -25,7 +27,7 @@ class Chest:
     def load_image():
         image = pygame.image.load(
             '../assets/chest/full/chest_full0.png'
-            #'../../assets/chest/full/chest_full0.png'
+            # '../../assets/chest/full/chest_full0.png'
         ).convert_alpha()
 
         image = pygame.transform.scale(image, utils.basic_entity_size)
@@ -46,7 +48,7 @@ class Chest:
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-        #self.surface.blit(self.image, self.rect)
+        # self.surface.blit(self.image, self.rect)
 
     def detect_collision(self, player):
         self.game.can_open_chest = bool(player.rect.colliderect(self.rect))
@@ -60,14 +62,16 @@ class Chest:
     def interact(self):
         self.open = True
         self.interaction = False
-        #self.drop_items()
+        self.drop_items()
 
     def drop_items(self):
-        pass
+        self.items[0].rect.midtop = self.rect.topleft
+        self.items[0].dropped = True
+        self.items[0].bounce.x = self.rect.x
+        self.items[0].bounce.y = self.rect.y
+
         self.room.objects.append(self.items[0])
-        self.room.object.pop()
+        self.items.pop()
 
     def __repr__(self):
         return f'Chest in room {self.room}'
-
-

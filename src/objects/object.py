@@ -88,7 +88,6 @@ class Object:
         if self.game.player.rect.colliderect(self.rect):
             self.image = self.image_picked
             self.interaction = True
-            print('PICKED')
         else:
             self.image = self.original_image
             self.interaction = False
@@ -102,7 +101,7 @@ class Object:
         self.game.player.weapon = None
         self.game.room.objects.append(self)
         if self.game.player.items:
-            self.game.player.weapon = self.player.items[-1]
+            self.game.player.weapon = self.game.player.items[-1]
 
     def set_size(self, filepath):
         self.size = tuple(3 * x for x in Image.open(filepath).size)
