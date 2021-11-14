@@ -12,7 +12,8 @@ class ShowName:
         self.weapon = weapon
         self.line_length = 0
         self.time = 0
-        self.text = self.weapon.name
+        # Format weapon display name
+        self.text = self.weapon.name.replace("_", " ").title()
         self.text_length = len(self.text)
         self.text_position = None
         self.counter = 0
