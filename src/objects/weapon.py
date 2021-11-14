@@ -18,6 +18,7 @@ class ShowName:
         self.text_length = len(self.text)
         self.text_position = None
         self.counter = 0
+        self.drawing_speed = 10
 
     @staticmethod
     def time_passed(time, amount):
@@ -43,7 +44,7 @@ class ShowName:
         starting_position[1] += 2  # adjustment of vertical position
         end_position = [starting_position[0] - self.line_length, starting_position[1]]
         pygame.draw.line(surface, (255, 255, 255), starting_position, end_position, 5)
-        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 40):
+        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, self.drawing_speed):
             self.time = pygame.time.get_ticks()
             self.line_length += 8
             self.counter += 1
@@ -96,12 +97,14 @@ class WeaponSwing:
         self.counter += 1
 
     def hovering(self):
+        print(self.hover_value)
         if self.weapon.player is None:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
-            if self.weapon.rect.y >= 300:
+                self.weapon.shadow += 5/self.hover_value
+            if self.weapon.rect.y > 300:
                 self.hover_value = -5
-            elif self.weapon.rect.y < 295:
+            elif self.weapon.rect.y <= 295:
                 self.hover_value = 5
             self.counter += 1
 
@@ -127,6 +130,17 @@ class Weapon:
         self.time = 0
         self.show_name = ShowName(self)
         self.weapon_swing = WeaponSwing(self)
+        self.update_hitbox()
+        self.shadow = 0
+        self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] ]
+
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, - 2 * self.shadow + 15, - 2 * self.shadow + 7))  # - self.animation_frame % 4
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        # position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
+        surface.blit(shape_surf, self.starting_position)
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -136,9 +150,9 @@ class Weapon:
         self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
         self.hud_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
-        self.hitbox = get_mask_rect(self.original_image, 0, 0)
         self.image = self.original_image
         self.rect = self.image.get_rect()
+        self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)
 
     def __repr__(self):
         return self.name
@@ -186,8 +200,15 @@ class Weapon:
                 self.weapon_swing.swing()
             else:
                 self.weapon_swing.rotate()
+        self.update_hitbox()
+
+    def update_hitbox(self):
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.hitbox.midbottom = self.rect.midbottom
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+        #self.draw_shadow(surface)
+        # pygame.draw.rect(surface, (255, 0, 123), self.hitbox, 2)
         if self.interaction:
             self.show_name.draw(surface, self.rect)

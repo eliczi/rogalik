@@ -40,7 +40,7 @@ class ShowName:
         starting_position[1] += 2  # adjustment of vertical position
         end_position = [starting_position[0] - self.line_length, starting_position[1]]
         pygame.draw.line(surface, (255, 255, 255), starting_position, end_position, 5)
-        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 40):
+        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 10):
             self.time = pygame.time.get_ticks()
             self.line_length += 8
             self.counter += 1
@@ -52,19 +52,19 @@ class ShowName:
 
 
 class Object:
-    def __init__(self, game, name, size, room=None, position=None):
+    def __init__(self, game, name, object_type, size, room=None, position=None):
         self.game = game
-        self.name = name
-        self.size = size
         self.room = room
+        self.name = name
+        self.object_type = object_type
+        self.size = size
         self.original_image = None
         self.image_picked = None
         self.hud_image = None
         self.image = None
-        self.hitbox = None
-        self.rect = None
-        self.type = 'flask'
         self.load_image()
+        self.rect = self.image.get_rect()
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         if position:
             self.rect.x, self.rect.y = position[0], position[1]
         self.show_name = ShowName(self)
@@ -75,14 +75,12 @@ class Object:
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.original_image = pygame.image.load(f'../assets/{self.type}/{self.name}.png').convert_alpha()
+        self.original_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
-        self.image_picked = pygame.image.load(f'../assets/{self.type}/{self.name}_picked.png').convert_alpha()
+        self.image_picked = pygame.image.load(f'../assets/{self.object_type}/{self.name}_picked.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
-        self.hud_image = pygame.image.load(f'../assets/{self.type}/{self.name}_hud.png').convert_alpha()
-        self.hitbox = get_mask_rect(self.original_image, 0, 0)
+        self.hud_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
-        self.rect = self.image.get_rect()
 
     def detect_collision(self, player):
         if self.game.player.rect.colliderect(self.rect):

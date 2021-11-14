@@ -155,7 +155,7 @@ class World:
                         room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
                         room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
                         #room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
-                        room.objects.append(Flask(self.game, 'green_flask', (48, 48), room, (660, 300)))
+                        room.objects.append(Flask(self.game, room, (660, 300)))
 
     def print_world(self):
         for row in self.world:

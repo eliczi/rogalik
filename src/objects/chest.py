@@ -4,34 +4,32 @@ import random
 import utils
 from particles import ChestParticle
 from objects.weapon import Weapon
+from .object import Object
 from .flask import Flask
 
 
-class Chest:
+class Chest(Object):
+    name = 'chest'
+    object_type = 'chest'
+    size = (64, 64)
+
     def __init__(self, game, room):
-        self.name = 'chest'
-        self.game = game
-        self.room = room
-        self.image = self.load_image()
+        self.image = None
+        Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.rect = self.image.get_rect()
         self.rect.midbottom = (17 * 64 / 2, 6 * 64)
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
         self.animation_frame = 0
         self.surface = self.room.tile_map.map_surface
         self.open = False
-        self.items = [Flask(game, 'green_flask', (48, 48), room)]  # items in chest
+        self.items = [Flask(game, room)]  # items in chest
         self.interaction = True
         self.counter = 0
 
-    @staticmethod
-    def load_image():
-        image = pygame.image.load(
-            '../assets/chest/full/chest_full0.png'
-            # '../../assets/chest/full/chest_full0.png'
-        ).convert_alpha()
-
-        image = pygame.transform.scale(image, utils.basic_entity_size)
-        return image
+    def load_image(self):
+        image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
+        image = pygame.transform.scale(image, self.size)
+        self.image = image
 
     def chest_particles(self):
         if random.randint(0, 30) == 5 and not self.open:

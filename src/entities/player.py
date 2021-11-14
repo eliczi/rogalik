@@ -33,6 +33,7 @@ class Player(Entity):
                     o.interact()
         if pressed[pygame.K_q] and self.weapon and pygame.time.get_ticks() - self.time > 300:
             self.time = pygame.time.get_ticks()
+            self.weapon.dropped = True
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]

@@ -5,8 +5,12 @@ import random
 
 
 class Flask(Object):
-    def __init__(self, game, name, size, room, position=None):
-        Object.__init__(self, game, name, size, room, position)
+    name = 'green_flask'
+    type = 'flask'
+    size = (48, 48)
+
+    def __init__(self, game, room, position=None):
+        Object.__init__(self, game, self.name, self.type, self.size, room, position)
         self.dropped = False
         self.bounce = Bounce(self.rect.x, self.rect.y)
 
@@ -23,6 +27,7 @@ class Flask(Object):
     def update(self):
         if self.bounce.speed < 0.001:
             self.dropped = False
+            self.bounce.reset()
         if self.dropped:
             for _ in range(15):
                 self.bounce.move()
@@ -30,11 +35,12 @@ class Flask(Object):
             self.rect.x = self.bounce.x
             self.rect.y = self.bounce.y
         if self in self.game.player.items:
+            self.bounce.reset()
             self.rect.bottomright = self.game.player.hitbox.topleft
 
 
 class Bounce:
-    def __init__(self, x, y, chest=None):
+    def __init__(self, x, y):
         self.speed = 0.5
         self.angle = random.choice([10, -10])
         self.drag = 0.999
@@ -58,8 +64,13 @@ class Bounce:
         self.speed *= self.drag
 
     def bounce(self):
-        print(self.speed)
         if self.y > self.limit - 64:
             self.y = 2 * (self.limit - 64) - self.y
             self.angle = math.pi - self.angle
             self.speed *= self.elasticity
+
+    def reset(self):
+        self.speed = 0.5
+        self.angle = random.choice([10, -10])
+        self.drag = 0.999
+        self.elasticity = 0.75
