@@ -68,6 +68,7 @@ class Weapon:
         self.hitbox = None
         self.image_size = (16, 108)
         self.text_bottom = None
+        self.slash = []
         self.load_image()
         if position:
             self.rect.x, self.rect.y = position[0], position[1]
@@ -83,6 +84,7 @@ class Weapon:
         self.interaction = False
         self.time = 0
         self.show_name = ShowName(self)
+        self.attack = 0
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -92,7 +94,10 @@ class Weapon:
         self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
         self.hud_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
-
+        for i in range(5):
+            image = pygame.image.load(f'../assets/vfx/slash/slash{i}.png').convert_alpha()
+            image = pygame.transform.scale(image, (64, 128))
+            self.slash.append(image)
         self.hitbox = get_mask_rect(self.original_image, 0, 0)
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -128,9 +133,17 @@ class Weapon:
         # self.hitbox = pygame.mask.from_surface(self.image)
 
     def draw(self, surface):
+
         surface.blit(self.image, self.rect)
+
         if self.interaction:
             self.show_name.draw(surface, self.rect)
+
+        if self.attack > 4:
+            self.attack = 0
+        if self.player and self.player.attacking:
+            self.game.room_image.map_surface.blit(self.slash[int(self.attack)], (self.rect))
+            self.attack +=0.1
 
     def interact(self):
         self.counter = 0
@@ -186,6 +199,7 @@ class Weapon:
         # self.rect_mask = get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox = pygame.mask.from_surface(self.image)
         self.counter += 1
+
 
     def __repr__(self):
         return self.name
