@@ -37,7 +37,6 @@ class Chest:
             self.game.particle_manager.add_particle(ChestParticle(self.game, *position))
 
     def update(self):
-        print(self.counter)
         self.chest_particles()
         if self.open and self.animation_frame <= 2:
             self.animation_frame += 1 / 20

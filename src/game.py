@@ -93,7 +93,6 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.game_over()
@@ -101,7 +100,6 @@ class Game:
             self.mini_map.draw(self.screen)
         if pressed[pygame.K_ESCAPE]:
             self.running = False
-
 
     def next_level(self):
         if self.directions is None:
@@ -134,5 +132,4 @@ class Game:
         print(f'Average FPS: {sum(fps) / len(fps)}')
         pygame.quit()
         print("Exited the game loop. Game will quit...")
-
         quit()

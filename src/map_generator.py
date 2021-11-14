@@ -5,7 +5,7 @@ import random
 from objects.chest import Chest
 from map import TileMap, Spritesheet
 from objects.weapon import Weapon
-
+from objects.flask import Flask
 
 class Room:
     def __init__(self, x, y):
@@ -154,7 +154,8 @@ class World:
                         room.objects.append(Weapon(self.game, 24, 'anime_sword', (36, 90), room, (300, 300)))
                         room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
                         room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
-                        room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
+                        #room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
+                        room.objects.append(Flask(self.game, 'green_flask', (48, 48), room, (660, 300)))
 
     def print_world(self):
         for row in self.world:

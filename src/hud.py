@@ -12,12 +12,17 @@ class Hud:
                                 [708 + 8, self.position[1] + 4]]
 
     def draw_items(self):
+        #works for 3 items
         if self.game.player.items:
             for i, item in enumerate(self.game.player.items):
-                position = self.items_positions[i]
-                # position = (self.position[0] + 4, self.position[1] + 4)
-                # pygame.draw.rect(self.game.screen, (255, 255, 255, 120), (*position, 64, 64))
+                if self.game.player.weapon == item:
+                    position = self.items_positions[1]
+                else:
+                    position = self.items_positions[(i//2) * -1]
                 self.game.screen.blit(item.hud_image, position)
+                # 0 -> 1
+                # 1 -> 0
+                # 2 > 2 or -1
 
     def update(self):
         if self.game.player.items:

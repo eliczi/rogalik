@@ -29,6 +29,9 @@ class EntityAnimation:
         """s"""
         return bool(sum(self.entity.velocity))
 
+    def get_direction(self):
+        self.animation_direction = 'right' if self.entity.velocity[0] >= 0 else 'left'
+
     def update_animation_frame(self):
         """sss"""
         self.animation_frame += 1.5 / 15
@@ -38,9 +41,10 @@ class EntityAnimation:
     def idle_animation(self, state):
         """Animation if idle"""
         self.update_animation_frame()
-        if self.entity.direction == 'left':
+        self.get_direction()
+        if self.animation_direction == 'left':
             self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
-        elif self.entity.direction == 'right':
+        elif self.animation_direction == 'right':
             self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 

@@ -11,6 +11,9 @@ basic_entity_size = (64, 64)
 # wall_list = (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3)
 wall_list = (1, 2, 33, 34, 67, 99, 226, 256, 257, 258, 259)
 font = '../assets/font/Minecraft.ttf'
+wall_side_left, wall_side_right = 256, 257
+wall_side_left_top, wall_side_right_top = 224, 225
+wall_side_front_left, wall_side_front_right = 288, 289
 
 
 def read_csv(filename):

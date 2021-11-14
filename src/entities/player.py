@@ -26,6 +26,7 @@ class Player(Entity):
         if pressed[pygame.K_d]:
             self.direction = 'right'
         if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300:
+            print(self.items)
             self.time = pygame.time.get_ticks()
             for o in self.game.room.objects:
                 if o.interaction:
@@ -33,14 +34,19 @@ class Player(Entity):
         if pressed[pygame.K_q] and self.weapon and pygame.time.get_ticks() - self.time > 300:
             self.time = pygame.time.get_ticks()
             self.weapon.drop()
+            if self.items:
+                self.weapon = self.items[0]
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
+                    #self.weapon = self.items[self.items.index(self.weapon) - 1]
                     self.shift_items_left()
-                    self.weapon = self.items[self.items.index(self.weapon) - 1]
+                    self.weapon = self.items[0]
                 elif event.button == 5:
+                    #self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
                     self.shift_items_right()
-                    self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
+                    self.weapon = self.items[0]
+                print(self.items)
 
         constant_dt = 0.06
         vel_up = [0, -self.speed * constant_dt]
@@ -62,12 +68,11 @@ class Player(Entity):
             self.set_velocity(vel_list_fixed)
         else:
             self.set_velocity(vel_list)
-
-        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600 and self.weapon:
+        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600 and self.weapon: # player attacking
             self.time = pygame.time.get_ticks()
             # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
-            self.weapon.swing_side *= (-1)  # self.player.weapon.swing_side * (-1) + 1
+            self.weapon.weapon_swing.swing_side *= (-1)
             self.game.counter = 0
 
     def shift_items_right(self):
