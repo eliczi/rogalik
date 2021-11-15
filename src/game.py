@@ -44,8 +44,8 @@ class Game:
         self.particle_manager = ParticleManager(self)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
-        num_of_rooms = 6
-        world_width, world_height = 3, 3
+        num_of_rooms = 4
+        world_width, world_height = 4, 4
         self.world = World(self, num_of_rooms, world_width, world_height)
         self.x, self.y = self.world.starting_room.x, self.world.starting_room.y
         self.room = self.world.starting_room
@@ -124,6 +124,8 @@ class Game:
             self.next_level()
             self.mini_map.set_current_room(self.room)
             self.hud.draw()
+            # pygame.draw.line(self.screen, (255, 255, 255), (utils.world_size[0]/2, 0), (utils.world_size[0]/2, utils.world_size[1]), 3)
+            # pygame.draw.line(self.screen, (255, 255, 255), (0, utils.world_size[1]/2), (utils.world_size[0], utils.world_size[1]/2), 3)
             self.display.blit(self.screen, (0, 0))
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()

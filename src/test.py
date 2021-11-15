@@ -95,5 +95,4 @@ while running:
         particle.move()
         particle.bounce()
         particle.display()
-        print(particle.speed)
     pygame.display.flip()

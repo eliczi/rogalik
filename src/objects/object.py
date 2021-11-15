@@ -83,7 +83,8 @@ class Object:
         self.image = self.original_image
 
     def detect_collision(self, player):
-        if self.game.player.rect.colliderect(self.rect):
+        if self.game.player.hitbox.colliderect(self.rect):
+            self.game.player.interaction = True
             self.image = self.image_picked
             self.interaction = True
         else:

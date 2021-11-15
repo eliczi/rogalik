@@ -3,7 +3,7 @@ import utils
 
 
 class Hud:
-    position = (9 * 64, utils.world_size[1] - 1.5 * 64)
+    position = (21/2 * 64, utils.world_size[1] - 1.5 * 64)
 
     def __init__(self, game):
         self.game = game

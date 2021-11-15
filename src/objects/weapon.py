@@ -97,7 +97,6 @@ class WeaponSwing:
         self.counter += 1
 
     def hovering(self):
-        print(self.hover_value)
         if self.weapon.player is None:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value

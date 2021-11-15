@@ -6,6 +6,7 @@ from particles import ChestParticle
 from objects.weapon import Weapon
 from .object import Object
 from .flask import Flask
+from .coin import Coin
 
 
 class Chest(Object):
@@ -22,7 +23,7 @@ class Chest(Object):
         self.animation_frame = 0
         self.surface = self.room.tile_map.map_surface
         self.open = False
-        self.items = [Flask(game, room)]  # items in chest
+        self.items = [Coin(game, room, self)]  # items in chest
         self.interaction = True
         self.counter = 0
 
@@ -63,12 +64,13 @@ class Chest(Object):
         self.drop_items()
 
     def drop_items(self):
-        self.items[0].rect.midtop = self.rect.topleft
-        self.items[0].dropped = True
-        self.items[0].bounce.x = self.rect.x
-        self.items[0].bounce.y = self.rect.y
+        for i, item in enumerate(self.items):
+            item.rect.midtop = self.rect.topleft
+            item.dropped = True
+            item.bounce.x = self.rect.x
+            item.bounce.y = self.rect.y
+            self.room.objects.append(item)
 
-        self.room.objects.append(self.items[0])
         self.items.pop()
 
     def __repr__(self):

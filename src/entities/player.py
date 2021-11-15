@@ -13,6 +13,7 @@ class Player(Entity):
         self.weapon = None
         self.attacking = False
         self.items = []
+        self.interaction = False
 
     def input(self):
         """s"""
@@ -26,7 +27,6 @@ class Player(Entity):
         if pressed[pygame.K_d]:
             self.direction = 'right'
         if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300:
-            print(self.items)
             self.time = pygame.time.get_ticks()
             for o in self.game.room.objects:
                 if o.interaction:

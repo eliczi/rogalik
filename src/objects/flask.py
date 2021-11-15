@@ -41,10 +41,10 @@ class Flask(Object):
 
 class Bounce:
     def __init__(self, x, y):
-        self.speed = 0.5
-        self.angle = random.choice([10, -10])
+        self.speed = random.uniform(0.5, 0.6) # 0.5
+        self.angle = random.randint(-5, 5) / 10 #random.choice([10, -10])
         self.drag = 0.999
-        self.elasticity = 0.75
+        self.elasticity = random.uniform(0.75, 0.9)#0.75
         self.gravity = (math.pi, 0.002)
         self.limit = 6 * 64
         self.x, self.y = x, y
@@ -64,8 +64,8 @@ class Bounce:
         self.speed *= self.drag
 
     def bounce(self):
-        if self.y > self.limit - 64:
-            self.y = 2 * (self.limit - 64) - self.y
+        if self.y > self.limit - 48:
+            self.y = 2 * (self.limit - 48) - self.y
             self.angle = math.pi - self.angle
             self.speed *= self.elasticity
 

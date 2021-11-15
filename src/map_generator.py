@@ -7,6 +7,7 @@ from map import TileMap, Spritesheet
 from objects.weapon import Weapon
 from objects.flask import Flask
 
+
 class Room:
     def __init__(self, x, y):
         self.x = x  # position in game world
@@ -63,17 +64,17 @@ class World:
         self.generate_rooms()
         self.assign_type()
         self.add_neighbors()
-        self.add_room_map('test4')
-        self.add_room_map('test3')
-        self.add_room_map('test2')
-        self.add_room_map('test1')
+        self.add_room_map('mapa4')
+        self.add_room_map('mapa3')
+        self.add_room_map('floor_layer')
+        self.add_room_map('wall_layer')
         self.add_graphics()
-        self.print_world()
+        # self.print_world()
         self.assign_objects()
 
     @staticmethod
     def check_boundary(coordinate, world_param):  # checks if coordinate doesnt exceed world boundary
-        return coordinate < world_param and coordinate >= 0
+        return world_param > coordinate >= 0
 
     def check_free_space(self):  # returns free neighbouring spaces
         free_space = []
@@ -117,6 +118,29 @@ class World:
                             room.neighbours.append([room.x, room.y + i])
                     room.add_doors()  # generates doors
 
+    @staticmethod
+    def shut_doors(doors, room_map, file):
+        if 'left' not in doors:
+            room_map[5][2] = 257
+            room_map[6][2] = 257
+            if file == 'floor_layer':
+                room_map[5][2] = 130
+                room_map[6][2] = 130
+        if 'right' not in doors:
+            room_map[5][16] = 256
+            room_map[6][16] = 256
+            if file == 'floor_layer':
+                room_map[5][16] = 130
+                room_map[6][16] = 130
+        if 'up' not in doors:
+            room_map[1][9] = 2
+            room_map[2][9] = 33
+        if 'down' not in doors:
+            room_map[9][9] = 2
+            room_map[10][9] = 33
+            if file == 'floor_layer':
+                room_map[9][9] = 130
+
     def add_room_map(self, file):
         with open(f'../maps/{file}.csv', newline='') as f:  # load room template
             reader = csv.reader(f)
@@ -126,16 +150,7 @@ class World:
             for room in row:
                 if isinstance(room, Room):
                     room_map = copy.deepcopy(basic_map)  # csv file
-                    for door in room.doors:
-                        if door == 'down':
-                            room_map[9][7] = -10
-                            room_map[8][7] = 129
-                        elif door == 'left':
-                            room_map[5][0] = 163
-                        elif door == 'right':
-                            room_map[5][14] = 163
-                        elif door == 'up':
-                            room_map[1][7] = -10
+                    self.shut_doors(room.doors, room_map, file)
                     room.room_map.append(room_map)
 
     def add_graphics(self):
@@ -154,7 +169,7 @@ class World:
                         room.objects.append(Weapon(self.game, 24, 'anime_sword', (36, 90), room, (300, 300)))
                         room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
                         room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
-                        #room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
+                        # room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
                         room.objects.append(Flask(self.game, room, (660, 300)))
 
     def print_world(self):
@@ -166,9 +181,10 @@ class World:
                     print(0, end=' ')
             print('')
 
+    types = ['power_up', 'normal', 'boss', 'chest']
+
     def assign_type(self):
-        types = ['power_up', 'normal', 'boss', 'chest']
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(types, weights=[0.2, 1, 0.15, 5], k=1)[0]
+                    room.type = random.choices(self.types, weights=[0.2, 1, 0.15, 5], k=1)[0]
