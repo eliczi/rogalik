@@ -6,7 +6,7 @@ from entities.player import Player
 from map_generator import World
 from menu import MainMenu
 from mini_map import MiniMap
-from particles import ParticleManager
+from particles import ParticleManager, Fire
 from hud import Hud
 import random
 
@@ -39,6 +39,8 @@ class Game:
         self.can_open_chest = False
         self.hud = Hud(self)
         self.fps_counter = 0
+        self.draw_map = False
+
 
     def init_all(self):
         self.screen = pygame.Surface(utils.world_size)
@@ -46,8 +48,8 @@ class Game:
         self.particle_manager = ParticleManager(self)
         self.player = Player(self)
         self.clock = pygame.time.Clock()
-        num_of_rooms = 4
-        world_width, world_height = 4, 4
+        num_of_rooms = 30
+        world_width, world_height = 7,7
         self.world = World(self, num_of_rooms, world_width, world_height)
         self.x, self.y = self.world.starting_room.x, self.world.starting_room.y
         self.room = self.world.starting_room
@@ -55,6 +57,7 @@ class Game:
         self.next_room = None
         self.directions = None
         self.mini_map = MiniMap(self, world_width, world_height)
+
 
     def game_over(self):
         self.init_all()
@@ -67,6 +70,9 @@ class Game:
         self.enemy_manager.test()
         self.enemy_manager.update_enemies()
         self.player.update()
+        self.particle_manager.update_particles()
+        self.mini_map.set_current_room(self.room)
+        self.mini_map.update()
 
     def draw_groups(self):
         self.room_image.clear_map()
@@ -81,15 +87,12 @@ class Game:
             self.player.draw(self.room_image.map_surface)
 
         self.enemy_manager.draw_enemies()
-
         self.room_image.draw_map(self.screen)
-
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
-
-        text_surface = pygame.font.Font(utils.font, 15).render(self.room.type, False, (255, 255, 255))
-        self.screen.blit(text_surface, (500, 500))
-        self.mini_map.draw(self.screen)
+        if not self.draw_map:
+            self.mini_map.draw(self.screen)
+        self.particle_manager.draw_particles(self.screen)
 
     def input(self):
         self.player.input()
@@ -100,7 +103,10 @@ class Game:
         if pressed[pygame.K_r]:
             self.game_over()
         if pressed[pygame.K_TAB]:
-            self.mini_map.draw(self.screen)
+            self.draw_map = True
+            self.mini_map.draw_all(self.screen)
+        else:
+            self.draw_map = False
         if pressed[pygame.K_ESCAPE]:
             self.running = False
 
@@ -114,7 +120,6 @@ class Game:
     def run_game(self):
         self.init_all()
         add_enemies(self)
-        fps = []
         while self.running:
             # self.menu.show(self.display)
             self.clock.tick(self.fps)
@@ -122,27 +127,11 @@ class Game:
             self.input()
             self.update_groups()
             self.draw_groups()
-            self.particle_manager.update_particles()
-
             self.next_level()
-            self.mini_map.set_current_room(self.room)
             self.hud.draw()
-            # pygame.draw.line(self.screen, (255, 255, 255), (utils.world_size[0]/2, 0), (utils.world_size[0]/2, utils.world_size[1]), 3)
-            # pygame.draw.line(self.screen, (255, 255, 255), (0, utils.world_size[1]/2), (utils.world_size[0], utils.world_size[1]/2), 3)
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
-            # print(self.clock.get_fps())
-            x, y = 0, 0
-            fps.append(self.clock.get_fps())
-            # if self.fps != 60:
-            #     self.fps_counter += 1
-            #     x = random.randint(-2, 2)
-            #     y = random.randint(-2, 2)
-            # if self.fps_counter > 15:
-            #     self.fps_counter = 0
-            #     self.fps = 60
-            self.display.blit(self.screen, (x, y))
-        print(f'Average FPS: {sum(fps) / len(fps)}')
+            self.display.blit(self.screen, (0, 0))
         pygame.quit()
         print("Exited the game loop. Game will quit...")
         quit()

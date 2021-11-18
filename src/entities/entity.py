@@ -1,7 +1,7 @@
 import pygame
 
 import utils
-from animation import load_animation_sprites, EntityAnimation
+from .animation import load_animation_sprites, EntityAnimation
 from utils import get_mask_rect
 
 
@@ -34,17 +34,11 @@ class Entity:
         self.velocity = new_velocity
 
     def wall_collision(self):
-        """Sets player's velocity to zero if it would collide with walls
-           In other words, prevents player from colliding with walls"""
-
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
         collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
         for wall in self.game.room_image.wall_list:
             if any(wall.hitbox.collidepoint(point) for point in collide_points):
                 self.velocity = [0, 0]
-        # for obj in self.game.room.objects:
-        #     if any(obj.hitbox.collidepoint(point) for point in collide_points):
-        #         self.velocity = [0, 0]
 
     def update_hitbox(self):
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)

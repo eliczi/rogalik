@@ -1,6 +1,7 @@
 import pygame
 from collections import namedtuple
 from dataclasses import dataclass
+import copy
 
 
 # pokoje naokoło,
@@ -10,55 +11,72 @@ class MiniMap:
     room_height = 21
     room_width = 33
     room_dimensions = (room_width, room_height)
-    room = namedtuple('Room', ['x', 'y', 'visited'])
-
     offset_x = 10
     offset_y = 10
 
     def __init__(self, game, width, height):
         self.game = game
         self.height, self.width = height, width
-        self.current_x, self.current_y = 0, 0
+        self.current_room = None
+        self.current_x, self.current_y = None, None
         self.color = (150, 148, 153)
         self.rooms = []
         self.adjacent_rooms = []
-        self.visited_rooms = set()
-        self.add_world_rooms()
-
-    def add_world_rooms(self):
-        for row in self.game.world.world:
-            for room in row:
-                if room is not None:
-                    self.rooms.append([room.x, room.y])
+        self.visited_rooms = []
 
     def add_room(self, room):
-        self.visited_rooms.add((room.x, room.y))
+        if [room.x, room.y] not in self.visited_rooms:
+            self.visited_rooms.append([room.x, room.y])
 
     def set_current_room(self, room):
         self.add_room(room)
-        self.current_x, self.current_y = room.x, room.y
+        if self.current_room is not room:
+            self.current_room = room
+            self.current_x = self.current_room.x
+            self.current_y = self.current_room.y
+            self.set_adjacent_rooms()
 
-    def enlarge(self):
-        self.room_width *= 2
-        self.room_height *= 2
+    def set_adjacent_rooms(self):
+        self.adjacent_rooms = copy.deepcopy(self.current_room.neighbours)
 
-    def draw_perimeters(self, surface):
-        for x in range(self.width):
-            for y in range(self.height):
-                position = (self.offset_x + x * 60, self.offset_y + y * 30)
-                perimeters = (x + 10 for x in self.room_dimensions)
-                per_pos = (position[0] - 5, position[1] - 4)
-                pygame.draw.rect(surface, (255, 255, 255), (*per_pos, *perimeters))
+    def update(self):
+        self.positions()
 
-    def update(self, world, room):
-        self.current_room(room)
+    def positions(self):
+        while self.current_x != 1 or self.current_y != 1:
+            if self.current_x < 1:
+                self.current_x += 1
+                for room in self.adjacent_rooms:
+                    room[0] += 1
+            elif self.current_x > 1:
+                self.current_x -= 1
+                for room in self.adjacent_rooms:
+                    room[0] -= 1
+            if self.current_y < 1:
+                self.current_y += 1
+                for room in self.adjacent_rooms:
+                    room[1] += 1
+            elif self.current_y > 1:
+                self.current_y -= 1
+                for room in self.adjacent_rooms:
+                    room[1] -= 1
 
-    def draw_near(self):
-        pass
+    def draw_all(self, surface):
+        for i, room in enumerate(self.visited_rooms):
+            position = (
+                self.offset_x + room[1] * self.room_width * 1.2, self.offset_y + room[0] * self.room_height * 1.2)
+            pygame.draw.rect(surface, self.color, (*position, *self.room_dimensions), 4)
+        position = (
+            self.offset_x + self.current_room.y * self.room_width * 1.2,
+            self.offset_y + self.current_room.x * self.room_height * 1.2)
+        pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))
 
     def draw(self, surface):
-        for room in self.rooms:
-            position = (self.offset_x + room[1] * self.room_width * 1.2, self.offset_y + room[0] * self.room_height * 1.2)
+        for room in self.adjacent_rooms:
+            position = (
+                self.offset_x + room[1] * self.room_width * 1.2, self.offset_y + room[0] * self.room_height * 1.2)
             pygame.draw.rect(surface, self.color, (*position, *self.room_dimensions), 4)
-            if room[0] == self.current_x and room[1] == self.current_y:
-                pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))
+        position = (
+            self.offset_x + self.current_y * self.room_width * 1.2,
+            self.offset_y + self.current_x * self.room_height * 1.2)
+        pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))

@@ -16,7 +16,6 @@ class Player(Entity):
         self.interaction = False
         self.gold = 0
 
-
     def input(self):
         """s"""
         pressed = pygame.key.get_pressed()
@@ -78,8 +77,6 @@ class Player(Entity):
             self.weapon.weapon_swing.swing_side *= (-1)
             self.game.counter = 0
 
-
-
     def shift_items_right(self):
         self.items = [self.items[-1]] + self.items[:-1]
 
@@ -88,6 +85,7 @@ class Player(Entity):
 
     def update(self) -> None:
         """s"""
+
         if self.weapon:
             self.weapon.update()
         self.entity_animation.update()

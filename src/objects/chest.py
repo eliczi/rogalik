@@ -18,7 +18,7 @@ class Chest(Object):
         self.image = None
         Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.rect = self.image.get_rect()
-        self.rect.midbottom = (17 * 64 / 2, 6 * 64)
+        self.rect.midbottom = (19 * 64 / 2, 6 * 64)
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
         self.animation_frame = 0
         self.surface = self.room.tile_map.map_surface
@@ -46,6 +46,11 @@ class Chest(Object):
             self.image = pygame.image.load(
                 f'../assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
+        elif self.open and self.animation_frame > 2:
+            self.image = pygame.image.load(
+                f'../assets/chest/empty/chest_empty2.png').convert_alpha()
+            self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
+            self.drop_items()
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -63,7 +68,7 @@ class Chest(Object):
     def interact(self):
         self.open = True
         self.interaction = False
-        self.drop_items()
+        #self.drop_items()
 
     def drop_items(self):
         for i, item in enumerate(self.items):
@@ -72,8 +77,7 @@ class Chest(Object):
             item.bounce.x = self.rect.x
             item.bounce.y = self.rect.y
             self.room.objects.append(item)
-
-        self.items.pop()
+            self.items.remove(item)
 
     def __repr__(self):
         return f'Chest in room {self.room}'

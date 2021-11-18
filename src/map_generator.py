@@ -6,7 +6,7 @@ from objects.chest import Chest
 from map import TileMap, Spritesheet
 from objects.weapon import Weapon
 from objects.flask import Flask
-
+from particles import Fire
 
 class Room:
     def __init__(self, x, y):
@@ -69,7 +69,7 @@ class World:
         self.add_room_map('floor_layer')
         self.add_room_map('wall_layer')
         self.add_graphics()
-        # self.print_world()
+        self.print_world()
         self.assign_objects()
 
     @staticmethod
@@ -123,18 +123,29 @@ class World:
         if 'left' not in doors:
             room_map[5][2] = 257
             room_map[6][2] = 257
+            room_map[4][1] = -1
+            room_map[5][1] = -1
+            room_map[6][1] = -1
+            room_map[7][1] = -1
             if file == 'floor_layer':
                 room_map[5][2] = 130
                 room_map[6][2] = 130
         if 'right' not in doors:
             room_map[5][16] = 256
             room_map[6][16] = 256
+            room_map[5][17] = -1
+            room_map[6][17] = -1
+            room_map[4][17] = -1
+            room_map[7][17] = -1
             if file == 'floor_layer':
                 room_map[5][16] = 130
                 room_map[6][16] = 130
         if 'up' not in doors:
             room_map[1][9] = 2
             room_map[2][9] = 33
+            room_map[1][10] = 1
+            room_map[1][9] = 1
+            room_map[1][8] = 1
         if 'down' not in doors:
             room_map[9][9] = 2
             room_map[10][9] = 33
