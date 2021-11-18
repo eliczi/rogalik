@@ -29,8 +29,6 @@ class Enemy(Entity):
         pass
 
     def spawn(self):
-        if self.game.player.direction == 'up':
-            pass
         self.rect.x = random.randint(250, 600)
         self.rect.y = random.randint(250, 600)
 

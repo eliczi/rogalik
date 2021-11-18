@@ -1,6 +1,6 @@
 import pygame
 from math import sqrt
-
+import random
 from objects.weapon import Weapon
 from .entity import Entity
 
@@ -10,16 +10,24 @@ class Dust:
         self.player = player
         self.x = x
         self.y = y
-        self.color = (173, 173, 172)
+        self.color = (173, 173, 172, 200)
+        self.life = random.randint(4, 5)
 
     def update(self):
         if self.player.velocity:
-            self.x += 2
-            self.y += 0.5
+            if self.player.velocity[0] > 0:
+                self.x -= random.randint(1, 2)/4
+            elif self.player.velocity[0] < 0:
+                self.x += random.randint(1, 2)/4
+            self.y -= random.randint(-2, 3)/4
+            self.life -= 0.5
+            if self.life < 0:
+                self.player.walking_particles.remove(self)
 
     def draw(self):
         if self.player.velocity:
-            pygame.draw.circle(self.player.game.room_image.map_surface, self.color, (self.x, self.y), 10)
+            rect = (self.x, self.y,5,5)
+            pygame.draw.rect(self.player.game.room_image.map_surface, self.color, rect)
 
 
 class Player(Entity):
@@ -115,15 +123,15 @@ class Player(Entity):
 
     def draw(self, surface):
         """S"""
+        if (self.velocity[0] != 0 or self.velocity[1] !=0) and random.randint(1,8) % 4 == 0:
+            self.walking_particles.append(Dust(self, *self.rect.midbottom))
+        for p in self.walking_particles:
+            p.update()
+            p.draw()
         self.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw(surface)
-        self.walking_particles.append(Dust(self, self.rect.x, self.rect.y))
-        # if self.velocity:
-        #     for p in self.walking_particles:
-        #         p.update()
-        #         p.draw()
 
 
     def render(self):  # Render weapon
