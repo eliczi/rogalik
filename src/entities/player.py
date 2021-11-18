@@ -5,6 +5,23 @@ from objects.weapon import Weapon
 from .entity import Entity
 
 
+class Dust:
+    def __init__(self, player, x, y):
+        self.player = player
+        self.x = x
+        self.y = y
+        self.color = (173, 173, 172)
+
+    def update(self):
+        if self.player.velocity:
+            self.x += 2
+            self.y += 0.5
+
+    def draw(self):
+        if self.player.velocity:
+            pygame.draw.circle(self.player.game.room_image.map_surface, self.color, (self.x, self.y), 10)
+
+
 class Player(Entity):
     def __init__(self, game):
         Entity.__init__(self, game, 'player')
@@ -15,6 +32,7 @@ class Player(Entity):
         self.items = []
         self.interaction = False
         self.gold = 0
+        self.walking_particles = []
 
     def input(self):
         """s"""
@@ -101,8 +119,12 @@ class Player(Entity):
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw(surface)
-        # pygame.draw.rect(self.game.room_image.map_surface, (0, 255, 0), self.rect, 1)
-        # pygame.draw.rect(self.game.room_image.map_surface, (255, 0, 0), self.hitbox, 1)
+        self.walking_particles.append(Dust(self, self.rect.x, self.rect.y))
+        if self.velocity:
+            for p in self.walking_particles:
+                p.update()
+                p.draw()
+
 
     def render(self):  # Render weapon
         """s"""

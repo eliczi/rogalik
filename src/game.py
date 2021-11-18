@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import time
 import utils
@@ -99,6 +101,12 @@ class Game:
         if self.directions:
             self.player.can_move = False
             self.room_image.load_level(self, *self.directions)
+
+    def draw_circle(self):
+        surface = pygame.Surface((64, 64)).convert_alpha()
+        surface.fill((255, 255, 255, 0))
+        pygame.draw.circle(surface, (255, 255, 255, 120), (32, 32), random.randint(28, 32))
+        self.screen.blit(pygame.transform.scale(surface, (256, 256)), (250, 250))
 
     def run_game(self):
         self.init_all()

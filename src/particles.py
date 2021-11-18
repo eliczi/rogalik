@@ -104,42 +104,20 @@ class Fire(Particle):
                                self.color[self.i] + (alpha,),
                                (self.draw_x, self.draw_y),
                                self.radius, 0)
-            # if self.i == 0:
-            #     pygame.draw.circle(self.surface,
-            #                        (0, 0, 0, 0),
-            #                        (self.draw_x + random.randint(-1, 1),
-            #                         self.draw_y - 4),
-            #                        self.radius * (((self.max_life - self.life) / self.max_life) / 0.88), 0)
-            # else:
-            #     pygame.draw.circle(self.surface,
-            #                        self.color[self.i - 1] + (alpha,),
-            #                        (self.draw_x + random.randint(-1, 1), self.draw_y - 3),
-            #                        self.radius / 1.5, 0)
+            if self.i == 0:
+                pygame.draw.circle(self.surface,
+                                   (0, 0, 0, 0),
+                                   (self.draw_x + random.randint(-1, 1),
+                                    self.draw_y - 4),
+                                   self.radius * (((self.max_life - self.life) / self.max_life) / 0.88), 0)
+            else:
+                pygame.draw.circle(self.surface,
+                                   self.color[self.i - 1] + (alpha,),
+                                   (self.draw_x + random.randint(-1, 1), self.draw_y - 3),
+                                   self.radius / 1.5, 0)
         else:
             self.counter2 += 1
         self.game.display.blit(pygame.transform.scale(self.surface, (250, 250)), (0, 0))
-
-
-class DeathParticle(Particle):
-    def __init__(self, game, x, y):
-        super().__init__(game, x, y)
-        self.color = (192, 192, 192)
-        self.radius = random.randint(5, 7)
-        self.life = random.randint(30, 50)
-        self.counter = 0  # to slow down animation speed
-
-    def update(self):
-        self.x += random.randint(-1, 1)
-        self.y += random.randint(-1, 1)
-        self.radius += 0.05
-        self.life -= 1
-        if self.life <= 0:
-            self.game.particle_manager.particle_list.remove(self)
-
-    def draw(self, surface):
-        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
-        # pygame.draw.circle(surface, (0, 0, 0, 0),
-        #                    (self.x + random.randint(-1, 1), self.y + random.randint(-1, 1)), self.radius)
 
 
 class ChestParticle(Particle):

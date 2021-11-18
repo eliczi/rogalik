@@ -1,7 +1,7 @@
 import pygame
 import random
 from map_generator import Room
-from particles import DeathParticle, DeathAnimation
+from particles import DeathAnimation
 from .entity import Entity
 
 
