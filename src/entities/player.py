@@ -120,10 +120,10 @@ class Player(Entity):
         if self.weapon:
             self.weapon.draw(surface)
         self.walking_particles.append(Dust(self, self.rect.x, self.rect.y))
-        if self.velocity:
-            for p in self.walking_particles:
-                p.update()
-                p.draw()
+        # if self.velocity:
+        #     for p in self.walking_particles:
+        #         p.update()
+        #         p.draw()
 
 
     def render(self):  # Render weapon
