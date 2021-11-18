@@ -93,7 +93,7 @@ class Enemy(Entity):
     def draw(self):  # if current room or the next room
         surface = self.room.tile_map.map_surface
         self.draw_shadow(surface)
-        if self.room == self.game.room or self.room == self.game.next_room:
+        if self.room in [self.game.room, self.game.next_room]:
             self.draw_health(surface)
             surface.blit(self.image, self.rect)
 
@@ -125,12 +125,16 @@ class EnemyManager:
                                           self.game.player) and self.game.player.hurt is False and pygame.time.get_ticks():
                 self.game.player.time = self.game.game_time
                 self.game.player.hurt = True
-            if self.game.player.weapon:
-                if pygame.sprite.collide_mask(self.game.player.weapon,
-                                              enemy) and self.game.player.attacking and self.game.game_time - enemy.time > 200 and enemy.dead is False:
-                    enemy.time = self.game.game_time
-                    enemy.hurt = True
-                    enemy.hp -= self.game.player.weapon.damage
+            if (
+                self.game.player.weapon
+                and pygame.sprite.collide_mask(self.game.player.weapon, enemy)
+                and self.game.player.attacking
+                and self.game.game_time - enemy.time > 200
+                and enemy.dead is False
+            ):
+                enemy.time = self.game.game_time
+                enemy.hurt = True
+                enemy.hp -= self.game.player.weapon.damage
 
     def add_enemies(self):
         for row in self.game.world.world:
