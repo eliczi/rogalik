@@ -29,8 +29,6 @@ class Enemy(Entity):
         pass
 
     def spawn(self):
-        if self.game.player.direction == 'up':
-            pass
         self.rect.x = random.randint(250, 600)
         self.rect.y = random.randint(250, 600)
 
@@ -93,7 +91,7 @@ class Enemy(Entity):
     def draw(self):  # if current room or the next room
         surface = self.room.tile_map.map_surface
         self.draw_shadow(surface)
-        if self.room == self.game.room or self.room == self.game.next_room:
+        if self.room in [self.game.room, self.game.next_room]:
             self.draw_health(surface)
             surface.blit(self.image, self.rect)
 

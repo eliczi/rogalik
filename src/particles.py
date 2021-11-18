@@ -159,7 +159,7 @@ class DeathAnimation:
             self.images.append(pygame.image.load(f'../assets/vfx/death/death{i + 1}.png').convert_alpha())
 
     def update(self):
-        self.counter += 0.25
+        self.counter += 0.4
         if self.counter >= 12:
             self.game.particle_manager.particle_list.remove(self)
 
