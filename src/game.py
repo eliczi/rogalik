@@ -1,5 +1,5 @@
 import pygame
-
+import time
 import utils
 from entities.enemy import add_enemies, EnemyManager
 from entities.player import Player
@@ -8,6 +8,7 @@ from menu import MainMenu
 from mini_map import MiniMap
 from particles import ParticleManager
 from hud import Hud
+import random
 
 pygame.init()
 pygame.mixer.init()
@@ -37,6 +38,7 @@ class Game:
         # pygame.mixer.music.play(-1)
         self.can_open_chest = False
         self.hud = Hud(self)
+        self.fps_counter = 0
 
     def init_all(self):
         self.screen = pygame.Surface(utils.world_size)
@@ -62,6 +64,7 @@ class Game:
 
     def update_groups(self):
         self.enemy_manager.update_enemy_list()
+        self.enemy_manager.test()
         self.enemy_manager.update_enemies()
         self.player.update()
 
@@ -120,17 +123,25 @@ class Game:
             self.update_groups()
             self.draw_groups()
             self.particle_manager.update_particles()
-            self.enemy_manager.test()
+
             self.next_level()
             self.mini_map.set_current_room(self.room)
             self.hud.draw()
             # pygame.draw.line(self.screen, (255, 255, 255), (utils.world_size[0]/2, 0), (utils.world_size[0]/2, utils.world_size[1]), 3)
             # pygame.draw.line(self.screen, (255, 255, 255), (0, utils.world_size[1]/2), (utils.world_size[0], utils.world_size[1]/2), 3)
-            self.display.blit(self.screen, (0, 0))
             self.game_time = pygame.time.get_ticks()
             pygame.display.update()
             # print(self.clock.get_fps())
+            x, y = 0, 0
             fps.append(self.clock.get_fps())
+            # if self.fps != 60:
+            #     self.fps_counter += 1
+            #     x = random.randint(-2, 2)
+            #     y = random.randint(-2, 2)
+            # if self.fps_counter > 15:
+            #     self.fps_counter = 0
+            #     self.fps = 60
+            self.display.blit(self.screen, (x, y))
         print(f'Average FPS: {sum(fps) / len(fps)}')
         pygame.quit()
         print("Exited the game loop. Game will quit...")

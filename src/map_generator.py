@@ -166,11 +166,11 @@ class World:
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
                     elif room.type == 'starting_room':
-                        room.objects.append(Weapon(self.game, 24, 'anime_sword', (36, 90), room, (300, 300)))
-                        room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
-                        room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
+                        room.objects.append(Weapon(self.game, 100, 'anime_sword', (36, 90), room, (300, 300)))
+                        #room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
+                        #room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
                         # room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
-                        room.objects.append(Flask(self.game, room, (660, 300)))
+                        #room.objects.append(Flask(self.game, room, (660, 300)))
 
     def print_world(self):
         for row in self.world:
@@ -187,4 +187,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[0.2, 1, 0.15, 5], k=1)[0]
+                    room.type = random.choices(self.types, weights=[0, 1, 0, 5], k=1)[0]

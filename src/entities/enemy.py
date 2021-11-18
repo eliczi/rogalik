@@ -1,7 +1,7 @@
 import pygame
 import random
 import typing
-
+import time
 import utils
 from animation import load_animation_sprites, EntityAnimation  # entity_animation
 from map_generator import Room
@@ -29,6 +29,9 @@ class Enemy(Entity):
         self.sound = pygame.mixer.Sound('../assets/sound/hit.wav')
         self.spawn()
 
+    def detect_collistion(self):
+        pass
+
     def spawn(self):
         if self.game.player.direction == 'up':
             pass
@@ -37,12 +40,18 @@ class Enemy(Entity):
 
     def update(self):
         self.collision()
-        self.move()
+        if not self.dead and self.hp > 0:
+            self.move()
+        self.wall_collision()
+        if not self.dead and self.hp > 0:
+            self.rect.move_ip(self.velocity)
+            self.hitbox.move_ip(self.velocity)
         self.update_hitbox()
         self.entity_animation.update()
+        self.can_move = True
 
     def move(self, dtick=0.06):
-        if not self.dead:
+        if not self.dead and self.can_move:
             self.move_towards_player(self.game.player, dtick)  # zmiana
 
     def move_towards_player(self, player, dtick):
@@ -51,20 +60,23 @@ class Enemy(Entity):
                                          player.rect.bottomleft[1] - 50 - self.rect.y)
 
         self.direction = 'left' if dir_vector[0] < 0 else 'right'
-        self.set_velocity(dir_vector)
+
         if dir_vector.length_squared() > 0:
             dir_vector.normalize()
             # Move along this normalized vector towards the player at current speed.
             dir_vector.scale_to_length(self.speed * 3 * dtick)
-        self.rect.move_ip(dir_vector)
-        self.hitbox.move_ip(dir_vector)
+        self.set_velocity(dir_vector)
+
+    def check_pair_collision(self):
+        if any(self.rect.colliderect(enemy.rect) and self is not enemy for enemy in self.game.enemy_manager.enemy_list):
+            self.velocity = [-x for x in self.velocity]
 
     def collision(self):
         if self.hp <= 0 and self.dead is False:
             self.dead = True
             self.entity_animation.animation_frame = 0
         if self.death_counter == 0:
-            pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/death.wav'))
+            # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/death.wav'))
             self.room.enemy_list.remove(self)
             position = ((self.rect.x) // 4 + 48, (self.rect.y) // 4 + 20)
             self.game.particle_manager.add_particle(DeathParticle(self.game, *position))
@@ -99,7 +111,9 @@ class Enemy(Entity):
 class EnemyManager:
     def __init__(self, game):
         self.game = game
-        self.enemy_list = None
+        self.enemy_list = []
+        self.sprites = None
+        self.time = 0
 
     def update_enemy_list(self):
         self.enemy_list = self.game.room.enemy_list
@@ -108,20 +122,26 @@ class EnemyManager:
         for enemy in self.enemy_list:
             enemy.draw()
 
+
     def update_enemies(self):
         for enemy in self.enemy_list:
             enemy.update()
 
     def test(self):
+        self.debug()
         for enemy in self.enemy_list:
             # if 0.6 second has passed
-            if pygame.sprite.collide_mask(enemy, self.game.player) and self.game.player.hurt is False and pygame.time.get_ticks() - self.game.player.time > 600:
+            if pygame.sprite.collide_mask(enemy,
+                                          self.game.player) and self.game.player.hurt is False and pygame.time.get_ticks():
                 self.game.player.time = self.game.game_time
                 self.game.player.hurt = True
-                #pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
+                # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
             if self.game.player.weapon:
-                if pygame.sprite.collide_mask(self.game.player.weapon, enemy) and self.game.player.attacking and self.game.game_time - enemy.time > 200 and enemy.dead is False:
-                    #pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
+                if pygame.sprite.collide_mask(self.game.player.weapon,
+                                              enemy) and self.game.player.attacking and self.game.game_time - enemy.time > 200 and enemy.dead is False:
+                    # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/hit.wav'))
+                    # self.game.fps = 30
+                    # self.game.fps_counter += 1
                     enemy.time = self.game.game_time
                     enemy.hurt = True
                     enemy.hp -= self.game.player.weapon.damage
@@ -131,6 +151,15 @@ class EnemyManager:
             for room in row:
                 if isinstance(room, Room) and room.type == 'normal':
                     room.enemy_list.append(Enemy(self.game, 15, 100, room, 'demon'))
+
+    def debug(self):
+        if pygame.mouse.get_pressed()[2] and pygame.time.get_ticks() - self.time > 100:
+            self.time = pygame.time.get_ticks()
+            mx, my = pygame.mouse.get_pos()
+            mx -= 64  # because we are rendering player on map_surface
+            my -= 32
+            self.game.room.enemy_list.append(Enemy(self.game, 15, 100, self.game.room, 'demon'))
+            self.game.room.enemy_list[-1].rect.topleft = (mx, my)
 
 
 def add_enemies(game):

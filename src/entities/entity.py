@@ -8,6 +8,7 @@ from utils import get_mask_rect
 class Entity:
     def __init__(self, game, name):
         self.game = game
+        self.name = name
         self.animation_database = load_animation_sprites(f'../assets/{name}/')
         self.image = pygame.transform.scale(pygame.image.load(f'../assets/{name}/idle/idle0.png').convert_alpha(),
                                             utils.basic_entity_size)
@@ -22,6 +23,12 @@ class Entity:
         self.entity_animation = EntityAnimation(self)
         self.counter = 0
         self.time = 0
+
+    def __repr(self):
+        return self.name
+
+    def __str__(self):
+        return f'{id(self)}, {self.name}'
 
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity

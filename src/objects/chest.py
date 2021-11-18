@@ -23,7 +23,9 @@ class Chest(Object):
         self.animation_frame = 0
         self.surface = self.room.tile_map.map_surface
         self.open = False
-        self.items = [Coin(game, room, self)]  # items in chest
+        self.items = []  # items in chest
+        for _ in range(10):
+            self.items.append(Coin(game, room, self))
         self.interaction = True
         self.counter = 0
 

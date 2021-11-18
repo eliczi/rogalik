@@ -24,6 +24,13 @@ class Hud:
                 # 1 -> 0
                 # 2 > 2 or -1
 
+        text = f'Gold: {str(self.game.player.gold)}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (700, 10))
+        text2 = f'FPS: {str(int(self.game.clock.get_fps()))}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (700, 30))
+
     def update(self):
         if self.game.player.items:
             pass

@@ -14,6 +14,8 @@ class Player(Entity):
         self.attacking = False
         self.items = []
         self.interaction = False
+        self.gold = 0
+
 
     def input(self):
         """s"""
@@ -40,14 +42,13 @@ class Player(Entity):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
-                    #self.weapon = self.items[self.items.index(self.weapon) - 1]
+                    # self.weapon = self.items[self.items.index(self.weapon) - 1]
                     self.shift_items_left()
                     self.weapon = self.items[0]
                 elif event.button == 5:
-                    #self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
+                    # self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
                     self.shift_items_right()
                     self.weapon = self.items[0]
-                print(self.items)
 
         constant_dt = 0.06
         vel_up = [0, -self.speed * constant_dt]
@@ -69,12 +70,15 @@ class Player(Entity):
             self.set_velocity(vel_list_fixed)
         else:
             self.set_velocity(vel_list)
-        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > 600 and self.weapon: # player attacking
+        if pygame.mouse.get_pressed()[
+            0] and pygame.time.get_ticks() - self.time > 600 and self.weapon:  # player attacking
             self.time = pygame.time.get_ticks()
             # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
             self.weapon.weapon_swing.swing_side *= (-1)
             self.game.counter = 0
+
+
 
     def shift_items_right(self):
         self.items = [self.items[-1]] + self.items[:-1]

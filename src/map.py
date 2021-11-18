@@ -83,7 +83,7 @@ class TileMap:
         return b * 16, a * 16
 
     def add_entrance(self, tile):
-        if tile.rect.y == 128:
+        if tile.rect.y == 64:
             self.entrances.append(self.door('up', -1, tile))
         if tile.rect.y == 640 + 64:
             self.entrances.append(self.door('down', 1, tile))
