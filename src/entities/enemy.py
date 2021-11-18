@@ -115,8 +115,9 @@ class EnemyManager:
     def update_enemies(self):
         for enemy in self.enemy_list:
             enemy.update()
+        self.check_collide()
 
-    def test(self):
+    def check_collide(self):
         self.debug()
         for enemy in self.enemy_list:
             # if 0.6 second has passed

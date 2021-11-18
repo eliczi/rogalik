@@ -3,13 +3,16 @@ import utils
 
 
 class Hud:
-    position = (21/2 * 64, utils.world_size[1] - 1.5 * 64)
+    position = (17.8/2 * 64, utils.world_size[1] - 1.5 * 64)
 
     def __init__(self, game):
         self.game = game
         self.hud_frame = pygame.image.load('../assets/hud_frame.png').convert_alpha()
+        self.rect = self.hud_frame.get_rect()
+        self.rect.midtop = (21/2 * 64, utils.world_size[1] - 1.4 * 64)
         self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4],
                                 [708 + 8, self.position[1] + 4]]
+        print(utils.world_size[0]/2 * 64)
 
     def draw_items(self):
         #works for 3 items
@@ -39,5 +42,6 @@ class Hud:
             pass
 
     def draw(self):
+        self.game.screen.blit(self.hud_frame, self.rect)
         self.draw_items()
-        self.game.screen.blit(self.hud_frame, self.position)
+

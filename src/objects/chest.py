@@ -46,7 +46,10 @@ class Chest(Object):
             self.image = pygame.image.load(
                 f'../assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
-        elif self.open and self.animation_frame > 2:
+        elif self.animation_frame > 2 and self.animation_frame <=3:
+            self.animation_frame += 1/20
+
+        elif self.open and self.animation_frame > 3:
             self.image = pygame.image.load(
                 f'../assets/chest/empty/chest_empty2.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
@@ -57,7 +60,6 @@ class Chest(Object):
         # self.surface.blit(self.image, self.rect)
 
     def detect_collision(self, player):
-        self.game.can_open_chest = bool(player.rect.colliderect(self.rect))
         if player.rect.colliderect(self.rect) and self.interaction:
             self.image = pygame.image.load('../assets/chest/full/chest_picked.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))

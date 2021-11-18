@@ -1,11 +1,6 @@
 import pygame
-from collections import namedtuple
-from dataclasses import dataclass
 import copy
 
-
-# pokoje naokoło,
-# jak tab, to cala odkryta mapa
 
 class MiniMap:
     room_height = 21
