@@ -3,6 +3,7 @@ import random
 from math import sin
 
 import utils
+import time
 
 
 class Particle:
@@ -71,21 +72,17 @@ class Fire(Particle):
         self.alpha = None
         self.draw_x = x
         self.draw_y = y
-        self.surface = pygame.Surface((64, 64), pygame.SRCALPHA).convert_alpha()
-        self.counter = 0
-        self.counter2 = 0
+
 
     def update(self):
-
-        self.counter = 0
         if self.j > 360:  # Angle
             self.j = 0
         self.life -= 1
         if self.life == 0:
-            self.game.particle_manager.particle_list.remove(self)
+            self.game.particle_manager.fire_particles.remove(self)
         self.i = int((self.life / self.max_life) * 6)
         self.y -= 0.7  # rise
-        self.x += ((self.sin * sin(self.j / self.sin_r)) / 20)  # spread
+        self.x += 0  # ((self.sin * sin(self.j / self.sin_r)) / 20)  # spread
         if not random.randint(0, 5):
             self.radius += 0.2  # circle radius, set to 10 for big bang
         self.draw_x, self.draw_y = self.x, self.y
@@ -96,28 +93,23 @@ class Fire(Particle):
             self.alpha = int((self.life / self.max_life) * 255)
 
     def draw(self, surface):
-        if self.counter2 == 5:
-            self.counter2 = 0
-            alpha = 255
-            self.surface.fill((255, 255, 255, 0))
-            pygame.draw.circle(self.surface,
-                               self.color[self.i] + (alpha,),
-                               (self.draw_x, self.draw_y),
-                               self.radius, 0)
-            if self.i == 0:
-                pygame.draw.circle(self.surface,
-                                   (0, 0, 0, 0),
-                                   (self.draw_x + random.randint(-1, 1),
-                                    self.draw_y - 4),
-                                   self.radius * (((self.max_life - self.life) / self.max_life) / 0.88), 0)
-            else:
-                pygame.draw.circle(self.surface,
-                                   self.color[self.i - 1] + (alpha,),
-                                   (self.draw_x + random.randint(-1, 1), self.draw_y - 3),
-                                   self.radius / 1.5, 0)
+        alpha = 255
+
+        pygame.draw.circle(surface,
+                           self.color[self.i] + (alpha,),
+                           (self.draw_x, self.draw_y),
+                           self.radius, 0)
+        if self.i == 0:
+            pygame.draw.circle(surface,
+                               (0, 0, 0, 0),
+                               (self.draw_x + random.randint(-1, 1),
+                                self.draw_y - 4),
+                               self.radius * (((self.max_life - self.life) / self.max_life) / 0.88), 0)
         else:
-            self.counter2 += 1
-        self.game.display.blit(pygame.transform.scale(self.surface, (250, 250)), (0, 0))
+            pygame.draw.circle(surface,
+                               self.color[self.i - 1] + (alpha,),
+                               (self.draw_x + random.randint(-1, 1), self.draw_y - 3),
+                               self.radius / 1.5, 0)
 
 
 class ChestParticle(Particle):
@@ -171,14 +163,32 @@ class ParticleManager:
     def __init__(self, game):
         self.game = game
         self.particle_list = []
+        self.fire_particles = []
         self.surface = self.game.screen
-        # self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
-        #                               pygame.SRCALPHA).convert_alpha()
+        self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
+                                      pygame.SRCALPHA).convert_alpha()
+        self.dest_surf = pygame.Surface((utils.world_size[0], utils.world_size[1])).convert_alpha()
 
     def update_particles(self):
         if self.particle_list:
             for particle in self.particle_list:
                 particle.update()
+        self.update_fire_particles()
+
+    def draw_fire_particles(self, surface):
+        self.surface.fill((0,0,0, 0))
+        for fire in self.fire_particles:
+            fire.draw(self.surface)
+
+        surface.blit(pygame.transform.scale(self.surface, (utils.world_size[0], utils.world_size[1]), self.dest_surf),
+                     (0, 0))
+
+    def update_fire_particles(self):
+        for fire in self.fire_particles:
+            fire.update()
+
+    def add_fire_particles(self, fire):
+        self.fire_particles.append(fire)
 
     def add_particle(self, particle):
         self.particle_list.append(particle)
@@ -186,3 +196,4 @@ class ParticleManager:
     def draw_particles(self, surface):
         for particle in self.particle_list:
             particle.draw(surface)
+        self.draw_fire_particles(surface)

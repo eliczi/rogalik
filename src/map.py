@@ -25,7 +25,7 @@ class Spritesheet(object):
 class Tile(pygame.sprite.Sprite):
     def __init__(self, rectangle, x, y, spritesheet):
         pygame.sprite.Sprite.__init__(self)
-        self.image = spritesheet.image_at(rectangle).convert_alpha()
+        self.image = spritesheet.image_at(rectangle)
         self.image = pygame.transform.scale(self.image, (64, 64))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
@@ -49,7 +49,7 @@ class TileMap:
         self.entrances = []
         self.tiles = []
         self.load_tiles(filename)
-        self.original_map_surface = pygame.Surface(self.map_size).convert_alpha()
+        self.original_map_surface = pygame.Surface(self.map_size).convert()
         self.original_map_surface.set_colorkey((0, 0, 0))
         self.map_surface = None
         # self.map_surface = pygame.Surface(self.map_size).convert_alpha()
@@ -100,7 +100,6 @@ class TileMap:
                 x = 0
                 for tile in row:
                     tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
-                    #if int(tile) in (-10, 75, 163):
                     self.add_entrance(tiles[-1])
                     if int(tile) in utils.wall_list:
                         self.wall_list.append(tiles[-1])

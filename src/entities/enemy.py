@@ -22,7 +22,6 @@ class Enemy(Entity):
         self.room = room  # room in which monster resides
         self.speed = speed  # movement speed
         self.death_counter = 30
-        self.sound = pygame.mixer.Sound('../assets/sound/hit.wav')
         self.spawn()
 
     def detect_collistion(self):
@@ -78,7 +77,7 @@ class Enemy(Entity):
             health_rect.midbottom = self.rect.centerx, self.rect.top
             health_rect.midbottom = self.rect.centerx, self.rect.top
             draw_health_bar(surf, health_rect.topleft, health_rect.size,
-                            (0, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
+                            (1, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
 
     def draw_shadow(self, surface):  # draw shadows before self.image for all entities
         color = (0, 0, 0, 120)
@@ -88,9 +87,9 @@ class Enemy(Entity):
         position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 20]
         surface.blit(shape_surf, position)
 
-    def draw(self):  # if current room or the next room
-        surface = self.room.tile_map.map_surface
-        self.draw_shadow(surface)
+    def draw(self, surface):  # if current room or the next room
+        #surface = self.room.tile_map.map_surface
+        #self.draw_shadow(surface)
         if self.room in [self.game.room, self.game.next_room]:
             self.draw_health(surface)
             surface.blit(self.image, self.rect)
@@ -106,9 +105,9 @@ class EnemyManager:
     def update_enemy_list(self):
         self.enemy_list = self.game.room.enemy_list
 
-    def draw_enemies(self):
+    def draw_enemies(self,surface):
         for enemy in self.enemy_list:
-            enemy.draw()
+            enemy.draw(surface)
 
     def update_enemies(self):
         for enemy in self.enemy_list:

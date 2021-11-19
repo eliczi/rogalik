@@ -21,7 +21,6 @@ class Chest(Object):
         self.rect.midbottom = (19 * 64 / 2, 6 * 64)
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
         self.animation_frame = 0
-        self.surface = self.room.tile_map.map_surface
         self.open = False
         self.items = []  # items in chest
         for _ in range(10):
@@ -57,7 +56,6 @@ class Chest(Object):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-        # self.surface.blit(self.image, self.rect)
 
     def detect_collision(self, player):
         if player.rect.colliderect(self.rect) and self.interaction:

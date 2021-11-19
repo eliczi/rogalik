@@ -128,7 +128,7 @@ class Player(Entity):
         for p in self.walking_particles:
             p.update()
             p.draw()
-        self.draw_shadow(surface)
+        #self.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw(surface)

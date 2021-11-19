@@ -19,7 +19,7 @@ pygame.mixer.init()
 class Game:
     def __init__(self):
         self.display = pygame.display.set_mode(utils.world_size)
-        self.screen = pygame.Surface(utils.world_size)
+        self.screen = pygame.Surface(utils.world_size).convert()
         self.player = Player(self)
         self.clock = pygame.time.Clock()
         self.enemy_manager = EnemyManager(self)
@@ -36,7 +36,7 @@ class Game:
         self.directions = None
         self.mini_map = None
         self.game_time = None
-        self.fps = 120
+        self.fps = 300
 
     def init_all(self):
         num_of_rooms = 10
@@ -50,6 +50,7 @@ class Game:
         self.mini_map = MiniMap(self, world_width, world_height)
         self.background = BackgroundEffects(0, 0)
 
+
     def game_over(self):
         self.__init__()
         pygame.display.flip()
@@ -57,34 +58,35 @@ class Game:
         self.run_game()
 
     def update_groups(self):
-        pass
-        # self.enemy_manager.update_enemy_list()
-        # self.enemy_manager.update_enemies()
-        # self.player.update()
-        # self.particle_manager.update_particles()
-        # self.mini_map.set_current_room(self.room)
-        # self.mini_map.update()
-        #self.background.update()
+        # for i in range(10):
+        #     self.particle_manager.add_fire_particles(Fire(self, i * 10, 100))
+        self.enemy_manager.update_enemy_list()
+        self.enemy_manager.update_enemies()
+        self.player.update()
+        self.particle_manager.update_particles()
+        self.mini_map.set_current_room(self.room)
+        self.mini_map.update()
+        self.background.update()
 
     def draw_groups(self):
-        #self.background.draw(self.screen)
-        # self.room_image.clear_map()
-        # for o in self.room.objects:
-        #     o.detect_collision(self.player)
-        #     o.update()
-        #     o.draw(self.room_image.map_surface)
-        # if self.next_room:
-        #     self.next_room_image.clear_map()
-        #     self.player.draw(self.next_room_image.map_surface)
-        # else:
-        #     self.player.draw(self.room_image.map_surface)
-        # self.enemy_manager.draw_enemies()
-        # self.room_image.draw_map(self.screen)
-        # if self.next_room:
-        #     self.next_room_image.draw_map(self.screen)
-        # self.mini_map.draw(self.screen)
+        self.background.draw(self.screen)
+        self.room_image.clear_map()
+        for o in self.room.objects:
+            o.detect_collision(self.player)
+            o.update()
+            o.draw(self.room_image.map_surface)
+        if self.next_room:
+            self.next_room_image.clear_map()
+            self.player.draw(self.next_room_image.map_surface)
+        else:
+            self.player.draw(self.room_image.map_surface)
+        self.enemy_manager.draw_enemies(self.room_image.map_surface)
+        self.room_image.draw_map(self.screen)
+        if self.next_room:
+            self.next_room_image.draw_map(self.screen)
+        self.mini_map.draw(self.screen)
         self.hud.draw()
-        # self.particle_manager.draw_particles(self.screen)
+        self.particle_manager.draw_particles(self.screen)
 
     def input(self):
         self.player.input()
@@ -115,8 +117,8 @@ class Game:
             self.input()
             self.update_groups()
             self.draw_groups()
-            # self.next_level()
-            #self.game_time = pygame.time.get_ticks()
+            self.next_level()
+            self.game_time = pygame.time.get_ticks()
             self.display.blit(self.screen, (0, 0))
             pygame.display.update()
         pygame.quit()

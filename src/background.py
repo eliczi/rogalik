@@ -19,9 +19,10 @@ class BackgroundEffects:
         self.y = y
         self.radius = 25
         self.color = (54, 127, 188)
-        self.surface = pygame.Surface((utils.world_size[0] / 4, utils.world_size[1] / 4)).convert_alpha()
+        self.surface = pygame.Surface((utils.world_size[0] / 4, utils.world_size[1] / 4), pygame.SRCALPHA).convert_alpha()
         self.circles = []
         self.counter = 0
+        self.dest_surf = pygame.Surface(((utils.world_size[0], utils.world_size[1])),pygame.SRCALPHA).convert_alpha()
 
     def update(self):
         if self.counter == 3:
@@ -30,8 +31,8 @@ class BackgroundEffects:
                 circle.y -= 1
         else:
             self.counter += 1
-        #if random.randint(1, 10) % 10 == 0:
-            #self.add_circle()
+        if random.randint(1, 10) % 3 == 0:
+            self.add_circle()
 
     def add_circle(self):
         radius = random.randint(4, 25)
@@ -45,4 +46,4 @@ class BackgroundEffects:
         self.surface.fill((0, 0, 0, 0))
         for circle in self.circles:
             pygame.draw.circle(self.surface, circle.color, (circle.x, circle.y), circle.radius, circle.width)
-        surface.blit(pygame.transform.scale(self.surface, (utils.world_size[0], utils.world_size[1])), (0, 0))
+        surface.blit(pygame.transform.scale(self.surface, (utils.world_size[0], utils.world_size[1]),self.dest_surf), (0, 0))
