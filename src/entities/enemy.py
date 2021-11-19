@@ -112,14 +112,13 @@ class EnemyManager:
     def update_enemies(self):
         for enemy in self.enemy_list:
             enemy.update()
+        self.debug()
         self.check_collide()
 
     def check_collide(self):
-        self.debug()
         for enemy in self.enemy_list:
             # if 0.6 second has passed
-            if pygame.sprite.collide_mask(enemy,
-                                          self.game.player) and self.game.player.hurt is False and pygame.time.get_ticks():
+            if enemy.hitbox.colliderect(self.game.player.hitbox) and self.game.player.hurt is False:
                 self.game.player.time = self.game.game_time
                 self.game.player.hurt = True
             if (

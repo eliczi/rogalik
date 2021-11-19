@@ -12,7 +12,6 @@ class Entity:
         self.animation_database = load_animation_sprites(f'../assets/{name}/')
         self.image = pygame.transform.scale(pygame.image.load(f'../assets/{name}/idle/idle0.png'),
                                             utils.basic_entity_size).convert_alpha()
-        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(512, 400))
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.velocity = [0, 0]

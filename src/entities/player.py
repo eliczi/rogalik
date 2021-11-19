@@ -27,7 +27,7 @@ class Dust:
     def draw(self):
         if self.player.velocity:
             rect = (self.x, self.y,5,5)
-            pygame.draw.rect(self.player.game.room_image.map_surface, self.color, rect)
+            pygame.draw.rect(self.player.game.screen, self.color, rect)
 
 
 class Player(Entity):

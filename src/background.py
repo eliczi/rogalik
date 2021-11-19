@@ -29,16 +29,18 @@ class BackgroundEffects:
             self.counter = 0
             for circle in self.circles:
                 circle.y -= 1
+                if circle.y < -25:
+                    self.circles.remove(circle)
         else:
             self.counter += 1
-        if random.randint(1, 10) % 3 == 0:
+        if random.randint(1, 25)  == 1:
             self.add_circle()
 
     def add_circle(self):
         radius = random.randint(4, 25)
         color = (self.color[0] + random.randint(-50, 50), self.color[1] + random.randint(-5, 5),
                  self.color[2] + random.randint(-5, 5))
-        x, y = random.randint(-100, utils.world_size[0] + 100), utils.world_size[1]/4
+        x, y = random.randint(-25, utils.world_size[0]/4 + 25), utils.world_size[1]/4
         width = random.randint(0, 25)
         self.circles.append(self.Circle(radius, color, x, y, width))
 

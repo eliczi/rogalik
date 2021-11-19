@@ -1,5 +1,5 @@
 import random
-
+import cProfile
 import pygame
 import time
 import utils
@@ -50,7 +50,6 @@ class Game:
         self.mini_map = MiniMap(self, world_width, world_height)
         self.background = BackgroundEffects(0, 0)
 
-
     def game_over(self):
         self.__init__()
         pygame.display.flip()
@@ -58,8 +57,8 @@ class Game:
         self.run_game()
 
     def update_groups(self):
-        # for i in range(10):
-        #     self.particle_manager.add_fire_particles(Fire(self, i * 10, 100))
+        for i in range(0):
+            self.particle_manager.add_fire_particles(Fire(self, i * 10, 100))
         self.enemy_manager.update_enemy_list()
         self.enemy_manager.update_enemies()
         self.player.update()
@@ -70,18 +69,21 @@ class Game:
 
     def draw_groups(self):
         self.background.draw(self.screen)
-        self.room_image.clear_map()
+        #self.room_image.clear_map()
+        self.room_image.draw_map(self.screen)
         for o in self.room.objects:
             o.detect_collision(self.player)
             o.update()
-            o.draw(self.room_image.map_surface)
+            #o.draw(self.room_image.map_surface)
+            o.draw(self.screen)
         if self.next_room:
             self.next_room_image.clear_map()
             self.player.draw(self.next_room_image.map_surface)
         else:
-            self.player.draw(self.room_image.map_surface)
-        self.enemy_manager.draw_enemies(self.room_image.map_surface)
-        self.room_image.draw_map(self.screen)
+            #self.player.draw(self.room_image.map_surface)
+            self.player.draw(self.screen)
+        self.enemy_manager.draw_enemies(self.screen)
+
         if self.next_room:
             self.next_room_image.draw_map(self.screen)
         self.mini_map.draw(self.screen)
@@ -120,7 +122,7 @@ class Game:
             self.next_level()
             self.game_time = pygame.time.get_ticks()
             self.display.blit(self.screen, (0, 0))
-            pygame.display.update()
+            pygame.display.flip()
         pygame.quit()
         print("Exited the game loop. Game will quit...")
         quit()

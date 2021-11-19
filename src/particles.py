@@ -173,7 +173,7 @@ class ParticleManager:
         if self.particle_list:
             for particle in self.particle_list:
                 particle.update()
-        self.update_fire_particles()
+        #self.update_fire_particles()
 
     def draw_fire_particles(self, surface):
         self.surface.fill((0,0,0, 0))
@@ -196,4 +196,4 @@ class ParticleManager:
     def draw_particles(self, surface):
         for particle in self.particle_list:
             particle.draw(surface)
-        self.draw_fire_particles(surface)
+        #self.draw_fire_particles(surface)
