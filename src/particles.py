@@ -74,27 +74,28 @@ class Fire(Particle):
         self.draw_y = y
 
 
+
     def update(self):
-        if self.j > 360:  # Angle
-            self.j = 0
-        self.life -= 1
-        if self.life == 0:
-            self.game.particle_manager.fire_particles.remove(self)
-        self.i = int((self.life / self.max_life) * 6)
-        self.y -= 0.7  # rise
-        self.x += 0  # ((self.sin * sin(self.j / self.sin_r)) / 20)  # spread
-        if not random.randint(0, 5):
-            self.radius += 0.2  # circle radius, set to 10 for big bang
-        self.draw_x, self.draw_y = self.x, self.y
-        self.draw_x += self.ox * (5 - self.i)
-        self.draw_y += self.oy * (5 - self.i)
-        self.alpha = 255
-        if self.life < self.max_life / 4:
-            self.alpha = int((self.life / self.max_life) * 255)
+        if random.randint(1, 8) == 2:
+            if self.j > 360:  # Angle
+                self.j = 0
+            self.life -= 1
+            if self.life == 0:
+                self.game.particle_manager.fire_particles.remove(self)
+            self.i = int((self.life / self.max_life) * 6)
+            self.y -= 0.7  # rise
+            self.x += 0  # ((self.sin * sin(self.j / self.sin_r)) / 20)  # spread
+            if not random.randint(0, 5):
+                self.radius += 0.2  # circle radius, set to 10 for big bang
+            self.draw_x, self.draw_y = self.x, self.y
+            self.draw_x += self.ox * (5 - self.i)
+            self.draw_y += self.oy * (5 - self.i)
+            self.alpha = 255
+            if self.life < self.max_life / 4:
+                self.alpha = int((self.life / self.max_life) * 255)
 
     def draw(self, surface):
         alpha = 255
-
         pygame.draw.circle(surface,
                            self.color[self.i] + (alpha,),
                            (self.draw_x, self.draw_y),
@@ -173,7 +174,7 @@ class ParticleManager:
         if self.particle_list:
             for particle in self.particle_list:
                 particle.update()
-        #self.update_fire_particles()
+        self.update_fire_particles()
 
     def draw_fire_particles(self, surface):
         self.surface.fill((0,0,0, 0))
@@ -196,4 +197,4 @@ class ParticleManager:
     def draw_particles(self, surface):
         for particle in self.particle_list:
             particle.draw(surface)
-        #self.draw_fire_particles(surface)
+        self.draw_fire_particles(surface)

@@ -36,7 +36,7 @@ class Game:
         self.directions = None
         self.mini_map = None
         self.game_time = None
-        self.fps = 300
+        self.fps = 200
 
     def init_all(self):
         num_of_rooms = 10
@@ -57,8 +57,8 @@ class Game:
         self.run_game()
 
     def update_groups(self):
-        for i in range(0):
-            self.particle_manager.add_fire_particles(Fire(self, i * 10, 100))
+        # for i in range(10):
+        #     self.particle_manager.add_fire_particles(Fire(self, i * 10, 100))
         self.enemy_manager.update_enemy_list()
         self.enemy_manager.update_enemies()
         self.player.update()
@@ -74,13 +74,11 @@ class Game:
         for o in self.room.objects:
             o.detect_collision(self.player)
             o.update()
-            #o.draw(self.room_image.map_surface)
             o.draw(self.screen)
         if self.next_room:
             self.next_room_image.clear_map()
             self.player.draw(self.next_room_image.map_surface)
         else:
-            #self.player.draw(self.room_image.map_surface)
             self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
 
