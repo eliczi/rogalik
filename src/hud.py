@@ -34,9 +34,9 @@ class Hud:
         text2 = f'FPS: {str(int(self.game.clock.get_fps()))}'
         text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (700, 30))
-        # text3 = f'Position: {str(int(self.game.player.rect.x)), str(int(self.game.player.rect.y))}'
-        # text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
-        # self.game.screen.blit(text_surface, (700, 50))
+        text3 = f'Position: {str(int(self.game.player.rect.x)), str(int(self.game.player.rect.y))}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (700, 50))
 
     def draw(self):
         #self.game.screen.blit(self.hud_frame, self.rect)

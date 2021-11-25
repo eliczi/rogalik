@@ -1,6 +1,6 @@
 import pygame
 import random
-from map_generator import Room
+from map.map_generator import Room
 from particles import DeathAnimation
 from .entity import Entity
 
@@ -35,7 +35,7 @@ class Enemy(Entity):
         self.collision()
         if not self.dead and self.hp > 0:
             self.move()
-        self.wall_collision()
+        #self.wall_collision()
         if not self.dead and self.hp > 0:
             self.rect.move_ip(self.velocity)
             self.hitbox.move_ip(self.velocity)
@@ -57,9 +57,6 @@ class Enemy(Entity):
             dir_vector.scale_to_length(self.speed * 3 * dtick)
         self.set_velocity(dir_vector)
 
-    def check_pair_collision(self):
-        if any(self.rect.colliderect(enemy.rect) and self is not enemy for enemy in self.game.enemy_manager.enemy_list):
-            self.velocity = [-x for x in self.velocity]
 
     def collision(self):
         if self.hp <= 0 and self.dead is False:
@@ -67,7 +64,7 @@ class Enemy(Entity):
             self.entity_animation.animation_frame = 0
         if self.death_counter == 0:
             self.room.enemy_list.remove(self)
-            position = (self.rect.x + 64, self.rect.y + 32)
+            position = (self.rect.x, self.rect.y)
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position))
             del self
 
@@ -88,11 +85,11 @@ class Enemy(Entity):
         surface.blit(shape_surf, position)
 
     def draw(self, surface):  # if current room or the next room
-        #surface = self.room.tile_map.map_surface
-        #self.draw_shadow(surface)
+        # self.draw_shadow(surface)
         if self.room in [self.game.room, self.game.next_room]:
             self.draw_health(surface)
             surface.blit(self.image, self.rect)
+            pygame.draw.rect(surface, (255, 123, 123), self.hitbox, 2)
 
 
 class EnemyManager:
@@ -105,7 +102,7 @@ class EnemyManager:
     def update_enemy_list(self):
         self.enemy_list = self.game.room.enemy_list
 
-    def draw_enemies(self,surface):
+    def draw_enemies(self, surface):
         for enemy in self.enemy_list:
             enemy.draw(surface)
 
@@ -117,16 +114,15 @@ class EnemyManager:
 
     def check_collide(self):
         for enemy in self.enemy_list:
-            # if 0.6 second has passed
             if enemy.hitbox.colliderect(self.game.player.hitbox) and self.game.player.hurt is False:
                 self.game.player.time = self.game.game_time
                 self.game.player.hurt = True
             if (
-                self.game.player.weapon
-                and pygame.sprite.collide_mask(self.game.player.weapon, enemy)
-                and self.game.player.attacking
-                and self.game.game_time - enemy.time > 200
-                and enemy.dead is False
+                    self.game.player.weapon
+                    and pygame.sprite.collide_mask(self.game.player.weapon, enemy)
+                    and self.game.player.attacking
+                    and self.game.game_time - enemy.time > 200
+                    and enemy.dead is False
             ):
                 enemy.time = self.game.game_time
                 enemy.hurt = True
@@ -152,5 +148,5 @@ def add_enemies(game):
     for row in game.world.world:
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
-                room.enemy_list.append(Enemy(game, 15, 100, room, 'demon'))
-                room.enemy_list.append(Enemy(game, 15, 100, room, 'demon'))
+                for _ in range(1):
+                    room.enemy_list.append(Enemy(game, 15, 100, room, 'demon'))

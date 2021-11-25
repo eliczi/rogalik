@@ -3,7 +3,7 @@ import csv
 import random
 
 from objects.chest import Chest
-from map import TileMap, Spritesheet
+from .map import TileMap, Spritesheet
 from objects.weapon import Weapon
 from objects.flask import Flask
 from particles import Fire
@@ -198,4 +198,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[0, 1, 0, 5], k=1)[0]
+                    room.type = random.choices(self.types, weights=[0, 10, 0, 1], k=1)[0]

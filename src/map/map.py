@@ -30,7 +30,6 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
-        #self.mask = pygame.mask.from_surface(self.image)
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
@@ -39,9 +38,9 @@ class Tile(pygame.sprite.Sprite):
 class TileMap:
     def __init__(self, room, filename, spritesheet, ):
         self.room = room
-        self.map_width = len(filename[0][0])  # offset
-        self.map_height = len(filename[0])
-        self.map_size = (self.map_width * 64, self.map_height * 64)
+        self.map_width = len(filename[0][0])
+        self.map_height = len(filename[0]) + 1
+        self.map_size = (len(filename[0][0]) * 64, (len(filename[0]) + 1) * 64)
         self.tile_size = 64
         self.spritesheet = spritesheet
         self.wall_list = []
@@ -50,21 +49,21 @@ class TileMap:
         self.tiles = []
         self.load_tiles(filename)
         self.original_map_surface = pygame.Surface(self.map_size).convert()
-        self.original_map_surface.set_colorkey((0, 0, 0))
         self.map_surface = None
-        # self.map_surface = pygame.Surface(self.map_size).convert_alpha()
-        # self.map_surface.set_colorkey((0, 0, 0))
-        self.x, self.y = 64, 32  # position of map surface on screen surface
+        self.x, self.y = 0, 0  # position of map surface on screen surface
+        self.game = None
         self.load_map()
 
     def correct_map_position(self):
-        if self.y != 32:
-            self.y = 32
-        if self.x != 64:
-            self.x = 64
+        if self.y != 0:
+            self.y = 0
+        if self.x != 0:
+            self.x = 0
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
+        for tile in self.entrances:
+            pygame.draw.rect(surface, (255, 123, 123), tile.tile.rect, 3)
 
     def clear_map(self):
         self.map_surface = self.original_map_surface.copy()
@@ -83,21 +82,21 @@ class TileMap:
         return b * 16, a * 16
 
     def add_entrance(self, tile):
-        if tile.rect.y == 64:
+        if tile.rect.y == 64 + 32:
             self.entrances.append(self.door('up', -1, tile))
-        if tile.rect.y == 640 + 64:
+        if tile.rect.y == 640 + 64 + 32:
             self.entrances.append(self.door('down', 1, tile))
-        if tile.rect.x == 64:
+        if tile.rect.x == 64 + 64:
             self.entrances.append(self.door('left', -1, tile))
-        if tile.rect.x > 16 * 64:
+        if tile.rect.x > 16 * 64 + 64:
             self.entrances.append(self.door('right', 1, tile))
 
     def load_tiles(self, filename):
         for file in filename:
             tiles = []
-            x, y = 0, 0
+            x, y = 0, 32
             for row in file:
-                x = 0
+                x = 64
                 for tile in row:
                     tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
                     self.add_entrance(tiles[-1])
@@ -123,12 +122,12 @@ class TileMap:
             game.next_room = game.world.world[game.x][game.y + value]
             game.next_room_image = game.next_room.tile_map
             game.next_room_image.x = utils.world_size[0]
-            game.player.rect.x = 112
+            game.player.rect.x = 200
         elif direction == 'left':
             game.next_room = game.world.world[game.x][game.y + value]
             game.next_room_image = game.next_room.tile_map
             game.next_room_image.x = 0 - 17 * 64
-            game.player.rect.x = 1000
+            game.player.rect.x = 1100
 
     def move_rooms(self, direction, value, game):
         anim_speed = 832 / 12
@@ -142,7 +141,7 @@ class TileMap:
                 game.next_room_image.x -= value * anim_speed
 
     def animation(self, direction, game, value):
-        if direction == 'up' and self.y < utils.world_size[1] + 32:
+        if direction == 'up' and self.y < utils.world_size[1]:
             if self.y + self.map_height * 64 + 64 > utils.world_size[1] and game.next_room is None:  # + 64 is of offset
                 self.initialise_next_room(game, value, direction)  # to bottom edge
             self.move_rooms(direction, value, game)
@@ -174,7 +173,7 @@ class TileMap:
         game.room = game.world.world[game.x][game.y]
         game.room_image = game.room.tile_map
         game.player.can_move = True
-        self.x, self.y = 64, 32
+        self.x, self.y = 0, 0
         game.next_room = None
         game.room_image.correct_map_position()
 

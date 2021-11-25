@@ -10,23 +10,23 @@ class Dust:
         self.player = player
         self.x = x
         self.y = y
-        self.color = (173, 173, 172, 200)
+        self.color = pygame.Color(173, 173, 172, 0)
         self.life = random.randint(4, 5)
 
     def update(self):
         if self.player.velocity:
             if self.player.velocity[0] > 0:
-                self.x -= random.randint(1, 2)/4
+                self.x -= random.randint(1, 2) / 4
             elif self.player.velocity[0] < 0:
-                self.x += random.randint(1, 2)/4
-            self.y -= random.randint(-2, 3)/4
+                self.x += random.randint(1, 2) / 4
+            self.y -= random.randint(-2, 3) / 4
             self.life -= 0.5
             if self.life < 0:
                 self.player.walking_particles.remove(self)
 
     def draw(self):
         if self.player.velocity:
-            rect = (self.x, self.y,5,5)
+            rect = (self.x, self.y, 5, 5)
             pygame.draw.rect(self.player.game.screen, self.color, rect)
 
 
@@ -109,9 +109,14 @@ class Player(Entity):
     def shift_items_left(self):
         self.items = self.items[1:] + [self.items[0]]
 
-    def update(self) -> None:
-        """s"""
+    def show_current_tile(self):
+        room_tiles = self.game.room.tile_map.tiles
+        for tile in room_tiles[3]:
+            print(tile.rect)
 
+
+    def update(self) -> None:
+        #self.show_current_tile()
         if self.weapon:
             self.weapon.update()
         self.entity_animation.update()
@@ -123,16 +128,15 @@ class Player(Entity):
 
     def draw(self, surface):
         """S"""
-        if (self.velocity[0] != 0 or self.velocity[1] !=0) and random.randint(1,8) % 4 == 0:
+        if (self.velocity[0] != 0 or self.velocity[1] != 0) and random.randint(1, 8) % 4 == 0:
             self.walking_particles.append(Dust(self, *self.rect.midbottom))
         for p in self.walking_particles:
             p.update()
             p.draw()
-        #self.draw_shadow(surface)
+        # self.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw(surface)
-
 
     def render(self):  # Render weapon
         """s"""

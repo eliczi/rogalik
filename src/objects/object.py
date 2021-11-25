@@ -112,6 +112,6 @@ class Object:
         pass
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect)
+        surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
         if self.interaction:
             self.show_name.draw(surface, self.rect)
