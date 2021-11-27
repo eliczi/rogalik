@@ -100,7 +100,7 @@ class EnemyManager:
         self.time = 0
 
     def update_enemy_list(self):
-        self.enemy_list = self.game.room.enemy_list
+        self.enemy_list = self.game.world_manager.current_room.enemy_list
 
     def draw_enemies(self, surface):
         for enemy in self.enemy_list:
@@ -145,7 +145,7 @@ class EnemyManager:
 
 
 def add_enemies(game):
-    for row in game.world.world:
+    for row in game.world_manager.world.world:
         for room in row:
             if isinstance(room, Room) and room.type == 'normal':
                 for _ in range(1):

@@ -36,7 +36,7 @@ class Entity:
     def wall_collision(self):
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
         collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
-        for wall in self.game.room_image.wall_list:
+        for wall in self.game.world_manager.current_map.wall_list:
             if any(wall.hitbox.collidepoint(point) for point in collide_points):
                 self.velocity = [0, 0]
 

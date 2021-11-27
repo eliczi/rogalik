@@ -184,7 +184,6 @@ class Weapon(Object):
 
     def draw(self, surface):
         #self.slash_image.draw(surface)
-
         surface.blit(self.image, (self.rect))
         if self.interaction:
             self.show_name.draw(surface, self.rect)

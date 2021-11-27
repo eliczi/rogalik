@@ -184,6 +184,7 @@ class World:
                         #room.objects.append(Flask(self.game, room, (660, 300)))
 
     def print_world(self):
+        print('-'*10)
         for row in self.world:
             for room in row:
                 if isinstance(room, Room):

@@ -12,7 +12,6 @@ class Hud:
         self.rect.midtop = (21 / 2 * 64, utils.world_size[1] - 1.4 * 64)
         self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4],
                                 [708 + 8, self.position[1] + 4]]
-        print(utils.world_size[0] / 2 * 64)
 
     def draw_items(self):
         # works for 3 items

@@ -49,6 +49,7 @@ class TileMap:
         self.tiles = []
         self.load_tiles(filename)
         self.original_map_surface = pygame.Surface(self.map_size).convert()
+        self.original_map_surface.set_colorkey((0, 0, 0, 0))
         self.map_surface = None
         self.x, self.y = 0, 0  # position of map surface on screen surface
         self.game = None
@@ -62,8 +63,8 @@ class TileMap:
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
-        for tile in self.entrances:
-            pygame.draw.rect(surface, (255, 123, 123), tile.tile.rect, 3)
+        # for tile in self.entrances:
+        #     pygame.draw.rect(surface, (255, 123, 123), tile.tile.rect, 3)
 
     def clear_map(self):
         self.map_surface = self.original_map_surface.copy()
@@ -73,7 +74,7 @@ class TileMap:
         for layer in self.tiles:
             for tile in layer:
                 tile.draw(self.original_map_surface)
-        self.map_surface = self.original_map_surface
+        self.clear_map()
 
     @staticmethod
     def get_location(number):
@@ -106,82 +107,3 @@ class TileMap:
                 y += self.tile_size
             self.tiles.append(tiles)
 
-    @staticmethod
-    def initialise_next_room(game, value, direction):
-        if direction == 'up':
-            game.next_room = game.world.world[game.x + value][game.y]
-            game.next_room_image = game.next_room.tile_map
-            game.next_room_image.y = -13 * 64
-            game.player.rect.y -= value * 7 * 64
-        elif direction == 'down':
-            game.next_room = game.world.world[game.x + value][game.y]
-            game.next_room_image = game.next_room.tile_map
-            game.next_room_image.y = utils.world_size[1]
-            game.player.rect.y -= value * 8 * 64
-        elif direction == 'right':
-            game.next_room = game.world.world[game.x][game.y + value]
-            game.next_room_image = game.next_room.tile_map
-            game.next_room_image.x = utils.world_size[0]
-            game.player.rect.x = 200
-        elif direction == 'left':
-            game.next_room = game.world.world[game.x][game.y + value]
-            game.next_room_image = game.next_room.tile_map
-            game.next_room_image.x = 0 - 17 * 64
-            game.player.rect.x = 1100
-
-    def move_rooms(self, direction, value, game):
-        anim_speed = 832 / 12
-        if direction in ('up', 'down'):
-            self.y -= value * anim_speed
-            if game.next_room:
-                game.next_room_image.y -= value * anim_speed
-        else:
-            self.x -= value * anim_speed
-            if game.next_room:
-                game.next_room_image.x -= value * anim_speed
-
-    def animation(self, direction, game, value):
-        if direction == 'up' and self.y < utils.world_size[1]:
-            if self.y + self.map_height * 64 + 64 > utils.world_size[1] and game.next_room is None:  # + 64 is of offset
-                self.initialise_next_room(game, value, direction)  # to bottom edge
-            self.move_rooms(direction, value, game)
-
-        elif direction == 'down' and self.y > - 13 * 64:
-            if self.y < 0 and game.next_room is None:
-                self.initialise_next_room(game, value, direction)
-            self.move_rooms(direction, value, game)
-
-        elif direction == 'right' and self.x + 64 > - 17 * 64:
-            if self.x < 0 and game.next_room is None:
-                self.initialise_next_room(game, value, direction)
-            self.move_rooms(direction, value, game)
-
-        elif direction == 'left' and self.x < utils.world_size[0] + 64:
-            if self.x > 5 * 64 and game.next_room is None:
-                self.initialise_next_room(game, value, direction)
-            self.move_rooms(direction, value, game)
-
-        else:
-            if direction in ('up', 'down'):
-                game.x += value
-            elif direction in ('right', 'left'):
-                game.y += value
-            game.directions = None
-            self.change_room(game)
-
-    def change_room(self, game):
-        game.room = game.world.world[game.x][game.y]
-        game.room_image = game.room.tile_map
-        game.player.can_move = True
-        self.x, self.y = 0, 0
-        game.next_room = None
-        game.room_image.correct_map_position()
-
-    def load_level(self, game, direction, value):
-        self.animation(direction, game, value)
-
-    def detect_passage(self, player):
-        collide_points = (player.hitbox.midbottom, player.hitbox.bottomleft, player.hitbox.bottomright)
-        for door in self.entrances:
-            if any(door.tile.rect.collidepoint(point) for point in collide_points):
-                return door.direction, door.value
