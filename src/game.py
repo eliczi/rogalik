@@ -86,6 +86,8 @@ class Game:
             self.update_groups()
             self.draw_groups()
             self.game_time = pygame.time.get_ticks()
+            pygame.draw.line(self.screen, (255, 255,255), (utils.world_size[0]/2, 0),(utils.world_size[0]/2, utils.world_size[1]), 2)
+            pygame.draw.line(self.screen, (255, 255,255), (0,utils.world_size[1]/2),(utils.world_size[0], utils.world_size[1]/2), 2)
             self.display.blit(self.screen, (0, 0))
             pygame.display.flip()
         pygame.quit()

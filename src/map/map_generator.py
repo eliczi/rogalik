@@ -149,6 +149,11 @@ class World:
         if 'down' not in doors:
             room_map[9][9] = 2
             room_map[10][9] = 33
+            room_map[10][8] = 33
+            room_map[10][10] = 33
+            room_map[11][8] = -1
+            room_map[11][9] = -1
+            room_map[11][10] = -1
             if file == 'floor_layer':
                 room_map[9][9] = 130
 

@@ -58,8 +58,10 @@ class TileMap:
     def correct_map_position(self):
         if self.y != 0:
             self.y = 0
+            print('corrected')
         if self.x != 0:
             self.x = 0
+            print('corrected')
 
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
@@ -106,4 +108,3 @@ class TileMap:
                     x += self.tile_size
                 y += self.tile_size
             self.tiles.append(tiles)
-
