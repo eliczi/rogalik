@@ -3,11 +3,19 @@ import pygame
 
 class ObjectManager:
     def __init__(self, game):
-        self.current_objects = None
+        self.current_objects = []
         self.game = game
 
+    def set_current_objects(self):
+        self.current_objects.clear()
+        for obj in self.game.world_manager.current_room.objects:
+            self.current_objects.append(obj)
+        if self.game.world_manager.next_room:
+            for obj in self.game.world_manager.next_room.objects:
+                self.current_objects.append(obj)
+
     def update(self):
-        self.current_objects = self.game.world_manager.current_room.objects
+        self.set_current_objects()
         for o in self.current_objects:
             o.detect_collision()
             o.update()
@@ -20,10 +28,4 @@ class ObjectManager:
         for o in self.current_objects:
             if o.interaction:
                 o.interact()
-
-    def move_objects(self):
-        for o in self.current_objects:
-            pass
-
-
 

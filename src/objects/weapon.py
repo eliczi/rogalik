@@ -48,10 +48,11 @@ class WeaponSwing:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
                 self.weapon.shadow += 5 / self.hover_value
-            if self.weapon.rect.y > 300:
+            if pygame.time.get_ticks() % 1000 < 500:
                 self.hover_value = -5
-            elif self.weapon.rect.y <= 295:
+            elif pygame.time.get_ticks() % 1000 > 500:
                 self.hover_value = 5
+
             self.counter += 1
 
 
@@ -186,9 +187,11 @@ class Weapon(Object):
 
     def draw(self):
         surface = self.room.tile_map.map_surface
-        #self.slash_image.draw(surface)
-        if surface:
-            surface.blit(self.image, (self.rect))
+        if self.player:
+            surface = self.game.screen
+        self.slash_image.draw(surface)
+        # if surface:
+        #     surface.blit(self.image, (self.rect))
         surface.blit(self.image, (self.rect))
         if self.interaction:
             self.show_name.draw(surface, self.rect)

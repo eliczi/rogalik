@@ -38,21 +38,24 @@ class Chest(Object):
             position = (self.rect.x + 2.5 * 64, self.rect.y + 64)
             self.game.particle_manager.add_particle(ChestParticle(self.game, *position))
 
-    def update(self):
-        self.chest_particles()
+    def change_chest_state(self):
         if self.open and self.animation_frame <= 2:
             self.animation_frame += 1 / 20
             self.image = pygame.image.load(
                 f'../assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
-        elif self.animation_frame > 2 and self.animation_frame <= 3:
+        elif 2 < self.animation_frame <= 3:
             self.animation_frame += 1 / 20
-
-        elif self.open and self.animation_frame > 3:
+        elif self.open:
             self.image = pygame.image.load(
-                f'../assets/chest/empty/chest_empty2.png').convert_alpha()
+                '../assets/chest/empty/chest_empty2.png'
+            ).convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
             self.drop_items()
+
+    def update(self):
+        self.chest_particles()
+        self.change_chest_state()
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -63,7 +66,7 @@ class Chest(Object):
             self.image = pygame.image.load('../assets/chest/full/chest_picked.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
         elif self.interaction:
-            self.image = pygame.image.load(f'../assets/chest/full/chest_full0.png').convert_alpha()
+            self.image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
 
     def interact(self):

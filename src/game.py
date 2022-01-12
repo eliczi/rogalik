@@ -55,7 +55,8 @@ class Game:
         self.enemy_manager.draw_enemies(self.screen)
         #self.mini_map.draw(self.screen)
         self.hud.draw()
-        self.particle_manager.draw_particles(self.screen)
+        #self.particle_manager.draw_particles(self.screen)
+        self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
 
     def input(self):
         self.player.input()

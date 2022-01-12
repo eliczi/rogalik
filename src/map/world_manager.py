@@ -1,6 +1,7 @@
 from .map_generator import World
 import utils
 
+
 # Responsible for moving player across the rooms and animation
 
 
@@ -34,8 +35,6 @@ class WorldManager:
     def draw_map(self, surface):
         self.current_map.draw_map(surface)
         if self.next_room:
-            for o in self.next_room.objects:
-                o.draw()
             self.next_room_map.draw_map(surface)
 
     def move_rooms(self, direction, value):
@@ -48,7 +47,6 @@ class WorldManager:
             self.current_map.x -= value * anim_speed
             self.next_room_map.x -= value * anim_speed
             self.game.player.rect.x -= value * anim_speed
-
         self.end_condition()
 
     def update(self):
@@ -77,12 +75,12 @@ class WorldManager:
     def initialize_next_room(self, direction):
         if direction == 'up':
             self.set_next_room(self.world.world[self.x - 1][self.y])
-            self.next_room_map.y = -13 * 64 # hard code
+            self.next_room_map.y = -13 * 64  # hard code
             self.game.player.rect.y = 0 - 6.3 * 64
         elif direction == 'down':
             self.set_next_room(self.world.world[self.x + 1][self.y])
             self.next_room_map.y = utils.world_size[1]
-            self.game.player.rect.y = 0 +20 * 64
+            self.game.player.rect.y = 0 + 20 * 64
         elif direction == 'right':
             self.set_next_room(self.world.world[self.x][self.y + 1])
             self.next_room_map.x = utils.world_size[0]

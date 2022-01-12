@@ -49,7 +49,7 @@ class Coin(Object):
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
             self.game.player.gold += 1
-            self.game.room.objects.remove(self)
+            self.game.world_manager.current_room.objects.remove(self)
 
     def draw(self):
         surface = self.room.tile_map.map_surface
