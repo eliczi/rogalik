@@ -45,8 +45,8 @@ class Chest(Object):
             self.image = pygame.image.load(
                 f'../assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
-        elif self.animation_frame > 2 and self.animation_frame <=3:
-            self.animation_frame += 1/20
+        elif self.animation_frame > 2 and self.animation_frame <= 3:
+            self.animation_frame += 1 / 20
 
         elif self.open and self.animation_frame > 3:
             self.image = pygame.image.load(
@@ -54,11 +54,12 @@ class Chest(Object):
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
             self.drop_items()
 
-    def draw(self, surface):
+    def draw(self):
+        surface = self.room.tile_map.map_surface
         surface.blit(self.image, self.rect)
 
-    def detect_collision(self, player):
-        if player.rect.colliderect(self.rect) and self.interaction:
+    def detect_collision(self):
+        if self.game.player.hitbox.colliderect(self.rect) and self.interaction:
             self.image = pygame.image.load('../assets/chest/full/chest_picked.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
         elif self.interaction:
@@ -68,7 +69,7 @@ class Chest(Object):
     def interact(self):
         self.open = True
         self.interaction = False
-        #self.drop_items()
+        # self.drop_items()
 
     def drop_items(self):
         for i, item in enumerate(self.items):

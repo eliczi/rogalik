@@ -99,9 +99,6 @@ class EnemyManager:
         self.sprites = None
         self.time = 0
 
-    def update_enemy_list(self):
-        self.enemy_list = self.game.world_manager.current_room.enemy_list
-
     def draw_enemies(self, surface):
         for enemy in self.enemy_list:
             enemy.draw(surface)
@@ -129,7 +126,7 @@ class EnemyManager:
                 enemy.hp -= self.game.player.weapon.damage
 
     def add_enemies(self):
-        for row in self.game.world.world:
+        for row in self.game.world_manager.world.world:
             for room in row:
                 if isinstance(room, Room) and room.type == 'normal':
                     room.enemy_list.append(Enemy(self.game, 15, 100, room, 'demon'))

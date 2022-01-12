@@ -55,15 +55,14 @@ class Player(Entity):
             self.direction = 'right'
         if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300:
             self.time = pygame.time.get_ticks()
-            for o in self.game.room.objects:
-                if o.interaction:
-                    o.interact()
+            self.game.object_manager.interact()
+
         if pressed[pygame.K_q] and self.weapon and pygame.time.get_ticks() - self.time > 300:
             self.time = pygame.time.get_ticks()
-            self.weapon.dropped = True
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]
+
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
@@ -114,9 +113,8 @@ class Player(Entity):
         for tile in room_tiles[3]:
             print(tile.rect)
 
-
     def update(self) -> None:
-        #self.show_current_tile()
+        # self.show_current_tile()
         if self.weapon:
             self.weapon.update()
         self.entity_animation.update()
@@ -136,7 +134,7 @@ class Player(Entity):
         # self.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.weapon:
-            self.weapon.draw(surface)
+            self.weapon.draw()
 
     def render(self):  # Render weapon
         """s"""

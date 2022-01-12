@@ -46,12 +46,13 @@ class Coin(Object):
             self.rect.x = self.bounce.x
             self.rect.y = self.bounce.y
 
-    def detect_collision(self, player):
+    def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
             self.game.player.gold += 1
             self.game.room.objects.remove(self)
 
-    def draw(self, surface):
+    def draw(self):
+        surface = self.room.tile_map.map_surface
         surface.blit(self.image, self.rect)
         # pygame.draw.rect(surface, (255, 123, 123), self.rect, 2)
 

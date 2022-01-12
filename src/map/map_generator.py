@@ -8,6 +8,7 @@ from objects.weapon import Weapon
 from objects.flask import Flask
 from particles import Fire
 
+
 class Room:
     def __init__(self, x, y):
         self.x = x  # position in game world
@@ -183,13 +184,13 @@ class World:
                         room.objects.append(Chest(self.game, room))
                     elif room.type == 'starting_room':
                         room.objects.append(Weapon(self.game, 100, 'anime_sword', (36, 90), room, (300, 300)))
-                        #room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
-                        #room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
+                        # room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
+                        # room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
                         # room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
-                        #room.objects.append(Flask(self.game, room, (660, 300)))
+                        # room.objects.append(Flask(self.game, room, (660, 300)))
 
     def print_world(self):
-        print('-'*10)
+        print('-' * 10)
         for row in self.world:
             for room in row:
                 if isinstance(room, Room):
@@ -204,4 +205,4 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[0, 10, 0, 1], k=1)[0]
+                    room.type = random.choices(self.types, weights=[0, 10, 0, 10], k=1)[0]

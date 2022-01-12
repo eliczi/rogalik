@@ -1,19 +1,21 @@
 from .map_generator import World
 import utils
 
+# Responsible for moving player across the rooms and animation
+
 
 class WorldManager:
-    number_of_rooms = 2
-    world_width = 2
-    world_height = 1
+    number_of_rooms = 4
+    world_width = 4
+    world_height = 4
     map_width = 13
     map_height = 19
 
     def __init__(self, game):
         self.game = game
-        self.world = World(self, self.number_of_rooms, self.world_width, self.world_height)
-        self.x, self.y = self.world.starting_room.x, self.world.starting_room.y  #
-        self.current_room = self.room = self.world.starting_room
+        self.world = World(self.game, self.number_of_rooms, self.world_width, self.world_height)
+        self.x, self.y = self.world.starting_room.x, self.world.starting_room.y
+        self.current_room = self.world.starting_room
         self.current_map = self.current_room.tile_map
         self.next_room = None
         self.next_room_map = None
@@ -32,6 +34,8 @@ class WorldManager:
     def draw_map(self, surface):
         self.current_map.draw_map(surface)
         if self.next_room:
+            for o in self.next_room.objects:
+                o.draw()
             self.next_room_map.draw_map(surface)
 
     def move_rooms(self, direction, value):
@@ -39,10 +43,12 @@ class WorldManager:
         if direction in ('up', 'down'):
             self.current_map.y -= value * anim_speed
             self.next_room_map.y -= value * anim_speed
+            self.game.player.rect.y -= value * anim_speed
         else:
             self.current_map.x -= value * anim_speed
             self.next_room_map.x -= value * anim_speed
             self.game.player.rect.x -= value * anim_speed
+
         self.end_condition()
 
     def update(self):
@@ -72,13 +78,15 @@ class WorldManager:
         if direction == 'up':
             self.set_next_room(self.world.world[self.x - 1][self.y])
             self.next_room_map.y = -13 * 64 # hard code
+            self.game.player.rect.y = 0 - 6.3 * 64
         elif direction == 'down':
             self.set_next_room(self.world.world[self.x + 1][self.y])
             self.next_room_map.y = utils.world_size[1]
+            self.game.player.rect.y = 0 +20 * 64
         elif direction == 'right':
             self.set_next_room(self.world.world[self.x][self.y + 1])
             self.next_room_map.x = utils.world_size[0]
-            self.game.player.rect.x = utils.world_size[0] + 3.5 * 64
+            self.game.player.rect.x = utils.world_size[0] + 3.3 * 64
         elif direction == 'left':
             self.set_next_room(self.world.world[self.x][self.y - 1])
             self.next_room_map.x = -19 * 64

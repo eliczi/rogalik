@@ -133,8 +133,8 @@ class Weapon(Object):
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)
 
-    def detect_collision(self, player):
-        if self.game.player.rect.colliderect(self.rect):
+    def detect_collision(self):
+        if self.game.player.hitbox.colliderect(self.rect):
             self.image = self.image_picked
             self.interaction = True
         else:
@@ -148,18 +148,19 @@ class Weapon(Object):
         self.player.items.append(self)
         if not self.player.weapon:
             self.player.weapon = self
-        if self.room == self.game.room:
+        if self.room == self.game.world_manager.current_room:
             self.room.objects.remove(self)
         self.interaction = False
         self.show_name.reset_line_length()
 
     def drop(self):
-        self.room = self.game.room
+        self.room = self.game.world_manager.current_room
         self.rect.x = self.player.rect.x
         self.rect.y = self.player.rect.y
         self.player.items.remove(self)
         self.player.weapon = None
-        self.game.room.objects.append(self)
+        self.game.world_manager.current_room.objects.append(self)
+        #self.game.room.objects.append(self)
         if self.player.items:
             self.player.weapon = self.player.items[-1]
         self.player = None
@@ -168,6 +169,7 @@ class Weapon(Object):
         """Update weapon position and state"""
         self.weapon_swing.hovering()
         if self.player:
+            self.interaction = False
             if self.weapon_swing.counter == 10:
                 self.original_image = pygame.transform.flip(self.original_image, 1, 0)
                 self.player.attacking = False
@@ -182,8 +184,11 @@ class Weapon(Object):
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox.midbottom = self.rect.midbottom
 
-    def draw(self, surface):
+    def draw(self):
+        surface = self.room.tile_map.map_surface
         #self.slash_image.draw(surface)
+        if surface:
+            surface.blit(self.image, (self.rect))
         surface.blit(self.image, (self.rect))
         if self.interaction:
             self.show_name.draw(surface, self.rect)

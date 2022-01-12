@@ -58,15 +58,13 @@ class TileMap:
     def correct_map_position(self):
         if self.y != 0:
             self.y = 0
-            print('corrected')
         if self.x != 0:
             self.x = 0
-            print('corrected')
 
     def draw_map(self, surface):
+
         surface.blit(self.map_surface, (self.x, self.y))
-        # for tile in self.entrances:
-        #     pygame.draw.rect(surface, (255, 123, 123), tile.tile.rect, 3)
+        self.clear_map()
 
     def clear_map(self):
         self.map_surface = self.original_map_surface.copy()

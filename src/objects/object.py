@@ -82,7 +82,7 @@ class Object:
         self.hud_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
 
-    def detect_collision(self, player):
+    def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
             self.game.player.interaction = True
             self.image = self.image_picked
@@ -111,7 +111,9 @@ class Object:
     def interact(self):
         pass
 
-    def draw(self, surface):
-        surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
+    def draw(self):
+        surface = self.room.tile_map.map_surface
+        self.room.room_map.map_surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
+        #surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
         if self.interaction:
             self.show_name.draw(surface, self.rect)
