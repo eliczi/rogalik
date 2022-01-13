@@ -9,9 +9,8 @@ class MiniMap:
     offset_x = 10
     offset_y = 10
 
-    def __init__(self, game, width, height):
+    def __init__(self, game):
         self.game = game
-        self.height, self.width = height, width
         self.current_room = None
         self.current_x, self.current_y = None, None
         self.color = (150, 148, 153)
@@ -35,6 +34,7 @@ class MiniMap:
         self.adjacent_rooms = copy.deepcopy(self.current_room.neighbours)
 
     def update(self):
+        self.set_current_room(self.game.world_manager.current_room)
         self.positions()
 
     def positions(self):

@@ -27,7 +27,7 @@ class Game:
         self.menu = MainMenu(self)
         self.hud = Hud(self)
         self.running = True
-        self.mini_map = None
+        self.mini_map = MiniMap(self)
         self.game_time = None
         self.fps = 60
         self.background = BackgroundEffects()
@@ -41,11 +41,10 @@ class Game:
         self.enemy_manager.update_enemies()
         self.player.update()
         self.particle_manager.update_particles()
-        #self.mini_map.set_current_room(self.world_manager.current_room)
-        #self.mini_map.update()
         self.background.update()
         self.object_manager.update()
         self.world_manager.update()
+        self.mini_map.update()
 
     def draw_groups(self):
         self.background.draw(self.screen)
@@ -53,7 +52,7 @@ class Game:
         self.object_manager.draw()
         self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
-        #self.mini_map.draw(self.screen)
+        self.mini_map.draw(self.screen)
         self.hud.draw()
         #self.particle_manager.draw_particles(self.screen)
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)

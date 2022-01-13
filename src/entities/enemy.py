@@ -80,15 +80,13 @@ class Enemy(Entity):
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
         pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] -5]
+        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
         surface.blit(shape_surf, position)
 
     def draw(self, surface):  # if current room or the next room
         self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
-
         self.draw_health(self.room.tile_map.map_surface)
-
 
 
 class EnemyManager:
@@ -101,15 +99,22 @@ class EnemyManager:
     def draw_enemies(self, surface):
         for enemy in self.game.world_manager.current_room.enemy_list:
             enemy.draw(surface)
+        if self.game.world_manager.next_room:
+            for enemy in self.game.world_manager.next_room.enemy_list:
+                enemy.draw(surface)
 
     def set_enemy_list(self):
-        self.enemy_list.clear() # unnecessary to clear and repopulate list every loop, but no better idea for now
+        self.enemy_list.clear()  # unnecessary to clear and repopulate list every loop, but no better idea for now
         for enemy in self.game.world_manager.current_room.enemy_list:
             self.enemy_list.append(enemy)
 
     def update_enemies(self):
+        self.set_enemy_list()
         for enemy in self.game.world_manager.current_room.enemy_list:
             enemy.update()
+        if self.game.world_manager.next_room:
+            for enemy in self.game.world_manager.next_room.enemy_list:
+                enemy.update()
         self.debug()
         self.check_collide()
 
@@ -141,7 +146,6 @@ class EnemyManager:
             mx, my = pygame.mouse.get_pos()
             mx -= 64  # because we are rendering player on map_surface
             my -= 32
-            self.game.room.enemy_list.append(Enemy(self.game, 15, 100, self.game.room, 'demon'))
-            self.game.room.enemy_list[-1].rect.topleft = (mx, my)
-
-
+            self.game.world_manager.current_room.enemy_list.append(
+                Enemy(self.game, 15, 100, self.game.world_manager.current_room, 'demon'))
+            self.game.world_manager.current_room.enemy_list[-1].rect.topleft = (mx, my)

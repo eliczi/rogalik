@@ -27,15 +27,18 @@ class Hud:
                 # 2 > 2 or -1
 
     def draw_info(self):
-        # text = f'Gold: {str(self.game.player.gold)}'
-        # text_surface = pygame.font.Font(utils.font, 15).render(text, True, (255, 255, 255))
-        # self.game.screen.blit(text_surface, (700, 10))
+        text = f'Gold: {str(self.game.player.gold)}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (0, 100))
         text2 = f'FPS: {str(int(self.game.clock.get_fps()))}'
         text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
-        self.game.screen.blit(text_surface, (700, 30))
+        self.game.screen.blit(text_surface, (0, 120))
         text3 = f'Position: {str(int(self.game.player.rect.x)), str(int(self.game.player.rect.y))}'
         text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
-        self.game.screen.blit(text_surface, (700, 50))
+        self.game.screen.blit(text_surface, (0, 140))
+        text4 = f'HP: {str(self.game.player.hp)}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text4, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (0, 160))
 
     def draw(self):
         #self.game.screen.blit(self.hud_frame, self.rect)
