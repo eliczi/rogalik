@@ -83,5 +83,4 @@ class Game:
             self.display.blit(self.screen, (0, 0))
             pygame.display.flip()
         pygame.quit()
-        print("Exited the game loop. Game will quit...")
         quit()

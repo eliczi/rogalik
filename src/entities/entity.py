@@ -32,7 +32,6 @@ class Entity:
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity
 
-
     def wall_collision(self):
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
         collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)

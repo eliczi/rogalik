@@ -37,22 +37,31 @@ class WorldManager:
         if self.next_room:
             self.next_room_map.draw_map(surface)
 
+    def move_entities(self, direction, value, anim_speed = 30):
+        if direction in ('up', 'down'):
+            self.game.player.rect.y -= value * anim_speed
+            for entity in self.game.enemy_manager.enemy_list:
+                entity.rect.y -= value * anim_speed
+        else:
+            self.game.player.rect.x -= value * anim_speed
+            for entity in self.game.enemy_manager.enemy_list:
+                entity.rect.x -= value * anim_speed
+
     def move_rooms(self, direction, value):
         anim_speed = 30
         if direction in ('up', 'down'):
             self.current_map.y -= value * anim_speed
             self.next_room_map.y -= value * anim_speed
-            self.game.player.rect.y -= value * anim_speed
         else:
             self.current_map.x -= value * anim_speed
             self.next_room_map.x -= value * anim_speed
-            self.game.player.rect.x -= value * anim_speed
         self.end_condition()
 
     def update(self):
         self.detect_next_room()
         if self.switch_room:
             self.move_rooms(self.direction, self.value)
+            self.move_entities(self.direction, self.value)
 
     def detect_next_room(self):  # checks if player goes through one of 4 possible doors
         if not self.switch_room:

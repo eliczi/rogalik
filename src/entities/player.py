@@ -108,13 +108,7 @@ class Player(Entity):
     def shift_items_left(self):
         self.items = self.items[1:] + [self.items[0]]
 
-    def show_current_tile(self):
-        room_tiles = self.game.room.tile_map.tiles
-        for tile in room_tiles[3]:
-            print(tile.rect)
-
     def update(self) -> None:
-        # self.show_current_tile()
         if self.weapon:
             self.weapon.update()
         self.entity_animation.update()
@@ -135,7 +129,6 @@ class Player(Entity):
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw()
-        pygame.draw.rect(surface, (255,255,255), self.rect, 1)
 
     def render(self):  # Render weapon
         """s"""

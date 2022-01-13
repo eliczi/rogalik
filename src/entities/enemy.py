@@ -24,7 +24,7 @@ class Enemy(Entity):
         self.death_counter = 30
         self.spawn()
 
-    def detect_collistion(self):
+    def detect_collision(self):
         pass
 
     def spawn(self):
@@ -35,7 +35,7 @@ class Enemy(Entity):
         self.collision()
         if not self.dead and self.hp > 0:
             self.move()
-        #self.wall_collision()
+        # self.wall_collision()
         if not self.dead and self.hp > 0:
             self.rect.move_ip(self.velocity)
             self.hitbox.move_ip(self.velocity)
@@ -56,7 +56,6 @@ class Enemy(Entity):
             dir_vector.normalize()
             dir_vector.scale_to_length(self.speed * 3 * dtick)
         self.set_velocity(dir_vector)
-
 
     def collision(self):
         if self.hp <= 0 and self.dead is False:
@@ -81,15 +80,15 @@ class Enemy(Entity):
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
         pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 20]
+        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] -5]
         surface.blit(shape_surf, position)
 
     def draw(self, surface):  # if current room or the next room
-        # self.draw_shadow(surface)
-        if self.room in [self.game.room, self.game.next_room]:
-            self.draw_health(surface)
-            surface.blit(self.image, self.rect)
-            pygame.draw.rect(surface, (255, 123, 123), self.hitbox, 2)
+        self.draw_shadow(self.room.tile_map.map_surface)
+        self.room.tile_map.map_surface.blit(self.image, self.rect)
+
+        self.draw_health(self.room.tile_map.map_surface)
+
 
 
 class EnemyManager:
@@ -100,11 +99,16 @@ class EnemyManager:
         self.time = 0
 
     def draw_enemies(self, surface):
-        for enemy in self.enemy_list:
+        for enemy in self.game.world_manager.current_room.enemy_list:
             enemy.draw(surface)
 
+    def set_enemy_list(self):
+        self.enemy_list.clear() # unnecessary to clear and repopulate list every loop, but no better idea for now
+        for enemy in self.game.world_manager.current_room.enemy_list:
+            self.enemy_list.append(enemy)
+
     def update_enemies(self):
-        for enemy in self.enemy_list:
+        for enemy in self.game.world_manager.current_room.enemy_list:
             enemy.update()
         self.debug()
         self.check_collide()
@@ -141,9 +145,3 @@ class EnemyManager:
             self.game.room.enemy_list[-1].rect.topleft = (mx, my)
 
 
-def add_enemies(game):
-    for row in game.world_manager.world.world:
-        for room in row:
-            if isinstance(room, Room) and room.type == 'normal':
-                for _ in range(1):
-                    room.enemy_list.append(Enemy(game, 15, 100, room, 'demon'))
