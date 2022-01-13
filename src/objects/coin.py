@@ -18,7 +18,7 @@ class Coin(Object):
         self.images = []
         Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.dropped = False
-        self.bounce = Bounce(self.rect.x, self.rect.y)
+        self.bounce = Bounce(self.rect.x, self.rect.y, self.chest.rect.bottom + random.randint(-50, 50))
         self.animation_frame = 0
 
     def load_image(self):
@@ -29,7 +29,7 @@ class Coin(Object):
         self.image = self.images[0]
 
     def update_animation_frame(self):
-        self.animation_frame += 1.5/15#random.randint(10, 20)/100
+        self.animation_frame += 1.5/15 #random.randint(10, 20)/100
         if self.animation_frame > 3:
             self.animation_frame = 0
         self.image = self.images[int(self.animation_frame)]
@@ -52,19 +52,17 @@ class Coin(Object):
             self.game.world_manager.current_room.objects.remove(self)
 
     def draw(self):
-        surface = self.room.tile_map.map_surface
-        surface.blit(self.image, self.rect)
-        # pygame.draw.rect(surface, (255, 123, 123), self.rect, 2)
+        self.room.tile_map.map_surface.blit(self.image, self.rect)
 
 
 class Bounce:
-    def __init__(self, x, y):
+    def __init__(self, x, y, limit):
         self.speed = random.uniform(0.5, 0.6)  # 0.5
-        self.angle = random.randrange(-10, 10, 2)#random.randint(-10, 10) / 10  # random.choice([10, -10])
+        self.angle = random.randint(-10, 10) / 10  # random.choice([10, -10])
         self.drag = 0.999
         self.elasticity = random.uniform(0.75, 0.9)  # 0.75
         self.gravity = (math.pi, 0.002)
-        self.limit = 6 * 64
+        self.limit = limit
         self.x, self.y = x, y
 
     @staticmethod
@@ -82,8 +80,8 @@ class Bounce:
         self.speed *= self.drag
 
     def bounce(self):
-        if self.y > self.limit - 48:
-            self.y = 2 * (self.limit - 48) - self.y
+        if self.y > self.limit:
+            self.y = 2 * self.limit - self.y
             self.angle = math.pi - self.angle
             self.speed *= self.elasticity
 

@@ -135,6 +135,7 @@ class Player(Entity):
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw()
+        pygame.draw.rect(surface, (255,255,255), self.rect, 1)
 
     def render(self):  # Render weapon
         """s"""

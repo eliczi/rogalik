@@ -18,7 +18,7 @@ class Chest(Object):
         self.image = None
         Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.rect = self.image.get_rect()
-        self.rect.midbottom = (19 * 64 / 2, 6 * 64)
+        self.rect.midbottom = (21 * 64 / 2, 7.25 * 64)
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
         self.animation_frame = 0
         self.open = False
@@ -35,8 +35,8 @@ class Chest(Object):
 
     def chest_particles(self):
         if random.randint(0, 30) == 5 and not self.open:
-            position = (self.rect.x + 2.5 * 64, self.rect.y + 64)
-            self.game.particle_manager.add_particle(ChestParticle(self.game, *position))
+            position = (self.rect.x + 0.5 * 64, self.rect.y)
+            self.game.particle_manager.add_particle(ChestParticle(self.game, *position, self))
 
     def change_chest_state(self):
         if self.open and self.animation_frame <= 2:
@@ -51,15 +51,14 @@ class Chest(Object):
                 '../assets/chest/empty/chest_empty2.png'
             ).convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
-            self.drop_items()
+            self.drop_items() # at the last frame of animation, drop items
 
     def update(self):
         self.chest_particles()
         self.change_chest_state()
 
     def draw(self):
-        surface = self.room.tile_map.map_surface
-        surface.blit(self.image, self.rect)
+        self.room.tile_map.map_surface.blit(self.image, self.rect)
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect) and self.interaction:

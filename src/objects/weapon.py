@@ -190,9 +190,7 @@ class Weapon(Object):
         if self.player:
             surface = self.game.screen
         self.slash_image.draw(surface)
-        # if surface:
-        #     surface.blit(self.image, (self.rect))
-        surface.blit(self.image, (self.rect))
+        surface.blit(self.image,self.rect)
         if self.interaction:
             self.show_name.draw(surface, self.rect)
-        #pygame.draw.rect(surface, (255,255,255), self.hitbox, 5)
+        pygame.draw.rect(surface, (255,255,255), self.rect, 1)

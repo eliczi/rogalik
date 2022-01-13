@@ -76,11 +76,11 @@ class WorldManager:
         if direction == 'up':
             self.set_next_room(self.world.world[self.x - 1][self.y])
             self.next_room_map.y = -13 * 64  # hard code
-            self.game.player.rect.y = 0 - 6.3 * 64
+            self.game.player.rect.y = -6.3 * 64
         elif direction == 'down':
             self.set_next_room(self.world.world[self.x + 1][self.y])
             self.next_room_map.y = utils.world_size[1]
-            self.game.player.rect.y = 0 + 20 * 64
+            self.game.player.rect.y = 20 * 64
         elif direction == 'right':
             self.set_next_room(self.world.world[self.x][self.y + 1])
             self.next_room_map.x = utils.world_size[0]
@@ -88,7 +88,7 @@ class WorldManager:
         elif direction == 'left':
             self.set_next_room(self.world.world[self.x][self.y - 1])
             self.next_room_map.x = -19 * 64
-            self.game.player.rect.x = 0 - 2.3 * 64
+            self.game.player.rect.x = -2.3 * 64
 
     def end_condition(self):
         if self.next_room_map.x <= 0 and self.direction == 'right':

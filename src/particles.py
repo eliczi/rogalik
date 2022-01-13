@@ -114,12 +114,13 @@ class Fire(Particle):
 
 
 class ChestParticle(Particle):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, chest):
         super().__init__(game, x, y)
         self.color = [(232, 209, 58, 125), (255, 255, 255, 124), (232, 67, 58, 125)]
         self.radius = 4
         self.life = 1
         self.counter = 0
+        self.chest = chest
         # self.surface = pygame.Surface((64, 128)).convert_alpha()
 
     def update(self):
@@ -130,9 +131,10 @@ class ChestParticle(Particle):
         if self.life <= 0:
             self.game.particle_manager.particle_list.remove(self)
 
-    def draw(self, surface):
+    def draw(self, surface = None):
         color = random.choice(self.color)
-        pygame.draw.rect(surface, color, (self.x, self.y, 8, 8))
+        base_surface = self.chest.room.tile_map.map_surface
+        pygame.draw.rect(base_surface, color, (self.x, self.y, 8, 8))
         # pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
         # self.surface = pygame.transform.scale(self.surface, (256, 512))
         # self.game.screen.blit(self.surface, (250, 250))
