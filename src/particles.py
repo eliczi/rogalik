@@ -1,9 +1,10 @@
 import pygame
 import random
 from math import sin
-
+import math
 import utils
 import time
+from objects.coin import Bounce
 
 
 class Particle:
@@ -12,6 +13,28 @@ class Particle:
         self.x = x
         self.y = y
         self.life = None  # how long should particle live(frames)
+
+
+class BounceParticle(Particle):
+    color = (255, 0, 0)
+    radius = random.randint(3, 8)
+
+    def __init__(self, game, x, y, limit):
+        super().__init__(game, x, y)
+        self.bounce = Bounce(x, y, limit)
+        self.life = 50
+
+    def update(self):
+        if self.bounce.speed < 0.001:
+            self.bounce.reset()
+        for _ in range(15):
+            self.bounce.move()
+            self.bounce.bounce()
+        self.x = self.bounce.x
+        self.y = self.bounce.y
+
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
 
 
 class EnemyHitParticle(Particle):
@@ -23,7 +46,7 @@ class EnemyHitParticle(Particle):
         self.y += random.randint(-1, 1)
         self.radius -= 0.20
         if self.radius <= 0:
-            self.game.particles.remove(self)
+            self.game.particle_manager.particle_list.remove(self)
 
     def draw(self, surface):
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
@@ -41,7 +64,7 @@ class WallHitParticle(Particle):
         self.radius -= 0.7
 
         if self.radius <= 0:
-            self.game.particles.remove(self)
+            self.game.particle_manager.particle_list.remove(self)
 
     def draw(self, surface):
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
@@ -72,8 +95,6 @@ class Fire(Particle):
         self.alpha = None
         self.draw_x = x
         self.draw_y = y
-
-
 
     def update(self):
         if random.randint(1, 8) == 2:
@@ -131,7 +152,7 @@ class ChestParticle(Particle):
         if self.life <= 0:
             self.game.particle_manager.particle_list.remove(self)
 
-    def draw(self, surface = None):
+    def draw(self, surface=None):
         color = random.choice(self.color)
         base_surface = self.chest.room.tile_map.map_surface
         pygame.draw.rect(base_surface, color, (self.x, self.y, 8, 8))
@@ -141,17 +162,20 @@ class ChestParticle(Particle):
 
 
 class DeathAnimation:
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, entity='normal'):
         self.game = game
         self.x = x
         self.y = y
         self.images = []
+        self.entity = entity
         self.load_images()
         self.counter = -0.5
 
     def load_images(self):
         for i in range(12):
             self.images.append(pygame.image.load(f'../assets/vfx/death/death{i + 1}.png').convert_alpha())
+            if self.entity == 'boss':
+                self.images[-1] = pygame.transform.scale(self.images[-1], (96, 96))
 
     def update(self):
         self.counter += 0.4
@@ -179,7 +203,7 @@ class ParticleManager:
         self.update_fire_particles()
 
     def draw_fire_particles(self, surface):
-        self.surface.fill((0,0,0, 0))
+        self.surface.fill((0, 0, 0, 0))
         for fire in self.fire_particles:
             fire.draw(self.surface)
 

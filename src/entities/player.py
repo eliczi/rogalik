@@ -3,7 +3,8 @@ from math import sqrt
 import random
 from objects.weapon import Weapon
 from .entity import Entity
-
+from .animation import load_animation_sprites
+from utils import get_mask_rect
 
 class Dust:
     def __init__(self, player, x, y):
@@ -33,17 +34,34 @@ class Dust:
 class Player(Entity):
     def __init__(self, game):
         Entity.__init__(self, game, 'player')
+        self.rect = self.image.get_rect(center=(512, 400))
         self.speed = 100
-        self.hp = 100
+        self.max_hp = 60
+        self.hp = self.max_hp
         self.weapon = None
         self.attacking = False
         self.items = []
-        self.interaction = False
+        self.interaction = True
         self.gold = 0
         self.walking_particles = []
+        self.size = 64
+        self.shield = 0
+        self.strength = 1
+
+    def enlarge(self):
+        self.size *= 1.01
+        self.animation_database = load_animation_sprites('../assets/player/', (self.size, self.size))
+        self.rect = self.image.get_rect(center=(512, 400))
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+
+    def unlarge(self):
+        self.size /= 1.01
+        self.animation_database = load_animation_sprites('../assets/player/', (self.size, self.size))
+        self.rect = self.image.get_rect(center=(512, 400))
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+
 
     def input(self):
-        """s"""
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_w]:
             self.direction = 'up'
@@ -62,6 +80,14 @@ class Player(Entity):
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]
+        if pressed[pygame.K_p]:
+            self.enlarge()
+            self.weapon.enlarge()
+            self.game.world_manager.current_map.enlarge()
+        if pressed[pygame.K_o]:
+            self.unlarge()
+            self.weapon.unlarge()
+
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
@@ -95,9 +121,8 @@ class Player(Entity):
         else:
             self.set_velocity(vel_list)
         if pygame.mouse.get_pressed()[
-            0] and pygame.time.get_ticks() - self.time > 600 and self.weapon:  # player attacking
+            0] and pygame.time.get_ticks() - self.time > 400 and self.weapon:  # player attacking
             self.time = pygame.time.get_ticks()
-            # pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/sword.wav'))
             self.attacking = True
             self.weapon.weapon_swing.swing_side *= (-1)
             self.game.counter = 0
@@ -118,8 +143,14 @@ class Player(Entity):
             self.hitbox.move_ip(*self.velocity)
         self.update_hitbox()
 
+    def calculate_collision(self, enemy):
+        if not self.shield and enemy.attack():
+            self.hp -= enemy.damage
+            self.hurt = True
+
     def draw(self, surface):
-        """S"""
+        # pygame.draw.rect(self.game.screen, (255,255, 255), self.rect, 2)
+        # pygame.draw.rect(self.game.screen, (255,255, 255), self.hitbox, 2)
         if (self.velocity[0] != 0 or self.velocity[1] != 0) and random.randint(1, 8) % 4 == 0:
             self.walking_particles.append(Dust(self, *self.rect.midbottom))
         for p in self.walking_particles:
@@ -129,16 +160,3 @@ class Player(Entity):
         surface.blit(self.image, self.rect)
         if self.weapon:
             self.weapon.draw()
-
-    def render(self):  # Render weapon
-        """s"""
-        pass
-        # start = pygame.math.Vector2(self.rect.midright)
-        # mouse = pygame.mouse.get_pos()
-        # end = start + (mouse - start).normalize() * self.gun_length
-
-        # pygame.draw.lines(self.game.screen, (255, 255, 255), False, (start, end), width=self.gun_width)
-
-    def assign_weapon(self, weapon: Weapon):
-        """Assigning weapon to player"""
-        self.weapon = weapon

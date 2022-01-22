@@ -5,6 +5,7 @@ class ObjectManager:
     def __init__(self, game):
         self.current_objects = []
         self.game = game
+        self.interaction = True
 
     def set_current_objects(self):
         self.current_objects.clear()
@@ -17,7 +18,8 @@ class ObjectManager:
     def update(self):
         self.set_current_objects()
         for o in self.current_objects:
-            o.detect_collision()
+            if self.interaction:
+                o.detect_collision()
             o.update()
 
     def draw(self):
@@ -28,4 +30,3 @@ class ObjectManager:
         for o in self.current_objects:
             if o.interaction:
                 o.interact()
-

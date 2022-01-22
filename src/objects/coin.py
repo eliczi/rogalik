@@ -12,13 +12,11 @@ class Coin(Object):
     size = (16, 16)
 
     def __init__(self, game, room=None, chest=None):
-        self.game = game
-        self.room = room
         self.chest = chest
         self.images = []
         Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.dropped = False
-        self.bounce = Bounce(self.rect.x, self.rect.y, self.chest.rect.bottom + random.randint(-50, 50))
+        self.bounce = Bounce(self.rect.x, self.rect.y, self.chest.rect.bottom + random.randint(-123, 123))
         self.animation_frame = 0
 
     def load_image(self):

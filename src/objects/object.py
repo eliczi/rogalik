@@ -1,6 +1,5 @@
 import pygame
 from utils import get_mask_rect
-from PIL import Image
 import utils
 
 
@@ -83,8 +82,7 @@ class Object:
         self.image = self.original_image
 
     def detect_collision(self):
-        if self.game.player.hitbox.colliderect(self.rect):
-            self.game.player.interaction = True
+        if self.game.player.hitbox.colliderect(self.rect) and self.game.player.interaction:
             self.image = self.image_picked
             self.interaction = True
         else:
@@ -108,12 +106,16 @@ class Object:
     def update(self):
         pass
 
+    def update_hitbox(self):
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.hitbox.midbottom = self.rect.midbottom
+
     def interact(self):
         pass
 
     def draw(self):
         surface = self.room.tile_map.map_surface
-        self.room.room_map.map_surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
-        surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
+        # self.room.tile_map.map_surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
+        surface.blit(self.image, (self.rect.x, self.rect.y))
         if self.interaction:
             self.show_name.draw(surface, self.rect)

@@ -23,7 +23,7 @@ class Chest(Object):
         self.animation_frame = 0
         self.open = False
         self.items = []  # items in chest
-        for _ in range(10):
+        for _ in range(20):
             self.items.append(Coin(game, room, self))
         self.interaction = True
         self.counter = 0
@@ -54,6 +54,7 @@ class Chest(Object):
             self.drop_items() # at the last frame of animation, drop items
 
     def update(self):
+        self.chest_collision()
         self.chest_particles()
         self.change_chest_state()
 
@@ -68,6 +69,12 @@ class Chest(Object):
             self.image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
 
+    def chest_collision(self):
+        test_rect = self.game.player.hitbox.move(*self.game.player.velocity)
+        collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
+        if any(self.hitbox.collidepoint(point) for point in collide_points):
+            self.game.player.velocity = [0, 0]
+
     def interact(self):
         self.open = True
         self.interaction = False
@@ -77,8 +84,8 @@ class Chest(Object):
         for i, item in enumerate(self.items):
             item.rect.midtop = self.rect.topleft
             item.dropped = True
-            item.bounce.x = self.rect.x
-            item.bounce.y = self.rect.y
+            item.bounce.x = self.hitbox.midtop[0]
+            item.bounce.y = self.hitbox.midtop[1]
             self.room.objects.append(item)
             self.items.remove(item)
 

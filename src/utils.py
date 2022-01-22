@@ -15,7 +15,7 @@ font = '../assets/font/Minecraft.ttf'
 wall_side_left, wall_side_right = 256, 257
 wall_side_left_top, wall_side_right_top = 224, 225
 wall_side_front_left, wall_side_front_right = 288, 289
-
+map_center = []
 
 def read_csv(filename):
     mapa = []
@@ -128,30 +128,4 @@ class PlayerInfo:
             center=(self.pos[0], self.pos[1] + 5 * self.space_between))
 
 
-class FPSCounter:
-    def __init__(self, game, surface, font_main, clock, pos):
-        self.game = game
-        self.surface = surface
-        self.font = font_main
-        self.clock = clock
-        self.pos = pos
-        self.fps_text = self.font.render(str(self.game.clock.get_fps()) + "FPS", False, (0, 0, 0))
-        self.fps_text_rect = self.fps_text.get_rect(center=(self.pos[0], self.pos[1]))
 
-    def render(self):
-        """
-
-        :return:
-        :rtype:
-        """
-        self.surface.blit(self.fps_text, self.fps_text_rect)
-
-    def update(self):
-        """
-
-        :return:
-        :rtype:
-        """
-        text = f"{self.game.clock.get_fps():2.0f} FPS"
-        self.fps_text = self.font.render(text, False, WHITE)
-        self.fps_text_rect = self.fps_text.get_rect(center=(self.pos[0], self.pos[1]))

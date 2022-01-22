@@ -6,7 +6,7 @@ import utils
 
 
 class WorldManager:
-    number_of_rooms = 4
+    number_of_rooms = 7
     world_width = 4
     world_height = 4
     map_width = 13
@@ -37,15 +37,11 @@ class WorldManager:
         if self.next_room:
             self.next_room_map.draw_map(surface)
 
-    def move_entities(self, direction, value, anim_speed = 30):
+    def move_entities(self, direction, value, anim_speed=30):
         if direction in ('up', 'down'):
             self.game.player.rect.y -= value * anim_speed
-            for entity in self.game.enemy_manager.enemy_list:
-                entity.rect.y -= value * anim_speed
         else:
             self.game.player.rect.x -= value * anim_speed
-            for entity in self.game.enemy_manager.enemy_list:
-                entity.rect.x -= value * anim_speed
 
     def move_rooms(self, direction, value):
         anim_speed = 30
@@ -62,6 +58,7 @@ class WorldManager:
         if self.switch_room:
             self.move_rooms(self.direction, self.value)
             self.move_entities(self.direction, self.value)
+
 
     def detect_next_room(self):  # checks if player goes through one of 4 possible doors
         if not self.switch_room:
@@ -80,16 +77,18 @@ class WorldManager:
         self.initialize_next_room(direction)
         self.switch_room = True
         self.game.player.can_move = False
+        self.game.player.interaction = False
+        self.game.object_manager.interaction = False
 
     def initialize_next_room(self, direction):
         if direction == 'up':
             self.set_next_room(self.world.world[self.x - 1][self.y])
             self.next_room_map.y = -13 * 64  # hard code
-            self.game.player.rect.y = -6.3 * 64
+            self.game.player.rect.y = -3.3 * 64
         elif direction == 'down':
             self.set_next_room(self.world.world[self.x + 1][self.y])
             self.next_room_map.y = utils.world_size[1]
-            self.game.player.rect.y = 20 * 64
+            self.game.player.rect.y = 16 * 64
         elif direction == 'right':
             self.set_next_room(self.world.world[self.x][self.y + 1])
             self.next_room_map.x = utils.world_size[0]
@@ -113,10 +112,14 @@ class WorldManager:
         self.current_map.correct_map_position()
         self.next_room_map.correct_map_position()
         self.set_current_room(self.world.world[self.x][self.y])
-        self.game.player.can_move = True
         self.set_next_room()
+        self.game.player.can_move = True
+        self.game.player.interaction = True
+        self.game.object_manager.interaction = True
 
     def stop_room_change(self):
         self.switch_room = False
         self.x, self.y = self.next_room.x, self.next_room.y
         self.change_room()
+
+

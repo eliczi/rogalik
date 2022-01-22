@@ -3,7 +3,7 @@ import pygame
 import utils
 
 
-def load_animation_sprites(path):
+def load_animation_sprites(path, size=utils.basic_entity_size):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
     animation_data = {"IDLE": [], "WALK": [], "RUN": [], 'HURT': [], 'DEAD': []}
@@ -13,7 +13,7 @@ def load_animation_sprites(path):
         for sub_state in sub_states:
             key = state.upper()  # key to dictionary
             animation_image = pygame.image.load(path + state + '/' + sub_state).convert_alpha()
-            animation_image = pygame.transform.scale(animation_image, utils.basic_entity_size)
+            animation_image = pygame.transform.scale(animation_image, size)
             animation_data[key].append(animation_image)
     return animation_data
 
@@ -32,7 +32,6 @@ class EntityAnimation:
         self.animation_direction = 'right' if self.entity.velocity[0] >= 0 else 'left'
 
     def update_animation_frame(self):
-        """sss"""
         self.animation_frame += 1.5 / 15
         if self.animation_frame >= 4:
             self.animation_frame = 0
@@ -48,7 +47,6 @@ class EntityAnimation:
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
     def death_animation(self):
-        state = 'DEAD'
         self.animation_frame += 1.0 / 15
         if self.animation_frame >= 4:
             self.entity.death_counter = 0

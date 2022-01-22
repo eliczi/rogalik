@@ -52,7 +52,6 @@ class WeaponSwing:
                 self.hover_value = -5
             elif pygame.time.get_ticks() % 1000 > 500:
                 self.hover_value = 5
-
             self.counter += 1
 
 
@@ -108,10 +107,12 @@ class SlashImage:
 
 class Weapon(Object):
     def __init__(self, game, damage, name, size, room=None, position=None):
+        self.scale = 3
         Object.__init__(self, game, name, 'weapon', size, room, position)
         self.damage = damage
         self.size = size
         self.player = None
+
         self.load_image()
         if position:
             self.rect.x, self.rect.y = position[0], position[1]
@@ -124,7 +125,7 @@ class Weapon(Object):
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.size = tuple(3 * x for x in Image.open(f'../assets/weapon/{self.name}/{self.name}.png').size)
+        self.size = tuple(self.scale * x for x in Image.open(f'../assets/weapon/{self.name}/{self.name}.png').size)
         self.original_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
         self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
@@ -133,6 +134,16 @@ class Weapon(Object):
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)
+
+    def enlarge(self):
+        self.scale *= 1.01
+        self.load_image()
+        self.weapon_swing.offset *=1.01
+
+    def unlarge(self):
+        self.scale /= 1.01
+        self.load_image()
+        self.weapon_swing.offset /=1.01
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
@@ -156,14 +167,16 @@ class Weapon(Object):
 
     def drop(self):
         self.room = self.game.world_manager.current_room
-        self.rect.x = self.player.rect.x
-        self.rect.y = self.player.rect.y
         self.player.items.remove(self)
         self.player.weapon = None
         self.game.world_manager.current_room.objects.append(self)
-        #self.game.room.objects.append(self)
         if self.player.items:
             self.player.weapon = self.player.items[-1]
+
+        self.rect = self.image.get_rect()
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.rect.x = self.player.rect.x
+        self.rect.y = self.player.rect.y
         self.player = None
 
     def update(self):
@@ -181,15 +194,13 @@ class Weapon(Object):
                 self.weapon_swing.rotate()
         self.update_hitbox()
 
-    def update_hitbox(self):
-        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
-        self.hitbox.midbottom = self.rect.midbottom
-
     def draw(self):
+        # pygame.draw.rect(self.game.screen, (255,255, 0), self.rect, 2)
+        # pygame.draw.rect(self.game.screen, (255,255, 0), self.hitbox, 2)
         surface = self.room.tile_map.map_surface
         if self.player:
             surface = self.game.screen
-        #self.slash_image.draw(surface)
-        surface.blit(self.image,self.rect)
+        # self.slash_image.draw(surface)
+        surface.blit(self.image, self.rect)
         if self.interaction:
             self.show_name.draw(surface, self.rect)

@@ -10,6 +10,7 @@ from hud import Hud
 from background import BackgroundEffects
 from map.world_manager import WorldManager
 from objects.object_manager import ObjectManager
+from game_over import GameOver
 pygame.init()
 pygame.mixer.init()
 
@@ -31,20 +32,21 @@ class Game:
         self.game_time = None
         self.fps = 60
         self.background = BackgroundEffects()
+        self.game_over = GameOver(self)
 
-    def game_over(self):
+    def refresh(self):
         self.__init__()
         pygame.display.flip()
         self.run_game()
 
     def update_groups(self):
         self.enemy_manager.update_enemies()
+        self.object_manager.update()
         self.player.update()
         self.particle_manager.update_particles()
         self.background.update()
-        self.object_manager.update()
         self.world_manager.update()
-        self.mini_map.update()
+        #self.mini_map.update()
 
     def draw_groups(self):
         self.background.draw(self.screen)
@@ -52,7 +54,7 @@ class Game:
         self.object_manager.draw()
         self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
-        self.mini_map.draw(self.screen)
+        #self.mini_map.draw(self.screen)
         self.hud.draw()
         #self.particle_manager.draw_particles(self.screen)
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
@@ -64,7 +66,7 @@ class Game:
                 pygame.quit()
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
-            self.game_over()
+            self.refresh()
         if pressed[pygame.K_TAB]:
             self.mini_map.draw_all(self.screen)
         if pressed[pygame.K_ESCAPE]:

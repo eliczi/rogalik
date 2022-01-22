@@ -1,8 +1,6 @@
-import csv
-import os
 import pygame
 from collections import namedtuple
-
+import math
 import utils
 
 
@@ -23,10 +21,11 @@ class Spritesheet(object):
 
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, rectangle, x, y, spritesheet):
+    def __init__(self, rectangle, x, y, spritesheet, size):
         pygame.sprite.Sprite.__init__(self)
+        self.size = size
         self.image = spritesheet.image_at(rectangle)
-        self.image = pygame.transform.scale(self.image, (64, 64))
+        self.image = pygame.transform.scale(self.image, self.size)
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
@@ -36,17 +35,17 @@ class Tile(pygame.sprite.Sprite):
 
 
 class TileMap:
-    def __init__(self, room, filename, spritesheet, ):
+    def __init__(self, room, filename, spritesheet, tile_size=64):
         self.room = room
         self.map_width = len(filename[0][0])
         self.map_height = len(filename[0]) + 1
         self.map_size = (len(filename[0][0]) * 64, (len(filename[0]) + 1) * 64)
-        self.tile_size = 64
+        self.tile_size = tile_size
         self.spritesheet = spritesheet
         self.wall_list = []
         self.door = namedtuple('Door', ['direction', 'value', 'tile'])
-        self.entrances = []
         self.tiles = []
+        self.filename = filename
         self.load_tiles(filename)
         self.original_map_surface = pygame.Surface(self.map_size).convert()
         self.original_map_surface.set_colorkey((0, 0, 0, 0))
@@ -62,9 +61,10 @@ class TileMap:
             self.x = 0
 
     def draw_map(self, surface):
-
         surface.blit(self.map_surface, (self.x, self.y))
         self.clear_map()
+        # for wall in self.wall_list:
+        #     pygame.draw.rect(surface, (255, 255, 255), wall.rect, 2)
 
     def clear_map(self):
         self.map_surface = self.original_map_surface.copy()
@@ -82,25 +82,22 @@ class TileMap:
         b = number % 32
         return b * 16, a * 16
 
-    def add_entrance(self, tile):
-        if tile.rect.y == 64 + 32:
-            self.entrances.append(self.door('up', -1, tile))
-        if tile.rect.y == 640 + 64 + 32:
-            self.entrances.append(self.door('down', 1, tile))
-        if tile.rect.x == 64 + 64:
-            self.entrances.append(self.door('left', -1, tile))
-        if tile.rect.x > 16 * 64 + 64:
-            self.entrances.append(self.door('right', 1, tile))
+    def enlarge(self):
+        self.tile_size *= 1.01
+        self.tile_size = math.ceil(self.tile_size)
+        self.tiles.clear()
+        self.load_tiles(self.filename)
+        self.load_map()
 
     def load_tiles(self, filename):
         for file in filename:
             tiles = []
-            x, y = 0, 32
+            x, y = 0, self.tile_size / 2
             for row in file:
-                x = 64
+                x = self.tile_size
                 for tile in row:
-                    tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet))
-                    self.add_entrance(tiles[-1])
+                    tiles.append(Tile((*self.get_location(int(tile)), 16, 16), x, y, self.spritesheet,
+                                      (self.tile_size, self.tile_size)))
                     if int(tile) in utils.wall_list:
                         self.wall_list.append(tiles[-1])
                     x += self.tile_size
