@@ -181,7 +181,7 @@ class Boss:
                        'boss'))
 
     def half_circle_shoot(self):
-        
+        pass
 
     def draw(self):
         self.draw_shadow(self.room.tile_map.map_surface)
