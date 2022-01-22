@@ -7,6 +7,15 @@ from particles import DeathAnimation
 from bullet import Bullet
 
 
+def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
+    pygame.draw.rect(surf, back_c, (*pos, *size))
+    pygame.draw.rect(surf, border_c, (*pos, *size), 1)
+    inner_pos = (pos[0] + 1, pos[1] + 1)
+    inner_size = ((size[0] - 2) * progress, size[1] - 2)
+    rect = (round(inner_pos[0]), round(inner_pos[1]), round(inner_size[0]), round(inner_size[1]))
+    pygame.draw.rect(surf, health_c, rect)
+
+
 def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
@@ -90,6 +99,7 @@ class Boss:
         self.image = pygame.transform.scale(pygame.image.load(f'../assets/{self.name}/idle/idle0.png'),
                                             (96, 96)).convert_alpha()
         self.rect = self.image.get_rect(center=(512, 400))
+        self.rect.midbottom = (21 * 64 / 2, 7.25 * 64)
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.boss_animation = BossAnimation(self)
         self.velocity = [0, 0]
@@ -101,9 +111,12 @@ class Boss:
         self.time = 0
         self.speed = 10
         self.death_counter = 15
-        self.hp = 100
+        self.hp = 200
+        self.max_hp = 200
         self.bullets = pygame.sprite.Group()
         self.cool_down = 0
+        self.damage = 10
+        self.shooter = Shooting(self)
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -120,6 +133,14 @@ class Boss:
         if pygame.time.get_ticks() - self.cool_down > 1000:
             self.cool_down = pygame.time.get_ticks()
             return True
+
+    def draw_health(self, surf):
+        if self.hp < self.max_hp:
+            health_rect = pygame.Rect(0, 0, 20, 5)
+            health_rect.midbottom = self.rect.centerx, self.rect.top
+            health_rect.midbottom = self.rect.centerx, self.rect.top
+            draw_health_bar(surf, health_rect.topleft, health_rect.size,
+                            (1, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
 
     def wall_collision(self):
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
@@ -139,10 +160,15 @@ class Boss:
 
     def update(self):
         self.detect_death()
-        self.move()
-        self.shoot()
+        if self.can_move:
+            self.move()
+            self.shooter.shoot()
+        # self.half_circle_shoot()
+        else:
+            self.shooter.machine_gun()
         self.wall_collision()
         self.boss_animation.update()
+        self.shooter.update()
 
     def move(self):
         if not self.dead and self.hp > 0:
@@ -173,19 +199,68 @@ class Boss:
         if pygame.time.get_ticks() - time > amount:
             return True
 
-    def shoot(self):
-        if self.time_passed(self.time, 1000):
+    def machine_gun_every_five_second(self):
+        if self.time_passed(self.time, 5000):
             self.time = pygame.time.get_ticks()
-            self.bullets.add(
-                Bullet(self, self.game, self.hitbox.center[0], self.hitbox.center[1], self.game.player.hitbox.center,
-                       'boss'))
+        self.can_move = False
 
     def half_circle_shoot(self):
-        pass
+        if self.time_passed(self.time, 1000):
+            self.time = pygame.time.get_ticks()
+            for i in range(-5, 5, 1):
+                self.bullets.add(
+                    Bullet(self, self.game, self.hitbox.center[0], self.hitbox.center[1],
+                           (self.game.player.hitbox.center[0] - 5 * i, self.game.player.hitbox.center[1] - 5 * i),
+                           'boss'))
 
     def draw(self):
         self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
+        self.shooter.draw()
+        self.draw_health(self.room.tile_map.map_surface)
+
+
+class Shooting:
+
+    def __init__(self, boss):
+        self.boss = boss
+        self.bullets = self.boss.bullets
+        self.shoot_time = 0
+        self.machine_time = 0
+        self.can_move_timer = 0
+
+    def update(self):
         for bullet in self.bullets:
             bullet.update()
+        self.moving_timer()
+
+    def draw(self):
+        for bullet in self.bullets:
             bullet.draw()
+
+    def time_passed(self, time, amount):
+        """Wait 'amount' amount of time"""
+        if pygame.time.get_ticks() - time > amount:
+            return True
+
+    def moving_timer(self):
+        """Wait 'amount' amount of time"""
+        if pygame.time.get_ticks() - self.can_move_timer > 10000:
+            self.can_move_timer = pygame.time.get_ticks()
+            self.boss.can_move = not self.boss.can_move
+
+    def shoot(self):
+        if self.time_passed(self.shoot_time, 1000):
+            self.shoot_time = pygame.time.get_ticks()
+            self.bullets.add(
+                Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
+                       self.boss.game.player.hitbox.center,
+                       'boss'))
+
+    def machine_gun(self):
+        if self.time_passed(self.machine_time, 100):
+            self.machine_time = pygame.time.get_ticks()
+            self.bullets.add(
+                Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
+                       self.boss.game.player.hitbox.center,
+                       'boss'))
