@@ -67,7 +67,8 @@ class MainMenu:
     def show(self):
         while self.running:
             self.input()
-
+            self.update()
+            self.draw()
             self.play_button.detect_action(pygame.mouse.get_pos())
             self.game.clock.tick(self.game.fps)
             self.game.display.blit(self.game.screen, (0, 0))
