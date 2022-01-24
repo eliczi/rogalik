@@ -125,7 +125,6 @@ class Player(Entity):
             self.time = pygame.time.get_ticks()
             self.attacking = True
             self.weapon.weapon_swing.swing_side *= (-1)
-            self.game.counter = 0
 
     def shift_items_right(self):
         self.items = [self.items[-1]] + self.items[:-1]
@@ -149,8 +148,7 @@ class Player(Entity):
             self.hurt = True
 
     def draw(self, surface):
-        # pygame.draw.rect(self.game.screen, (255,255, 255), self.rect, 2)
-        # pygame.draw.rect(self.game.screen, (255,255, 255), self.hitbox, 2)
+
         if (self.velocity[0] != 0 or self.velocity[1] != 0) and random.randint(1, 8) % 4 == 0:
             self.walking_particles.append(Dust(self, *self.rect.midbottom))
         for p in self.walking_particles:

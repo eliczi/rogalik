@@ -11,6 +11,7 @@ from background import BackgroundEffects
 from map.world_manager import WorldManager
 from objects.object_manager import ObjectManager
 from game_over import GameOver
+
 pygame.init()
 pygame.mixer.init()
 
@@ -25,14 +26,15 @@ class Game:
         self.particle_manager = ParticleManager(self)
         self.world_manager = WorldManager(self)
         self.object_manager = ObjectManager(self)
-        self.menu = MainMenu(self)
         self.hud = Hud(self)
         self.running = True
+        self.menu = MainMenu(self)
         self.mini_map = MiniMap(self)
         self.game_time = None
         self.fps = 60
         self.background = BackgroundEffects()
         self.game_over = GameOver(self)
+        self.can_exit = False
 
     def refresh(self):
         self.__init__()
@@ -46,7 +48,7 @@ class Game:
         self.particle_manager.update_particles()
         self.background.update()
         self.world_manager.update()
-        #self.mini_map.update()
+        # self.mini_map.update()
 
     def draw_groups(self):
         self.background.draw(self.screen)
@@ -54,9 +56,8 @@ class Game:
         self.object_manager.draw()
         self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
-        #self.mini_map.draw(self.screen)
+        # self.mini_map.draw(self.screen)
         self.hud.draw()
-        #self.particle_manager.draw_particles(self.screen)
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
 
     def input(self):
@@ -70,11 +71,13 @@ class Game:
         if pressed[pygame.K_TAB]:
             self.mini_map.draw_all(self.screen)
         if pressed[pygame.K_ESCAPE]:
-            self.running = False
+            self.menu.running = True
+            self.menu.play_button.clicked = False
 
-    def run_game(self):  # sourcery skip: extract-method
+    def run_game(self):
         self.enemy_manager.add_enemies()
         while self.running:
+            self.menu.show()
             self.clock.tick(self.fps)
             self.screen.fill(utils.BLACK)
             self.input()

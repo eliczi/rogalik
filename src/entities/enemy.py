@@ -122,7 +122,7 @@ class Imp(Enemy):
         self.draw_health(self.room.tile_map.map_surface)
         for bullet in self.bullets:
             bullet.update()
-            bullet.draw()
+            bullet.draw(self.room.tile_map.map_surface)
 
     def move_away_from_player(self):
         distance_to_player = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,

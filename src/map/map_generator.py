@@ -203,10 +203,15 @@ class World:
                     print(0, end=' ')
             print('')
 
-    types = ['power_up', 'normal', 'boss', 'chest']
+    types = ['power_up', 'normal', 'chest']
 
     def assign_type(self):
+        ok_rooms = []
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[0, 0, 0.3, 0], k=1)[0]
+                    room.type = random.choices(self.types, weights=[1, 2, 1], k=1)[0]
+                    ok_rooms.append(room)
+
+        x = random.choice(ok_rooms)
+        x.type = 'boss'

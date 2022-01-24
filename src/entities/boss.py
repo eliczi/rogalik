@@ -111,8 +111,8 @@ class Boss:
         self.time = 0
         self.speed = 10
         self.death_counter = 15
-        self.hp = 200
-        self.max_hp = 200
+        self.max_hp = 500
+        self.hp = self.max_hp
         self.bullets = pygame.sprite.Group()
         self.cool_down = 0
         self.damage = 10
@@ -160,13 +160,12 @@ class Boss:
 
     def update(self):
         self.detect_death()
-        if self.can_move:
-            self.move()
-            self.shooter.shoot()
-        # self.half_circle_shoot()
-        else:
-            self.shooter.machine_gun()
-        self.wall_collision()
+        if not self.dead:
+            if self.can_move:
+                self.move()
+            else:
+                self.velocity = [0, 0]
+            self.wall_collision()
         self.boss_animation.update()
         self.shooter.update()
 
@@ -199,24 +198,10 @@ class Boss:
         if pygame.time.get_ticks() - time > amount:
             return True
 
-    def machine_gun_every_five_second(self):
-        if self.time_passed(self.time, 5000):
-            self.time = pygame.time.get_ticks()
-        self.can_move = False
-
-    def half_circle_shoot(self):
-        if self.time_passed(self.time, 1000):
-            self.time = pygame.time.get_ticks()
-            for i in range(-5, 5, 1):
-                self.bullets.add(
-                    Bullet(self, self.game, self.hitbox.center[0], self.hitbox.center[1],
-                           (self.game.player.hitbox.center[0] - 5 * i, self.game.player.hitbox.center[1] - 5 * i),
-                           'boss'))
-
     def draw(self):
         self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
-        self.shooter.draw()
+        self.shooter.draw(self.room.tile_map.map_surface)
         self.draw_health(self.room.tile_map.map_surface)
 
 
@@ -227,16 +212,27 @@ class Shooting:
         self.bullets = self.boss.bullets
         self.shoot_time = 0
         self.machine_time = 0
+        self.circle_time = 0
         self.can_move_timer = 0
+        self.normal_shooting_timer = 0
+        self.normal_shooting = True
 
     def update(self):
         for bullet in self.bullets:
             bullet.update()
         self.moving_timer()
+        self.other_timer()
+        if self.boss.can_move:
+            if self.normal_shooting:
+                self.shoot()
+            else:
+                self.machine_gun()
+        else:
+            self.half_circle_shoot()
 
-    def draw(self):
+    def draw(self, surface):
         for bullet in self.bullets:
-            bullet.draw()
+            bullet.draw(surface)
 
     def time_passed(self, time, amount):
         """Wait 'amount' amount of time"""
@@ -244,10 +240,15 @@ class Shooting:
             return True
 
     def moving_timer(self):
-        """Wait 'amount' amount of time"""
+        """Wait 'amount' amount of time before moving"""
         if pygame.time.get_ticks() - self.can_move_timer > 10000:
             self.can_move_timer = pygame.time.get_ticks()
             self.boss.can_move = not self.boss.can_move
+
+    def other_timer(self):
+        if pygame.time.get_ticks() - self.normal_shooting_timer > 20000:
+            self.normal_shooting_timer = pygame.time.get_ticks()
+            self.normal_shooting = not self.normal_shooting
 
     def shoot(self):
         if self.time_passed(self.shoot_time, 1000):
@@ -264,3 +265,12 @@ class Shooting:
                 Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                        self.boss.game.player.hitbox.center,
                        'boss'))
+
+    def half_circle_shoot(self):
+        if self.time_passed(self.circle_time, 1000):
+            self.circle_time = pygame.time.get_ticks()
+            for i in range(-12, 12):
+                self.bullets.add(
+                    Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
+                           self.boss.game.player.hitbox.center,
+                           'boss', 15 * i))
