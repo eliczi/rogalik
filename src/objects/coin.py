@@ -10,14 +10,21 @@ class Coin(Object):
     name = 'coin'
     object_type = 'coin'
     size = (16, 16)
+    value = 1
 
     def __init__(self, game, room=None, chest=None):
         self.chest = chest
         self.images = []
         Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.dropped = False
-        self.bounce = Bounce(self.rect.x, self.rect.y, self.chest.rect.bottom + random.randint(-123, 123))
+        self.bounce = None
         self.animation_frame = 0
+
+    def activate_bounce(self):
+        if self.chest:
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123))
+        else:
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123))
 
     def load_image(self):
         for i in range(4):
@@ -27,7 +34,7 @@ class Coin(Object):
         self.image = self.images[0]
 
     def update_animation_frame(self):
-        self.animation_frame += 1.5/15 #random.randint(10, 20)/100
+        self.animation_frame += (1.5 + (random.randint(1, 5) / 10)) / 15  # random.randint(10, 20)/100
         if self.animation_frame > 3:
             self.animation_frame = 0
         self.image = self.images[int(self.animation_frame)]
@@ -43,14 +50,44 @@ class Coin(Object):
                 self.bounce.bounce()
             self.rect.x = self.bounce.x
             self.rect.y = self.bounce.y
+        self.magnet()
+        self.update_hitbox()
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
-            self.game.player.gold += 1
+            self.game.player.gold += self.value
             self.game.world_manager.current_room.objects.remove(self)
 
+    def magnet(self):
+        dir_vector = pygame.math.Vector2(self.game.player.hitbox.center[0] - self.rect.x,
+                                         self.game.player.hitbox.center[1] - self.rect.y)
+        if dir_vector.length() < 200:
+            speed = 1 / dir_vector.length() * 150
+            dir_vector.normalize_ip()
+            dir_vector.scale_to_length(speed)
+            self.rect.move_ip(*dir_vector)
+
+
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, 5, 3))
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        surface.blit(shape_surf, (self.rect.x + 2, self.rect.y + 20))
+
     def draw(self):
+        self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
+
+
+class Emerald(Coin):
+    name = 'emerald'
+    object_type = 'coin'
+    value = 5
+    size = (24, 24)
+
+    def __init__(self, game, room=None, chest=None):
+        super().__init__(game, room, chest)
 
 
 class Bounce:

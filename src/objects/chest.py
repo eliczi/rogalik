@@ -6,7 +6,7 @@ from particles import ChestParticle
 from objects.weapon import Weapon
 from .object import Object
 from .flask import Flask
-from .coin import Coin
+from .coin import Coin, Emerald
 
 
 class Chest(Object):
@@ -23,10 +23,15 @@ class Chest(Object):
         self.animation_frame = 0
         self.open = False
         self.items = []  # items in chest
-        for _ in range(20):
-            self.items.append(Coin(game, room, self))
-        self.interaction = True
+        self.add_treasure()
+        self.interaction = False
         self.counter = 0
+
+    def add_treasure(self):
+        for _ in range(random.randint(10, 20)):
+            self.items.append(Coin(self.game, self.room, self))
+        for _ in range(random.randint(2, 7)):
+            self.items.append(Emerald(self.game, self.room, self))
 
     def load_image(self):
         image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
@@ -51,7 +56,7 @@ class Chest(Object):
                 '../assets/chest/empty/chest_empty2.png'
             ).convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
-            self.drop_items() # at the last frame of animation, drop items
+            self.drop_items()  # at the last frame of animation, drop items
 
     def update(self):
         self.chest_collision()
@@ -62,10 +67,11 @@ class Chest(Object):
         self.room.tile_map.map_surface.blit(self.image, self.rect)
 
     def detect_collision(self):
-        if self.game.player.hitbox.colliderect(self.rect) and self.interaction:
+        if self.game.player.hitbox.colliderect(self.rect):
             self.image = pygame.image.load('../assets/chest/full/chest_picked.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
-        elif self.interaction:
+            self.interaction = True
+        else:
             self.image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
 
@@ -81,9 +87,10 @@ class Chest(Object):
         # self.drop_items()
 
     def drop_items(self):
-        for i, item in enumerate(self.items):
+        for item in self.items:
             item.rect.midtop = self.rect.topleft
             item.dropped = True
+            item.activate_bounce()
             item.bounce.x = self.hitbox.midtop[0]
             item.bounce.y = self.hitbox.midtop[1]
             self.room.objects.append(item)

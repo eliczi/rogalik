@@ -15,28 +15,6 @@ class Particle:
         self.life = None  # how long should particle live(frames)
 
 
-class BounceParticle(Particle):
-    color = (255, 0, 0)
-    radius = random.randint(3, 8)
-
-    def __init__(self, game, x, y, limit):
-        super().__init__(game, x, y)
-        self.bounce = Bounce(x, y, limit)
-        self.life = 50
-
-    def update(self):
-        if self.bounce.speed < 0.001:
-            self.bounce.reset()
-        for _ in range(15):
-            self.bounce.move()
-            self.bounce.bounce()
-        self.x = self.bounce.x
-        self.y = self.bounce.y
-
-    def draw(self, surface):
-        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
-
-
 class EnemyHitParticle(Particle):
     color = (255, 0, 0)
     radius = random.randint(3, 8)
@@ -156,9 +134,65 @@ class ChestParticle(Particle):
         color = random.choice(self.color)
         base_surface = self.chest.room.tile_map.map_surface
         pygame.draw.rect(base_surface, color, (self.x, self.y, 8, 8))
-        # pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
-        # self.surface = pygame.transform.scale(self.surface, (256, 512))
-        # self.game.screen.blit(self.surface, (250, 250))
+
+
+class Bounce:
+    def __init__(self, x, y):
+        self.speed = random.uniform(0.5, 0.6)  # 0.5
+        self.angle = random.randint(-10, 10) / 10  # random.choice([10, -10])
+        self.drag = 0.999
+        self.elasticity = random.uniform(0.75, 0.9)  # 0.75
+        self.gravity = (math.pi, 0.002)
+        self.x, self.y = x, y
+
+    @staticmethod
+    def add_vectors(angle1, length1, angle2, length2):
+        x = math.sin(angle1) * length1 + math.sin(angle2) * length2
+        y = math.cos(angle1) * length1 + math.cos(angle2) * length2
+        angle = 0.5 * math.pi - math.atan2(y, x)
+        length = math.hypot(x, y)
+        return angle, length
+
+    def move(self):
+        self.angle, self.speed = self.add_vectors(self.angle, self.speed, *self.gravity)
+        self.x += math.sin(self.angle) * self.speed
+        self.y -= math.cos(self.angle) * self.speed
+        self.speed *= self.drag
+
+
+class PowerUpParticle(Particle):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y)
+        self.color = [(255, 21, 121)]
+        self.radius = 4
+        self.life = 20
+        self.counter = 0
+        self.bounce = Bounce(self.x, self.y)
+
+    def update(self):
+        self.life -= 1
+        for _ in range(5):
+            self.bounce.move()
+        self.x = self.bounce.x
+        self.y = self.bounce.y
+        if self.life <= 0:
+            self.game.particle_manager.particle_list.remove(self)
+
+    def draw(self, surface):
+        color = random.choice(self.color)
+        pygame.draw.rect(surface, color, (self.x, self.y, 8, 8))
+
+
+class PowerUpAttackParticle(PowerUpParticle):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y)
+        self.color = [(255, 21, 121), (255, 111, 204)]
+
+
+class ShieldParticle(PowerUpParticle):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y)
+        self.color = [(3, 188, 139), (11, 144, 141)]
 
 
 class DeathAnimation:

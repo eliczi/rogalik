@@ -5,6 +5,7 @@ from .animation import load_animation_sprites, EntityAnimation
 from utils import get_mask_rect
 
 
+
 class Entity:
     def __init__(self, game, name):
         self.game = game
@@ -23,6 +24,7 @@ class Entity:
         self.counter = 0
         self.time = 0
 
+
     def __repr(self):
         return self.name
 
@@ -40,7 +42,7 @@ class Entity:
                 self.velocity = [0, 0]
 
     def update_hitbox(self):
-        #self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        # self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox.midbottom = self.rect.midbottom
 
     def draw_shadow(self, surface):

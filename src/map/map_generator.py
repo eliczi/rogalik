@@ -8,7 +8,7 @@ from objects.weapon import Weapon
 from objects.flask import Flask
 from particles import Fire
 from entities.boss import Boss
-from objects.power_up import PowerUp
+from objects.power_up import ShieldPowerUp, AttackPowerUp
 
 
 class Room:
@@ -191,7 +191,8 @@ class World:
                         # room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
                         # room.objects.append(Flask(self.game, room, (660, 300)))
                     elif room.type == 'power_up':
-                        room.objects.append(PowerUp(self.game, room))
+                        power_ups = [ShieldPowerUp(self.game, room), AttackPowerUp(self.game, room)]
+                        room.objects.append(random.choice(power_ups))
 
     def print_world(self):
         print('-' * 10)
@@ -210,7 +211,7 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[1, 2, 1], k=1)[0]
+                    room.type = random.choices(self.types, weights=[1, 1, 0], k=1)[0]
                     ok_rooms.append(room)
 
         x = random.choice(ok_rooms)

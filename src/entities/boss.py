@@ -5,6 +5,8 @@ import utils
 import os
 from particles import DeathAnimation
 from bullet import Bullet
+from objects.flask import Flask
+from objects.coin import Coin
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -117,6 +119,8 @@ class Boss:
         self.cool_down = 0
         self.damage = 10
         self.shooter = Shooting(self)
+        self.items = [Flask(self.game, self.room)]
+        self.add_coins(50)
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -189,6 +193,7 @@ class Boss:
             self.dead = True
             self.boss_animation.animation_frame = 0
         if self.death_counter == 0:
+            self.drop_items()
             self.room.enemy_list.remove(self)
             position = (self.rect.x, self.rect.y)
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, entity='boss'))
@@ -203,6 +208,20 @@ class Boss:
         self.room.tile_map.map_surface.blit(self.image, self.rect)
         self.shooter.draw(self.room.tile_map.map_surface)
         self.draw_health(self.room.tile_map.map_surface)
+
+    def add_coins(self, num_of_coins):
+        for _ in range(num_of_coins):
+            self.items.append(Coin(self.game, self.room))
+
+    def drop_items(self):
+        for item in self.items:
+            item.rect.center = self.rect.center
+            item.dropped = True
+            item.activate_bounce()
+            item.bounce.x = self.hitbox.center[0]
+            item.bounce.y = self.hitbox.center[1]
+            self.room.objects.append(item)
+            self.items.remove(item)
 
 
 class Shooting:

@@ -12,17 +12,21 @@ class Flask(Object):
     def __init__(self, game, room, position=None):
         Object.__init__(self, game, self.name, self.type, self.size, room, position)
         self.dropped = False
-        self.bounce = Bounce(self.rect.x, self.rect.y)
+        self.bounce = None
+
+    def activate_bounce(self):
+        self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + 20)
 
     def interact(self):
-        if not self.game.player.weapon:
-            self.game.player.weapon = self
-        self.game.player.items.append(self)
-        if self.room == self.game.room:
+        # if not self.game.player.weapon:
+        #     self.game.player.weapon = self
+        # self.game.player.items.append(self)
+        if self.room == self.game.world_manager.current_room:
             self.room.objects.remove(self)
         self.interaction = False
         self.show_name.reset_line_length()
         self.image = self.original_image
+        self.game.player.hp += 20
 
     def update(self):
         if self.bounce.speed < 0.001:
@@ -40,13 +44,13 @@ class Flask(Object):
 
 
 class Bounce:
-    def __init__(self, x, y):
-        self.speed = random.uniform(0.5, 0.6) # 0.5
-        self.angle = random.randint(-5, 5) / 10 #random.choice([10, -10])
+    def __init__(self, x, y, limit):
+        self.speed = random.uniform(0.5, 0.6)  # 0.5
+        self.angle = random.randint(-5, 5) / 10  # random.choice([10, -10])
         self.drag = 0.999
-        self.elasticity = random.uniform(0.75, 0.9)#0.75
+        self.elasticity = random.uniform(0.75, 0.9)  # 0.75
         self.gravity = (math.pi, 0.002)
-        self.limit = 6 * 64
+        self.limit = limit
         self.x, self.y = x, y
 
     @staticmethod
@@ -64,8 +68,8 @@ class Bounce:
         self.speed *= self.drag
 
     def bounce(self):
-        if self.y > self.limit - 48:
-            self.y = 2 * (self.limit - 48) - self.y
+        if self.y > self.limit:
+            self.y = 2 * (self.limit) - self.y
             self.angle = math.pi - self.angle
             self.speed *= self.elasticity
 

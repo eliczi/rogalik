@@ -5,6 +5,7 @@ from particles import DeathAnimation
 from .entity import Entity
 from bullet import Bullet
 from .boss import Boss
+from objects.coin import Coin, Emerald
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -28,6 +29,24 @@ class Enemy(Entity):
         self.move_time = 0
         self.damage = 10
         self.cool_down = 0
+        self.items = []
+        self.add_treasure()
+
+    def add_treasure(self):
+        for _ in range(random.randint(10, 20)):
+            self.items.append(Coin(self.game, self.room, self))
+        for _ in range(random.randint(2, 7)):
+            self.items.append(Emerald(self.game, self.room, self))
+
+    def drop_items(self):
+        for item in self.items:
+            item.rect.center = self.rect.center
+            item.dropped = True
+            item.activate_bounce()
+            item.bounce.x = self.hitbox.center[0]
+            item.bounce.y = self.hitbox.center[1]
+            self.room.objects.append(item)
+            self.items.remove(item)
 
     def spawn(self):
         self.rect.x = random.randint(200, 1000)
@@ -71,6 +90,7 @@ class Enemy(Entity):
             self.dead = True
             self.entity_animation.animation_frame = 0
         if self.death_counter == 0:
+            self.drop_items()
             self.room.enemy_list.remove(self)
             position = (self.rect.x, self.rect.y)
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position))

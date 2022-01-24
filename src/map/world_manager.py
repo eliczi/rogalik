@@ -6,7 +6,7 @@ import utils
 
 
 class WorldManager:
-    number_of_rooms = 7
+    number_of_rooms = 12
     world_width = 4
     world_height = 4
     map_width = 13
