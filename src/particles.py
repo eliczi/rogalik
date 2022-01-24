@@ -200,22 +200,6 @@ class ParticleManager:
         if self.particle_list:
             for particle in self.particle_list:
                 particle.update()
-        self.update_fire_particles()
-
-    def draw_fire_particles(self, surface):
-        self.surface.fill((0, 0, 0, 0))
-        for fire in self.fire_particles:
-            fire.draw(self.surface)
-
-        surface.blit(pygame.transform.scale(self.surface, (utils.world_size[0], utils.world_size[1]), self.dest_surf),
-                     (0, 0))
-
-    def update_fire_particles(self):
-        for fire in self.fire_particles:
-            fire.update()
-
-    def add_fire_particles(self, fire):
-        self.fire_particles.append(fire)
 
     def add_particle(self, particle):
         self.particle_list.append(particle)
@@ -223,4 +207,3 @@ class ParticleManager:
     def draw_particles(self, surface):
         for particle in self.particle_list:
             particle.draw(surface)
-        self.draw_fire_particles(surface)

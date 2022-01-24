@@ -53,17 +53,22 @@ class MainMenu:
         if pressed[pygame.K_1]:
             self.running = False
 
+    def update(self):
+        self.game.background.update()
+        self.play_button.update()
+        self.exit_button.update()
+
+    def draw(self):
+        self.game.screen.fill((0, 0, 0))
+        self.game.background.draw(self.game.screen)
+        self.play_button.draw(self.game.screen)
+        self.exit_button.draw(self.game.screen)
+
     def show(self):
         while self.running:
-            self.game.screen.fill((0, 0, 0))
-            self.game.background.update()
-            self.game.background.draw(self.game.screen)
             self.input()
-            self.play_button.update()
-            self.exit_button.update()
-            self.play_button.draw(self.game.screen)
-            self.exit_button.draw(self.game.screen)
-            self.play_button.detect_action(pygame.mouse.get_pos())
 
+            self.play_button.detect_action(pygame.mouse.get_pos())
+            self.game.clock.tick(self.game.fps)
             self.game.display.blit(self.game.screen, (0, 0))
             pygame.display.flip()

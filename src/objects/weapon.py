@@ -172,7 +172,7 @@ class Weapon(Object):
         self.game.world_manager.current_room.objects.append(self)
         if self.player.items:
             self.player.weapon = self.player.items[-1]
-
+        self.load_image()
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.rect.x = self.player.rect.x

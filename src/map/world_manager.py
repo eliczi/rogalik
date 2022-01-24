@@ -59,7 +59,6 @@ class WorldManager:
             self.move_rooms(self.direction, self.value)
             self.move_entities(self.direction, self.value)
 
-
     def detect_next_room(self):  # checks if player goes through one of 4 possible doors
         if not self.switch_room:
             player = self.game.player

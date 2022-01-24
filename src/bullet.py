@@ -5,6 +5,11 @@ import random
 from particles import EnemyHitParticle, WallHitParticle
 
 
+class BulletManager:
+    def __init__(self):
+        pass
+
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, master, game, x, y, target, entity='normal', rotation=None):
         super().__init__()

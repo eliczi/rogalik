@@ -6,6 +6,7 @@ from .entity import Entity
 from .animation import load_animation_sprites
 from utils import get_mask_rect
 
+
 class Dust:
     def __init__(self, player, x, y):
         self.player = player
@@ -47,6 +48,7 @@ class Player(Entity):
         self.size = 64
         self.shield = 0
         self.strength = 1
+        self.step = pygame.mixer.Sound('../assets/sound/footsteps.wav')
 
     def enlarge(self):
         self.size *= 1.01
@@ -59,7 +61,6 @@ class Player(Entity):
         self.animation_database = load_animation_sprites('../assets/player/', (self.size, self.size))
         self.rect = self.image.get_rect(center=(512, 400))
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
-
 
     def input(self):
         pressed = pygame.key.get_pressed()
@@ -87,7 +88,6 @@ class Player(Entity):
         if pressed[pygame.K_o]:
             self.unlarge()
             self.weapon.unlarge()
-
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
@@ -146,9 +146,10 @@ class Player(Entity):
         if not self.shield and enemy.attack():
             self.hp -= enemy.damage
             self.hurt = True
+        if self.shield:
+            self.shield -= 1
 
     def draw(self, surface):
-
         if (self.velocity[0] != 0 or self.velocity[1] != 0) and random.randint(1, 8) % 4 == 0:
             self.walking_particles.append(Dust(self, *self.rect.midbottom))
         for p in self.walking_particles:

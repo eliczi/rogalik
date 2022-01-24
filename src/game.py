@@ -35,6 +35,7 @@ class Game:
         self.background = BackgroundEffects()
         self.game_over = GameOver(self)
         self.can_exit = False
+        pygame.mixer.init()
 
     def refresh(self):
         self.__init__()
