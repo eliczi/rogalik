@@ -4,12 +4,12 @@ import random
 
 from objects.chest import Chest
 from .map import TileMap, Spritesheet
-from objects.weapon import Weapon
+from objects.weapon import Weapon, AnimeSword, FireSword
 from objects.flask import Flask
 from particles import Fire
 from entities.boss import Boss
 from objects.power_up import ShieldPowerUp, AttackPowerUp
-
+from entities.merchant import Merchant
 
 class Room:
     def __init__(self, x, y):
@@ -185,7 +185,7 @@ class World:
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
                     elif room.type == 'starting_room':
-                        room.objects.append(Weapon(self.game, 50, 'anime_sword', (36, 90), room, (650, 300)))
+                        room.objects.append(FireSword(self.game, room, (650, 300)))
                         # room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
                         # room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
                         # room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
@@ -193,6 +193,8 @@ class World:
                     elif room.type == 'power_up':
                         power_ups = [ShieldPowerUp(self.game, room), AttackPowerUp(self.game, room)]
                         room.objects.append(random.choice(power_ups))
+                    elif room.type == 'shop':
+                        room.enemy_list.append(Merchant(self.game, room))
 
     def print_world(self):
         print('-' * 10)
@@ -204,14 +206,14 @@ class World:
                     print(0, end=' ')
             print('')
 
-    types = ['power_up', 'normal', 'chest']
+    types = ['power_up', 'normal', 'chest', 'shop']
 
     def assign_type(self):
         ok_rooms = []
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[1, 1, 0], k=1)[0]
+                    room.type = random.choices(self.types, weights=[0, 1, 0, 0], k=1)[0]
                     ok_rooms.append(room)
 
         x = random.choice(ok_rooms)

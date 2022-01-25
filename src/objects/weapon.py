@@ -5,6 +5,7 @@ from utils import get_mask_rect
 import utils
 from PIL import Image
 from .object import Object
+from particles import ParticleManager, Fire
 
 
 class WeaponSwing:
@@ -12,16 +13,18 @@ class WeaponSwing:
         self.weapon = weapon
         self.angle = 0
         self.offset = Vector2(0, -50)
+        self.offset_rotated = Vector2(0, -25)
         self.counter = 0
         self.swing_side = 1
         self.hover_value = 5
-        self.bottom_boundary = None
-        self.top_boundary = None
+
+    def reset(self):
+        self.counter = 0
 
     def rotate(self):
         mx, my = pygame.mouse.get_pos()
-        dx = mx - self.weapon.player.hitbox.centerx - 64
-        dy = my - self.weapon.player.hitbox.centery - 32
+        dx = mx - self.weapon.player.hitbox.centerx  # - 64
+        dy = my - self.weapon.player.hitbox.centery  # - 32
         if self.swing_side == 1:
             self.angle = (180 / math.pi) * math.atan2(-self.swing_side * dy, dx) + 10
         else:
@@ -32,6 +35,7 @@ class WeaponSwing:
         offset_rotated = self.offset.rotate(-self.angle)
         self.weapon.rect = self.weapon.image.get_rect(center=position + offset_rotated)
         self.weapon.hitbox = pygame.mask.from_surface(self.weapon.image)
+        self.offset_rotated = Vector2(0, -35).rotate(-self.angle)
 
     def swing(self):
         self.angle += 20 * self.swing_side
@@ -48,6 +52,7 @@ class WeaponSwing:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
                 self.weapon.shadow += 5 / self.hover_value
+                self.weapon.up = self.hover_value < 0
             if pygame.time.get_ticks() % 1000 < 500:
                 self.hover_value = -5
             elif pygame.time.get_ticks() % 1000 > 500:
@@ -106,22 +111,20 @@ class SlashImage:
 
 
 class Weapon(Object):
-    def __init__(self, game, damage, name, size, room=None, position=None):
+    def __init__(self, game, name=None, size=None, room=None, position=None):
         self.scale = 3
         Object.__init__(self, game, name, 'weapon', size, room, position)
-        self.damage = damage
         self.size = size
         self.player = None
-
+        self.shadow = 0
         self.load_image()
         if position:
             self.rect.x, self.rect.y = position[0], position[1]
         self.time = 0
         self.weapon_swing = WeaponSwing(self)
-        self.update_hitbox()
-        self.shadow = 0
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
         self.slash_image = SlashImage(self)
+        self.enemy_list = []
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -138,12 +141,12 @@ class Weapon(Object):
     def enlarge(self):
         self.scale *= 1.01
         self.load_image()
-        self.weapon_swing.offset *=1.01
+        self.weapon_swing.offset *= 1.01
 
     def unlarge(self):
         self.scale /= 1.01
         self.load_image()
-        self.weapon_swing.offset /=1.01
+        self.weapon_swing.offset /= 1.01
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
@@ -155,7 +158,7 @@ class Weapon(Object):
             self.show_name.reset_line_length()
 
     def interact(self):
-        self.weapon_swing.counter = 0
+        self.weapon_swing.reset()
         self.player = self.game.player
         self.player.items.append(self)
         if not self.player.weapon:
@@ -178,9 +181,9 @@ class Weapon(Object):
         self.rect.x = self.player.rect.x
         self.rect.y = self.player.rect.y
         self.player = None
+        self.weapon_swing.offset_rotated = Vector2(0, -25)
 
     def update(self):
-        """Update weapon position and state"""
         self.weapon_swing.hovering()
         if self.player:
             self.interaction = False
@@ -194,13 +197,65 @@ class Weapon(Object):
                 self.weapon_swing.rotate()
         self.update_hitbox()
 
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 - 2, 12))
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        surface.blit(shape_surf, (self.hitbox.midbottom[0], self.hitbox.midbottom[1]))
+
     def draw(self):
-        # pygame.draw.rect(self.game.screen, (255,255, 0), self.rect, 2)
-        # pygame.draw.rect(self.game.screen, (255,255, 0), self.hitbox, 2)
         surface = self.room.tile_map.map_surface
         if self.player:
             surface = self.game.screen
         # self.slash_image.draw(surface)
+        # self.weapon_swing.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.interaction:
             self.show_name.draw(surface, self.rect)
+
+
+class AnimeSword(Weapon):
+    name = 'anime_sword'
+    damage = 40
+    size = (36, 90)
+
+    def __init__(self, game, room=None, position=None):
+        super().__init__(game, self.name, self.size, room, position)
+        self.value = 100
+
+
+class FireSword(Weapon):
+    name = 'fire_sword'
+    damage = 30
+    size = (36, 90)
+
+    def __init__(self, game, room=None, position=None):
+        super().__init__(game, self.name, self.size, room, position)
+        self.value = 150
+
+    def update(self):
+        self.burning()
+        self.weapon_swing.hovering()
+        if self.player:
+            self.interaction = False
+            if self.weapon_swing.counter == 10:
+                self.original_image = pygame.transform.flip(self.original_image, 1, 0)
+                self.player.attacking = False
+                self.weapon_swing.counter = 0
+            if self.player.attacking and self.weapon_swing.counter <= 10:
+                self.weapon_swing.swing()
+            else:
+                self.weapon_swing.rotate()
+        self.update_hitbox()
+        # self.special_effect()
+
+    def special_effect(self):
+        print(self.enemy_list)
+
+    def burning(self):
+        x, y = self.weapon_swing.offset_rotated.xy
+        x = self.rect.center[0] + x
+        y = self.rect.center[1] + y
+        if self.game.world_manager.switch_room is False:
+            self.game.particle_manager.add_fire_particle(Fire(self.game, x / 4, y / 4))

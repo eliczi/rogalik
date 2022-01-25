@@ -7,15 +7,9 @@ from particles import DeathAnimation
 from bullet import Bullet
 from objects.flask import Flask
 from objects.coin import Coin
+from entities.enemy import Enemy, draw_health_bar
+from entities.animation import EntityAnimation
 
-
-def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
-    pygame.draw.rect(surf, back_c, (*pos, *size))
-    pygame.draw.rect(surf, border_c, (*pos, *size), 1)
-    inner_pos = (pos[0] + 1, pos[1] + 1)
-    inner_size = ((size[0] - 2) * progress, size[1] - 2)
-    rect = (round(inner_pos[0]), round(inner_pos[1]), round(inner_size[0]), round(inner_size[1]))
-    pygame.draw.rect(surf, health_c, rect)
 
 
 def load_animation_sprites(path):
@@ -33,33 +27,9 @@ def load_animation_sprites(path):
     return animation_data
 
 
-class BossAnimation:
+class BossAnimation(EntityAnimation):
     def __init__(self, entity):
-        self.entity = entity
-        self.animation_direction = 'right'
-        self.animation_frame = 0
-
-    def moving(self) -> bool:
-        """s"""
-        return bool(sum(self.entity.velocity))
-
-    def get_direction(self):
-        self.animation_direction = 'right' if self.entity.velocity[0] <= 0 else 'left'
-
-    def update_animation_frame(self):
-        self.animation_frame += 1.5 / 15
-        if self.animation_frame >= 4:
-            self.animation_frame = 0
-
-    def idle_animation(self, state):
-        """Animation if idle"""
-        self.update_animation_frame()
-        self.get_direction()
-        if self.animation_direction == 'left':
-            self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
-        elif self.animation_direction == 'right':
-            self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
-            self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
+        super().__init__(entity)
 
     def death_animation(self):
         self.animation_frame += 1.0 / 10
@@ -72,24 +42,6 @@ class BossAnimation:
             elif self.entity.direction == 'right':
                 self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
                 self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
-
-    def animation(self):
-        """s"""
-        if self.entity.dead:
-            self.death_animation()
-        elif self.entity.hurt:
-            self.animation_frame = 0
-            self.idle_animation('HURT')
-            # if 0.3 seconds have passed
-            if pygame.time.get_ticks() - self.entity.time > 300:
-                self.entity.hurt = False
-        elif self.moving():
-            self.idle_animation('WALK')
-        else:
-            self.idle_animation('IDLE')
-
-    def update(self):
-        self.animation()
 
 
 class Boss:
@@ -121,6 +73,7 @@ class Boss:
         self.shooter = Shooting(self)
         self.items = [Flask(self.game, self.room)]
         self.add_coins(50)
+        self.weapon_hurt_cooldown = 0
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -129,6 +82,11 @@ class Boss:
         shape_surf = pygame.transform.scale(shape_surf, (200, 200))
         position = [self.hitbox.bottomleft[0] + 3, self.hitbox.bottomleft[1] - 10]
         surface.blit(shape_surf, position)
+
+    def can_get_hurt_from_weapon(self):
+        if pygame.time.get_ticks() - self.weapon_hurt_cooldown > self.game.player.attack_cooldown:
+            self.weapon_hurt_cooldown = pygame.time.get_ticks()
+            return True
 
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity

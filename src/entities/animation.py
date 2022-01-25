@@ -23,6 +23,7 @@ class EntityAnimation:
         self.entity = entity
         self.animation_direction = 'right'
         self.animation_frame = 0
+        self.hurt_timer = 0
 
     def moving(self) -> bool:
         """s"""
@@ -66,8 +67,10 @@ class EntityAnimation:
             self.animation_frame = 0
             self.idle_animation('HURT')
             # if 0.3 seconds have passed
-            if pygame.time.get_ticks() - self.entity.time > 300:
+            if pygame.time.get_ticks() - self.hurt_timer > 300:
+                self.hurt_timer = pygame.time.get_ticks()
                 self.entity.hurt = False
+
         elif self.moving():
             self.idle_animation('WALK')
         else:

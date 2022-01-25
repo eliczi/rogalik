@@ -74,7 +74,6 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.colliderect(collision_enemy.hitbox):
             self.game.player.hp -= self.damage
             self.game.player.hurt = True
-            self.game.player.time = pygame.time.get_ticks()
             self.sparkle()
             self.kill()
 

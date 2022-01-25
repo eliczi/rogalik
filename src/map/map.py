@@ -40,6 +40,7 @@ class TileMap:
         self.map_width = len(filename[0][0])
         self.map_height = len(filename[0]) + 1
         self.map_size = (len(filename[0][0]) * 64 + 128, (len(filename[0]) + 1) * 64)
+        self.map_size = (utils.world_size[0], utils.world_size[1])
         self.tile_size = tile_size
         self.spritesheet = spritesheet
         self.wall_list = []

@@ -61,11 +61,11 @@ class Fire(Particle):
                       (191, 74, 46),
                       (115, 61, 56),
                       (61, 38, 48))
-        self.max_life = random.randint(13, 27)
+        self.max_life = random.randint(6, 13)
         self.life = self.max_life
         self.sin = random.randint(-10, 10) / 7
         self.sin_r = random.randint(5, 10)
-        self.radius = random.randint(0, 4)
+        self.radius = random.randint(0, 2)
         self.ox = random.randint(-1, 1)
         self.oy = random.randint(-1, 1)
         self.j = random.randint(0, 360)
@@ -75,7 +75,7 @@ class Fire(Particle):
         self.draw_y = y
 
     def update(self):
-        if random.randint(1, 8) == 2:
+        if random.randint(1, 4) == 2:
             if self.j > 360:  # Angle
                 self.j = 0
             self.life -= 1
@@ -225,7 +225,7 @@ class ParticleManager:
         self.game = game
         self.particle_list = []
         self.fire_particles = []
-        self.surface = self.game.screen
+        #self.surface = self.game.screen
         self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
                                       pygame.SRCALPHA).convert_alpha()
         self.dest_surf = pygame.Surface((utils.world_size[0], utils.world_size[1])).convert_alpha()
@@ -235,8 +235,22 @@ class ParticleManager:
             for particle in self.particle_list:
                 particle.update()
 
+    def update_fire_particles(self):
+        for p in self.fire_particles:
+            p.update()
+
+    def draw_fire_particles(self):
+        self.surface.fill((0,0,0,0))
+        for p in self.fire_particles:
+            p.draw(self.surface)
+        s = self.game.world_manager.current_map.map_surface
+        s.blit(pygame.transform.scale(self.surface, (utils.world_size[0], utils.world_size[1]), self.dest_surf), (0, 0))
+
     def add_particle(self, particle):
         self.particle_list.append(particle)
+
+    def add_fire_particle(self, particle):
+        self.fire_particles.append(particle)
 
     def draw_particles(self, surface):
         for particle in self.particle_list:

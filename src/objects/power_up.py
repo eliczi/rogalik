@@ -8,9 +8,11 @@ class PowerUp(Object):
     type = 'flask'
     size = (64, 64)
 
-    def __init__(self, game, room, name):
+    def __init__(self, game, room, name, position=None):
         self.name = name
         self.position = [644, 400]
+        if position is not None:
+            self.position = position
         Object.__init__(self, game, self.name, self.type, self.size, room, self.position)
         self.interaction = False
         self.shadow_position = [self.rect.midbottom[0] - 28, self.rect.midbottom[1]]
@@ -33,6 +35,8 @@ class PowerUp(Object):
             self.interaction = True
         else:
             self.image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
+            self.interaction = False
+            self.show_name.reset_line_length()
 
     def interact(self):
         pass
@@ -46,6 +50,8 @@ class PowerUp(Object):
         self.draw_shadow(surface)
         surface.blit(self.image, (self.rect.x, self.rect.y))
         self.beautify(surface)
+        if self.interaction:
+            self.show_name.draw(surface, self.rect)
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -77,8 +83,8 @@ class PowerUp(Object):
 class AttackPowerUp(PowerUp):
     name = 'attack'
 
-    def __init__(self, game, room):
-        super().__init__(game, room, self.name)
+    def __init__(self, game, room, position=None):
+        super().__init__(game, room, self.name, position)
 
     def interact(self):
         self.game.player.strength += 1
@@ -97,8 +103,8 @@ class AttackPowerUp(PowerUp):
 class ShieldPowerUp(PowerUp):
     name = 'armor'
 
-    def __init__(self, game, room):
-        super().__init__(game, room, self.name)
+    def __init__(self, game, room, position=None):
+        super().__init__(game, room, self.name, position)
 
     def interact(self):
         self.game.player.shield += 1
@@ -106,6 +112,6 @@ class ShieldPowerUp(PowerUp):
 
     def beautify(self, surface):
         if random.randint(1, 10) == 1:
-            x = random.randint(self.rect.midtop[0] - 10, self.rect.midtop[0] + 10)
-            y = random.randint(self.rect.midtop[1] - 10, self.rect.midtop[1] + 10)
+            x = random.randint(self.hitbox.midtop[0] - 10, self.rect.midtop[0] + 10)
+            y = random.randint(self.hitbox.midtop[1] - 10, self.rect.midtop[1] + 10)
             self.game.particle_manager.particle_list.append(ShieldParticle(self.game, x, y))

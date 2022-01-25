@@ -22,13 +22,13 @@ class Coin(Object):
 
     def activate_bounce(self):
         if self.chest:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123))
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
         else:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123))
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123),self.size)
 
     def load_image(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.image.load(f'../assets/coin/{self.name}/{self.name}{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]
@@ -52,6 +52,7 @@ class Coin(Object):
             self.rect.y = self.bounce.y
         self.magnet()
         self.update_hitbox()
+        self.rect.y += 0.1
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
@@ -61,12 +62,11 @@ class Coin(Object):
     def magnet(self):
         dir_vector = pygame.math.Vector2(self.game.player.hitbox.center[0] - self.rect.x,
                                          self.game.player.hitbox.center[1] - self.rect.y)
-        if dir_vector.length() < 200:
-            speed = 1 / dir_vector.length() * 150
+        if 0 < dir_vector.length() < 200 :
+            speed = 1 / dir_vector.length() * 250
             dir_vector.normalize_ip()
             dir_vector.scale_to_length(speed)
             self.rect.move_ip(*dir_vector)
-
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -90,15 +90,27 @@ class Emerald(Coin):
         super().__init__(game, room, chest)
 
 
+class Ruby(Coin):
+    name = 'ruby'
+    object_type = 'coin'
+    value = 15
+    size = (24, 24)
+
+    def __init__(self, game, room=None, chest=None):
+        super().__init__(game, room, chest)
+
+
 class Bounce:
-    def __init__(self, x, y, limit):
+    def __init__(self, x, y, limit, size):
         self.speed = random.uniform(0.5, 0.6)  # 0.5
         self.angle = random.randint(-10, 10) / 10  # random.choice([10, -10])
         self.drag = 0.999
         self.elasticity = random.uniform(0.75, 0.9)  # 0.75
         self.gravity = (math.pi, 0.002)
         self.limit = limit
+        self.limits = [limit, 654]
         self.x, self.y = x, y
+        self.size = size
 
     @staticmethod
     def add_vectors(angle1, length1, angle2, length2):
@@ -115,9 +127,25 @@ class Bounce:
         self.speed *= self.drag
 
     def bounce(self):
+        # if self.y > any(self.limits):
         if self.y > self.limit:
             self.y = 2 * self.limit - self.y
             self.angle = math.pi - self.angle
+            self.speed *= self.elasticity
+
+        elif self.y > 654 - self.size[0]:
+            self.y = 2 * (654 - self.size[0]) - self.y
+            self.angle = math.pi - self.angle
+            self.speed *= self.elasticity
+
+        if self.x < 198 + 10:
+            self.x = 2 * (198 + 10) - self.x
+            self.angle = - self.angle
+            self.speed *= self.elasticity
+
+        elif self.x > 1136 - self.size[0]:
+            self.x = 2*(1136 - self.size[0]) - self.x
+            self.angle = - self.angle
             self.speed *= self.elasticity
 
     def reset(self):

@@ -46,9 +46,11 @@ class Player(Entity):
         self.gold = 0
         self.walking_particles = []
         self.size = 64
-        self.shield = 0
+        self.shield = 2
         self.strength = 1
         self.step = pygame.mixer.Sound('../assets/sound/footsteps.wav')
+        self.attack_cooldown = 400
+        self.buying = False
 
     def enlarge(self):
         self.size *= 1.01
@@ -72,10 +74,11 @@ class Player(Entity):
             self.direction = 'left'
         if pressed[pygame.K_d]:
             self.direction = 'right'
-        if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300:
+        if pressed[pygame.K_e] and pygame.time.get_ticks() - self.time > 300 and self.buying == False:
             self.time = pygame.time.get_ticks()
             self.game.object_manager.interact()
-
+            self.buying = True
+        self.buying = False
         if pressed[pygame.K_q] and self.weapon and pygame.time.get_ticks() - self.time > 300:
             self.time = pygame.time.get_ticks()
             self.weapon.drop()
@@ -121,7 +124,7 @@ class Player(Entity):
         else:
             self.set_velocity(vel_list)
         if pygame.mouse.get_pressed()[
-            0] and pygame.time.get_ticks() - self.time > 400 and self.weapon:  # player attacking
+            0] and pygame.time.get_ticks() - self.time > self.attack_cooldown and self.weapon:  # player attacking
             self.time = pygame.time.get_ticks()
             self.attacking = True
             self.weapon.weapon_swing.swing_side *= (-1)
@@ -143,9 +146,10 @@ class Player(Entity):
         self.update_hitbox()
 
     def calculate_collision(self, enemy):
-        if not self.shield and enemy.attack():
+        if not self.shield:
             self.hp -= enemy.damage
             self.hurt = True
+            self.entity_animation.hurt_timer = pygame.time.get_ticks()
         if self.shield:
             self.shield -= 1
 

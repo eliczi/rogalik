@@ -1,6 +1,6 @@
 import pygame
 import utils
-from entities.enemy import EnemyManager
+from entities.enemy_manager import EnemyManager
 from entities.player import Player
 from map.map_generator import World
 from menu import MainMenu
@@ -47,19 +47,21 @@ class Game:
         self.object_manager.update()
         self.player.update()
         self.particle_manager.update_particles()
+        self.particle_manager.update_fire_particles()
         self.background.update()
         self.world_manager.update()
         # self.mini_map.update()
 
     def draw_groups(self):
-        self.background.draw(self.screen)
+        #self.background.draw(self.screen)
         self.world_manager.draw_map(self.screen)
-        self.object_manager.draw()
         self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
+        self.object_manager.draw()
         # self.mini_map.draw(self.screen)
         self.hud.draw()
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
+        self.particle_manager.draw_fire_particles()
 
     def input(self):
         self.player.input()
@@ -86,6 +88,7 @@ class Game:
             self.draw_groups()
             self.game_time = pygame.time.get_ticks()
             self.display.blit(self.screen, (0, 0))
-            pygame.display.flip()
+            if self.running == True:
+                pygame.display.flip()
         pygame.quit()
         quit()
