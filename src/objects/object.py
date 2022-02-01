@@ -1,6 +1,7 @@
 import pygame
 from utils import get_mask_rect
 import utils
+import random
 
 
 class ShowName:
@@ -54,13 +55,48 @@ class ShowPrice(ShowName):
     def __init__(self, object):
         super().__init__(object)
         # Format weapon display name
-        self.text = self.object.value
+        self.text = str(self.object.value)
         self.text_length = len(self.text)
         self.text_position = None
         self.counter = 0
+        self.image = None
+        self.images = []
+        self.image_size = (24, 24)
+        self.load_image()
+        self.image_rect = self.image.get_rect()
+        self.text_position = (0, 0)
+        self.animation_frame = 0
 
-    def draw(self, surface, rect):
-        self.draw_text(surface)
+    def set_text_position(self, position):
+        self.text_position = position
+        self.image_rect = (position[0] - 25, position[1] - 8)
+
+    def load_image(self):
+        for i in range(4):
+            image = pygame.image.load(f'../assets/coin/coin/coin{i}.png').convert_alpha()
+            image = pygame.transform.scale(image, self.image_size)
+            self.images.append(image)
+        self.image = self.images[0]
+
+    def update_animation_frame(self):
+        self.animation_frame += 1.5 / 15  # random.randint(10, 20)/100
+        if self.animation_frame > 3:
+            self.animation_frame = 0
+        self.image = self.images[int(self.animation_frame)]
+
+    def update(self):
+        # self.image_rect.topleft = (self.object.hitbox.midbottom[0] - 15, self.object.hitbox.midbottom[1] + 10)
+        # self.text_position = (self.image_rect.topleft[0] + 25, self.image_rect.topleft[1] + 8)
+        self.update_animation_frame()
+
+    def draw_text(self, surface):
+        text_surface = pygame.font.Font(utils.font, 18).render(self.text, True, (255, 255, 255))
+        surface.blit(text_surface, self.text_position)
+
+    def draw(self, surface):
+        if self.object.for_sale:
+            surface.blit(self.image, self.image_rect)
+            self.draw_text(surface)
 
 
 class Object:
@@ -80,11 +116,16 @@ class Object:
         if position:
             self.rect.x, self.rect.y = position[0], position[1]
         self.show_name = ShowName(self)
+        self.value = None
+        self.show_price = ShowPrice(self)
         self.interaction = False
+
+
         self.for_sale = False
 
     def __repr__(self):
         return self.name
+
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -128,10 +169,9 @@ class Object:
         pass
 
     def buy(self):
-        if self.game.player.gold >=self.value:
-            self.game.player.gold -=self.value
+        if self.game.player.gold >= self.value:
+            self.game.player.gold -= self.value
             self.interact()
-
 
     def draw(self):
         surface = self.room.tile_map.map_surface

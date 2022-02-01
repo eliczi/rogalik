@@ -65,7 +65,7 @@ class Enemy(Entity):
             return True
 
     def attack_player(self, player):
-        if self.hitbox.colliderect(player.hitbox) and self.can_attack() and not self.game.world_manager.switch_room:
+        if self.hitbox.colliderect(player.hitbox) and self.can_attack() and not self.game.world_manager.switch_room and not self.hurt:
             player.calculate_collision(self)
             # play attack sound
 
@@ -88,7 +88,7 @@ class Enemy(Entity):
             if self.game.player.death_counter != 0:
                 self.move_towards_player()
             else:
-                self.move_away_from_player()
+                self.move_away_from_player(radius=100)
             self.rect.move_ip(self.velocity)
             self.hitbox.move_ip(self.velocity)
             self.update_hitbox()
@@ -101,15 +101,15 @@ class Enemy(Entity):
             dir_vector.scale_to_length(self.speed / 4)
         self.set_velocity(dir_vector)
 
-    def move_away_from_player(self):
+    def move_away_from_player(self, radius):
         distance_to_player = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,
                                                  self.game.player.hitbox.y - self.hitbox.y).length()
         if self.destination_position:
             vector = pygame.math.Vector2(self.game.player.hitbox.x - self.destination_position[0],
                                          self.game.player.hitbox.y - self.destination_position[1]).length()
-            if vector < 100:
+            if vector < radius:
                 self.pick_random_spot()
-        if distance_to_player < 100:
+        if distance_to_player < radius:
             if not self.destination_position:
                 self.pick_random_spot()
             dir_vector = pygame.math.Vector2(self.destination_position[0] - self.hitbox.x,

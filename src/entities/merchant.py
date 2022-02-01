@@ -30,6 +30,7 @@ class Merchant:
         for item in self.items:
             self.room.objects.append(item)
         self.room.tile_map.wall_list.append(self)
+        self.dead = False
 
     def load_images(self):
         for i in range(4):
@@ -43,6 +44,10 @@ class Merchant:
         self.items.append(ShieldPowerUp(self.game, self.room, self.items_position[1]))
         self.items[-1].for_sale = True
         self.items[-2].for_sale = True
+        self.items[-2].show_price.__init__(self.items[-2])
+        self.items[-1].show_price.__init__(self.items[-1])
+        self.items[-2].show_price.set_text_position((650 + 15, 350 + 126))
+        self.items[-1].show_price.set_text_position((750 + 15, 350 + 126))
 
     def update_animation_frame(self):
         self.animation_frame += 1.5 / 15

@@ -81,7 +81,7 @@ class PlayerInfo:
         self.damage_text_rect = None
         self.time_text_rect = None
         self.enemy_count_text_rect = None
-        self.score_img = pygame.image.load('./assets/score.png')
+        self.score_img = pygame.image.load('../assets/score.png')
         self.score_img = pygame.transform.scale(self.score_img, (200, 100))
 
     def render(self):

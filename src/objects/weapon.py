@@ -20,6 +20,9 @@ class WeaponSwing:
         self.counter = 0
         self.swing_side = 1
         self.hover_value = 5
+        self.up = False
+        self.shadow_width = self.weapon.hitbox.width
+        self.shadow_position = [self.weapon.rect.midbottom[0] - 28, self.weapon.rect.midbottom[1]]
 
     def reset(self):
         self.counter = 0
@@ -50,12 +53,25 @@ class WeaponSwing:
         self.weapon.hitbox = pygame.mask.from_surface(self.weapon.image)
         self.counter += 1
 
+    def update_shadow_position(self):
+        self.shadow_position = [self.weapon.rect.midbottom[0] - 15, self.weapon.rect.midbottom[1]]
+
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        if self.up:
+            pygame.draw.ellipse(shape_surf, color, (1, 0, self.shadow_width / 2 - 2, 12))
+        else:
+            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4, 14))
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        surface.blit(shape_surf, self.shadow_position)
+
     def hovering(self):
+        self.update_shadow_position()
         if self.weapon.player is None:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
-                self.weapon.shadow += 5 / self.hover_value
-                self.weapon.up = self.hover_value < 0
+                self.up = self.hover_value < 0
             if pygame.time.get_ticks() % 1000 < 500:
                 self.hover_value = -5
             elif pygame.time.get_ticks() % 1000 > 500:
@@ -119,7 +135,6 @@ class Weapon(Object):
         Object.__init__(self, game, name, 'weapon', size, room, position)
         self.size = size
         self.player = None
-        self.shadow = 0
         self.load_image()
         if position:
             self.rect.x, self.rect.y = position[0], position[1]
@@ -127,6 +142,7 @@ class Weapon(Object):
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
         self.slash_image = SlashImage(self)
+        self.up = False
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -177,6 +193,7 @@ class Weapon(Object):
 
     def update(self):
         self.weapon_swing.hovering()
+        self.show_price.update()
         if self.player:
             self.interaction = False
             if self.weapon_swing.counter == 10:
@@ -189,22 +206,16 @@ class Weapon(Object):
                 self.weapon_swing.rotate()
         self.update_hitbox()
 
-    def draw_shadow(self, surface):
-        color = (0, 0, 0, 120)
-        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 - 2, 12))
-        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        surface.blit(shape_surf, (self.hitbox.midbottom[0], self.hitbox.midbottom[1]))
-
     def draw(self):
         surface = self.room.tile_map.map_surface
         if self.player:
             surface = self.game.screen
-        # self.slash_image.draw(surface)
-        # self.weapon_swing.draw_shadow(surface)
+        else:
+            self.weapon_swing.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.interaction:
             self.show_name.draw(surface, self.rect)
+        self.show_price.draw(surface)
 
 
 class AnimeSword(Weapon):
@@ -229,6 +240,7 @@ class FireSword(Weapon):
 
     def update(self):
         self.burning()
+        self.show_price.update()
         self.weapon_swing.hovering()
         if self.player:
             self.interaction = False

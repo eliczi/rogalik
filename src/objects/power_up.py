@@ -42,6 +42,7 @@ class PowerUp(Object):
         pass
 
     def update(self):
+        self.show_price.update()
         self.update_hitbox()
         self.hovering()
 
@@ -52,6 +53,7 @@ class PowerUp(Object):
         self.beautify(surface)
         if self.interaction:
             self.show_name.draw(surface, self.rect)
+        self.show_price.draw(surface)
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
