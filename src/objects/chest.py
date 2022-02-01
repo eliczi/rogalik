@@ -34,7 +34,7 @@ class Chest(Object):
             self.items.append(Emerald(self.game, self.room, self))
 
     def load_image(self):
-        image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
+        image = pygame.image.load('./assets/chest/full/chest_full0.png').convert_alpha()
         image = pygame.transform.scale(image, self.size)
         self.image = image
 
@@ -47,13 +47,13 @@ class Chest(Object):
         if self.open and self.animation_frame <= 2:
             self.animation_frame += 1 / 20
             self.image = pygame.image.load(
-                f'../assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
+                f'./assets/chest/full/chest_full{int(self.animation_frame)}.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
         elif 2 < self.animation_frame <= 3:
             self.animation_frame += 1 / 20
         elif self.open:
             self.image = pygame.image.load(
-                '../assets/chest/empty/chest_empty2.png'
+                './assets/chest/empty/chest_empty2.png'
             ).convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
             self.drop_items()  # at the last frame of animation, drop items
@@ -68,11 +68,11 @@ class Chest(Object):
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
-            self.image = pygame.image.load('../assets/chest/full/chest_picked.png').convert_alpha()
+            self.image = pygame.image.load('./assets/chest/full/chest_picked.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, (64, 64))
             self.interaction = True
         else:
-            self.image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
+            self.image = pygame.image.load('./assets/chest/full/chest_full0.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
 
     def chest_collision(self):

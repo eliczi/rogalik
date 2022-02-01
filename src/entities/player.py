@@ -50,7 +50,7 @@ class Player(Entity):
         self.size = 64
         self.shield = 2
         self.strength = 1
-        self.step = pygame.mixer.Sound('../assets/sound/footsteps.wav')
+        self.step = pygame.mixer.Sound('./assets/sound/footsteps.wav')
         self.attack_cooldown = 400
         self.death_counter = 1
         self.dupa = False

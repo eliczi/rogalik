@@ -10,8 +10,8 @@ class Entity:
     def __init__(self, game, name):
         self.game = game
         self.name = name
-        self.animation_database = load_animation_sprites(f'../assets/{name}/')
-        self.image = pygame.transform.scale(pygame.image.load(f'../assets/{name}/idle/idle0.png'),
+        self.animation_database = load_animation_sprites(f'./assets/{name}/')
+        self.image = pygame.transform.scale(pygame.image.load(f'./assets/{name}/idle/idle0.png'),
                                             utils.basic_entity_size).convert_alpha()
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
