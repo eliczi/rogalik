@@ -40,8 +40,7 @@ class EnemyManager:
                     and enemy.dead is False
                     and enemy.can_get_hurt_from_weapon()
             ):
-                if enemy not in self.game.player.weapon.enemy_list:
-                    self.game.player.weapon.enemy_list.append(enemy)
+
                 enemy.hurt = True
                 enemy.hp -= self.game.player.weapon.damage
                 enemy.entity_animation.hurt_timer = pygame.time.get_ticks()

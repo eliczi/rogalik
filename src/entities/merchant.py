@@ -22,11 +22,14 @@ class Merchant:
         self.items_position = [(650, 350), (750, 350), (850, 350)]
         self.items = []
         self.add_items()
-        self.text = 'Oy Vey!'
-        self.dialog = ShowName(self)
-        self.dialog.text = self.text.replace("_", " ").title()
-        self.dialog.text_length = len(self.text)
+        # self.texts = ['Hello there', 'How you doin?', 'I\'m an orc']
+        # self.dialog = ShowName(self)
+        # self.dialog.text = 'dupa z trupa'
+        # self.dialog.text_length = len(self.dialog.text)
         self.interaction = False
+        for item in self.items:
+            self.room.objects.append(item)
+        self.room.tile_map.wall_list.append(self)
 
     def load_images(self):
         for i in range(4):
@@ -38,12 +41,12 @@ class Merchant:
     def add_items(self):
         self.items.append(AnimeSword(self.game, self.room, self.items_position[0]))
         self.items.append(ShieldPowerUp(self.game, self.room, self.items_position[1]))
-        self.items[-1].owner = self
-        self.items[-2].owner = self
+        self.items[-1].for_sale = True
+        self.items[-2].for_sale = True
 
     def update_animation_frame(self):
         self.animation_frame += 1.5 / 15
-        if self.animation_frame > 3:
+        if self.animation_frame > 4:
             self.animation_frame = 0
         self.image = self.images[int(self.animation_frame)]
 
@@ -52,22 +55,22 @@ class Merchant:
         self.detect_collision()
 
     def detect_collision(self):
-        if self.game.player.hitbox.colliderect(self.hitbox):
-            self.game.player.gold -= 1
-            self.interaction = True
-        else:
-            self.interaction = False
-            self.dialog.reset_line_length()
+        self.interaction = bool(self.game.player.hitbox.colliderect(self.hitbox))
 
-    def manage_items(self):
-        for item in self.items:
-            item.draw()
-            item.update()
-            item.detect_collision()
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((100, 100), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, 40, 14))  # - self.animation_frame % 4
+        shape_surf = pygame.transform.scale(shape_surf, (200, 200))
+        position = [self.hitbox.bottomleft[0] + 3, self.hitbox.bottomleft[1] - 15 + self.animation_frame]
+        surface.blit(shape_surf, position)
 
     def draw(self):
         # self.draw_shadow(self.room.tile_map.map_surface)
-        self.manage_items()
+        self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
-        if self.interaction:
-            self.dialog.draw(self.room.tile_map.map_surface, self.rect)
+
+        # if self.interaction:
+        #     self.dialog.draw(self.room.tile_map.map_surface, self.rect)
+        # else:
+        #     self.dialog.text = random.choice(self.texts)

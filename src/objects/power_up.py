@@ -105,6 +105,7 @@ class ShieldPowerUp(PowerUp):
 
     def __init__(self, game, room, position=None):
         super().__init__(game, room, self.name, position)
+        self.value = 50
 
     def interact(self):
         self.game.player.shield += 1

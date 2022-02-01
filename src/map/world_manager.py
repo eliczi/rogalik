@@ -60,7 +60,7 @@ class WorldManager:
             self.move_entities(self.direction, self.value)
 
     def detect_next_room(self):  # checks if player goes through one of 4 possible doors
-        if not self.switch_room:
+        if not self.switch_room and self.game.player:
             player = self.game.player
             if player.rect.y <= 96:
                 self.initialize_room_change('up', -1)

@@ -29,4 +29,7 @@ class ObjectManager:
     def interact(self):
         for o in self.current_objects:
             if o.interaction:
-                o.interact()
+                if not o.for_sale:
+                    o.interact()
+                else:
+                    o.buy()

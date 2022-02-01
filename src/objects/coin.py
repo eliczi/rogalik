@@ -10,7 +10,6 @@ class Coin(Object):
     name = 'coin'
     object_type = 'coin'
     size = (16, 16)
-    value = 1
 
     def __init__(self, game, room=None, chest=None):
         self.chest = chest
@@ -19,6 +18,7 @@ class Coin(Object):
         self.dropped = False
         self.bounce = None
         self.animation_frame = 0
+        self.value = 1
 
     def activate_bounce(self):
         if self.chest:
@@ -56,6 +56,7 @@ class Coin(Object):
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
+            print(self.game.player.gold)
             self.game.player.gold += self.value
             self.game.world_manager.current_room.objects.remove(self)
 
@@ -83,21 +84,21 @@ class Coin(Object):
 class Emerald(Coin):
     name = 'emerald'
     object_type = 'coin'
-    value = 5
     size = (24, 24)
 
     def __init__(self, game, room=None, chest=None):
         super().__init__(game, room, chest)
+        self.value = 5
 
 
 class Ruby(Coin):
     name = 'ruby'
     object_type = 'coin'
-    value = 15
     size = (24, 24)
 
     def __init__(self, game, room=None, chest=None):
         super().__init__(game, room, chest)
+        self.value = 15
 
 
 class Bounce:

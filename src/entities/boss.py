@@ -9,7 +9,7 @@ from objects.flask import Flask
 from objects.coin import Coin
 from entities.enemy import Enemy, draw_health_bar
 from entities.animation import EntityAnimation
-
+from entities.enemy import Enemy
 
 
 def load_animation_sprites(path):
@@ -44,36 +44,27 @@ class BossAnimation(EntityAnimation):
                 self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
 
-class Boss:
+class Boss(Enemy):
+    name = "boss"
+    max_hp = 500
+    hp = max_hp
+    damage = 10
+    speed = 10
+
     def __init__(self, game, room):
-        self.game = game
+        super().__init__(game, speed=self.speed, max_hp=self.max_hp, room=room, name=self.name)
         self.room = room
-        self.name = 'boss'
-        self.animation_database = load_animation_sprites(f'../assets/{self.name}/')
         self.image = pygame.transform.scale(pygame.image.load(f'../assets/{self.name}/idle/idle0.png'),
                                             (96, 96)).convert_alpha()
         self.rect = self.image.get_rect(center=(512, 400))
         self.rect.midbottom = (21 * 64 / 2, 7.25 * 64)
-        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
-        self.boss_animation = BossAnimation(self)
-        self.velocity = [0, 0]
-        self.hurt = False
-        self.dead = False
-        self.direction = 'right'
-        self.can_move = True
-        self.counter = 0
-        self.time = 0
-        self.speed = 10
-        self.death_counter = 15
-        self.max_hp = 500
-        self.hp = self.max_hp
         self.bullets = pygame.sprite.Group()
-        self.cool_down = 0
-        self.damage = 10
         self.shooter = Shooting(self)
+        self.animation_database = load_animation_sprites(f'../assets/{self.name}/')
+        self.entity_animation = BossAnimation(self)
+
         self.items = [Flask(self.game, self.room)]
-        self.add_coins(50)
-        self.weapon_hurt_cooldown = 0
+        self.add_treasure()
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -82,37 +73,6 @@ class Boss:
         shape_surf = pygame.transform.scale(shape_surf, (200, 200))
         position = [self.hitbox.bottomleft[0] + 3, self.hitbox.bottomleft[1] - 10]
         surface.blit(shape_surf, position)
-
-    def can_get_hurt_from_weapon(self):
-        if pygame.time.get_ticks() - self.weapon_hurt_cooldown > self.game.player.attack_cooldown:
-            self.weapon_hurt_cooldown = pygame.time.get_ticks()
-            return True
-
-    def set_velocity(self, new_velocity):
-        self.velocity = new_velocity
-
-    def attack(self):
-        if pygame.time.get_ticks() - self.cool_down > 1000:
-            self.cool_down = pygame.time.get_ticks()
-            return True
-
-    def draw_health(self, surf):
-        if self.hp < self.max_hp:
-            health_rect = pygame.Rect(0, 0, 20, 5)
-            health_rect.midbottom = self.rect.centerx, self.rect.top
-            health_rect.midbottom = self.rect.centerx, self.rect.top
-            draw_health_bar(surf, health_rect.topleft, health_rect.size,
-                            (1, 0, 0), (255, 0, 0), (0, 255, 0), self.hp / self.max_hp)
-
-    def wall_collision(self):
-        test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
-        collide_points = (test_rect.midbottom, test_rect.bottomleft, test_rect.bottomright)
-        for wall in self.game.world_manager.current_map.wall_list:
-            if any(wall.hitbox.collidepoint(point) for point in collide_points):
-                self.velocity = [0, 0]
-
-    def update_hitbox(self):
-        self.hitbox.midbottom = self.rect.midbottom
 
     def spawn(self):
         self.rect.x = 800
@@ -128,7 +88,7 @@ class Boss:
             else:
                 self.velocity = [0, 0]
             self.wall_collision()
-        self.boss_animation.update()
+        self.entity_animation.update()
         self.shooter.update()
 
     def move(self):
@@ -149,17 +109,12 @@ class Boss:
     def detect_death(self):
         if self.hp <= 0 and self.dead is False:
             self.dead = True
-            self.boss_animation.animation_frame = 0
+            self.entity_animation.animation_frame = 0
         if self.death_counter == 0:
             self.drop_items()
             self.room.enemy_list.remove(self)
             position = (self.rect.x, self.rect.y)
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, entity='boss'))
-
-    def time_passed(self, time, amount):
-        """Wait 'amount' amount of time"""
-        if pygame.time.get_ticks() - time > amount:
-            return True
 
     def draw(self):
         self.draw_shadow(self.room.tile_map.map_surface)

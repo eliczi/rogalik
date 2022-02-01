@@ -30,6 +30,7 @@ class Enemy(Entity):
         self.weapon_hurt_cooldown = 0
         self.items = []
         self.add_treasure()
+        self.destination_position = None
 
     def add_treasure(self):
         for _ in range(random.randint(10, 20)):
@@ -84,7 +85,10 @@ class Enemy(Entity):
 
     def move(self):
         if not self.dead and self.hp > 0:
-            self.move_towards_player()
+            if self.game.player.death_counter != 0:
+                self.move_towards_player()
+            else:
+                self.move_away_from_player()
             self.rect.move_ip(self.velocity)
             self.hitbox.move_ip(self.velocity)
             self.update_hitbox()
@@ -96,6 +100,40 @@ class Enemy(Entity):
             dir_vector.normalize_ip()
             dir_vector.scale_to_length(self.speed / 4)
         self.set_velocity(dir_vector)
+
+    def move_away_from_player(self):
+        distance_to_player = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,
+                                                 self.game.player.hitbox.y - self.hitbox.y).length()
+        if self.destination_position:
+            vector = pygame.math.Vector2(self.game.player.hitbox.x - self.destination_position[0],
+                                         self.game.player.hitbox.y - self.destination_position[1]).length()
+            if vector < 100:
+                self.pick_random_spot()
+        if distance_to_player < 100:
+            if not self.destination_position:
+                self.pick_random_spot()
+            dir_vector = pygame.math.Vector2(self.destination_position[0] - self.hitbox.x,
+                                             self.destination_position[1] - self.hitbox.y)
+            if dir_vector.length_squared() > 0:
+                dir_vector.normalize_ip()
+                dir_vector.scale_to_length(self.speed / 4)
+                self.set_velocity(dir_vector)
+            else:
+                self.pick_random_spot()
+        else:
+            self.set_velocity([0, 0])
+
+    def pick_random_spot(self):
+        min_x, max_x = 196, 1082
+        min_y, max_y = 162, 586
+        pick = [random.randint(min_x, max_x), random.randint(min_y, max_y)]
+        vector = pygame.math.Vector2(self.game.player.hitbox.x - pick[0],
+                                     self.game.player.hitbox.y - pick[1])
+        while vector.length() < 100:
+            pick = [random.randint(min_x, max_x), random.randint(min_y, max_y)]
+            vector = pygame.math.Vector2(self.game.player.hitbox.x - pick[0],
+                                         self.game.player.hitbox.y - pick[1])
+        self.destination_position = pick
 
     def detect_death(self):
         if self.hp <= 0 and self.dead is False:
@@ -122,7 +160,8 @@ class Enemy(Entity):
 
     def draw(self):  # if current room or the next room
         self.draw_shadow(self.room.tile_map.map_surface)
-        self.room.tile_map.map_surface.blit(self.image, self.rect)
+        if self.image:
+            self.room.tile_map.map_surface.blit(self.image, self.rect)
         self.draw_health(self.room.tile_map.map_surface)
 
 
@@ -136,7 +175,7 @@ class Imp(Enemy):
         self.destination_position = None
 
     def shoot(self):
-        if not sum(self.velocity) and self.time_passed(self.time, 1000):
+        if not sum(self.velocity) and self.time_passed(self.time, 750):
             self.time = pygame.time.get_ticks()
             self.bullets.add(
                 Bullet(self, self.game, self.hitbox.midbottom[0], self.hitbox.midbottom[1],
@@ -199,6 +238,3 @@ class Imp(Enemy):
             self.update_hitbox()
             self.old_position = self.position
             self.position = [self.rect.x, self.rect.y]
-
-
-

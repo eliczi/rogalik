@@ -9,6 +9,9 @@ from particles import ParticleManager, Fire
 
 
 class WeaponSwing:
+    left_swing = 10
+    right_swing = -190
+
     def __init__(self, weapon):
         self.weapon = weapon
         self.angle = 0
@@ -26,9 +29,9 @@ class WeaponSwing:
         dx = mx - self.weapon.player.hitbox.centerx  # - 64
         dy = my - self.weapon.player.hitbox.centery  # - 32
         if self.swing_side == 1:
-            self.angle = (180 / math.pi) * math.atan2(-self.swing_side * dy, dx) + 10
+            self.angle = (180 / math.pi) * math.atan2(-self.swing_side * dy, dx) + self.left_swing
         else:
-            self.angle = (180 / math.pi) * math.atan2(self.swing_side * dy, dx) - 190
+            self.angle = (180 / math.pi) * math.atan2(self.swing_side * dy, dx) + self.right_swing
 
         position = self.weapon.player.hitbox.center
         self.weapon.image = pygame.transform.rotozoom(self.weapon.original_image, self.angle, 1)
@@ -124,7 +127,6 @@ class Weapon(Object):
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
         self.slash_image = SlashImage(self)
-        self.enemy_list = []
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -137,16 +139,6 @@ class Weapon(Object):
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)
-
-    def enlarge(self):
-        self.scale *= 1.01
-        self.load_image()
-        self.weapon_swing.offset *= 1.01
-
-    def unlarge(self):
-        self.scale /= 1.01
-        self.load_image()
-        self.weapon_swing.offset /= 1.01
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
@@ -233,6 +225,7 @@ class FireSword(Weapon):
     def __init__(self, game, room=None, position=None):
         super().__init__(game, self.name, self.size, room, position)
         self.value = 150
+        self.enemy_list = []
 
     def update(self):
         self.burning()

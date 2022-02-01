@@ -39,7 +39,7 @@ class ShowName:
         starting_position[1] += 2  # adjustment of vertical position
         end_position = [starting_position[0] - self.line_length, starting_position[1]]
         pygame.draw.line(surface, (255, 255, 255), starting_position, end_position, 5)
-        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 10):
+        if self.line_length <= self.text_length * 8 and self.time_passed(self.time, 15):
             self.time = pygame.time.get_ticks()
             self.line_length += 8
             self.counter += 1
@@ -48,6 +48,19 @@ class ShowName:
     def reset_line_length(self):
         self.line_length = 0
         self.counter = 0
+
+
+class ShowPrice(ShowName):
+    def __init__(self, object):
+        super().__init__(object)
+        # Format weapon display name
+        self.text = self.object.value
+        self.text_length = len(self.text)
+        self.text_position = None
+        self.counter = 0
+
+    def draw(self, surface, rect):
+        self.draw_text(surface)
 
 
 class Object:
@@ -68,6 +81,7 @@ class Object:
             self.rect.x, self.rect.y = position[0], position[1]
         self.show_name = ShowName(self)
         self.interaction = False
+        self.for_sale = False
 
     def __repr__(self):
         return self.name
@@ -100,8 +114,8 @@ class Object:
         if self.game.player.items:
             self.game.player.weapon = self.game.player.items[-1]
 
-    def set_size(self, filepath):
-        self.size = tuple(3 * x for x in Image.open(filepath).size)
+    # def set_size(self, filepath):
+    #     self.size = tuple(3 * x for x in Image.open(filepath).size)
 
     def update(self):
         pass
@@ -112,6 +126,12 @@ class Object:
 
     def interact(self):
         pass
+
+    def buy(self):
+        if self.game.player.gold >=self.value:
+            self.game.player.gold -=self.value
+            self.interact()
+
 
     def draw(self):
         surface = self.room.tile_map.map_surface

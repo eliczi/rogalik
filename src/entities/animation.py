@@ -59,18 +59,20 @@ class EntityAnimation:
                 self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
                 self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
+    def hurt_animation(self):
+        self.animation_frame = 0
+        self.idle_animation('HURT')
+        # if 0.3 seconds have
+        if pygame.time.get_ticks() - self.hurt_timer > 300:
+            self.hurt_timer = pygame.time.get_ticks()
+            self.entity.hurt = False
+
     def animation(self):
         """s"""
         if self.entity.dead:
             self.death_animation()
         elif self.entity.hurt:
-            self.animation_frame = 0
-            self.idle_animation('HURT')
-            # if 0.3 seconds have passed
-            if pygame.time.get_ticks() - self.hurt_timer > 300:
-                self.hurt_timer = pygame.time.get_ticks()
-                self.entity.hurt = False
-
+            self.hurt_animation()
         elif self.moving():
             self.idle_animation('WALK')
         else:

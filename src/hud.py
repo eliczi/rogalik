@@ -122,12 +122,12 @@ class Hud:
                 self.game.screen.blit(item.hud_image, position)
 
     def draw_info(self):
-        text2 = f'D000pa: {int(self.game.clock.get_fps())}'
-        text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
-        self.game.screen.blit(text_surface, (0, 120))
-        text3 = f'C1111pa: {str(int(self.player.rect.x)), str(int(self.game.player.rect.midbottom[1]))}'
-        text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
-        self.game.screen.blit(text_surface, (0, 140))
+        # text2 = f'D000pa: {int(self.game.clock.get_fps())}'
+        # text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
+        # self.game.screen.blit(text_surface, (0, 120))
+        # text3 = f'C1111pa: {str(int(self.player.rect.x)), str(int(self.game.player.rect.midbottom[1]))}'
+        # text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
+        # self.game.screen.blit(text_surface, (0, 140))
         # text4 = f'konie na godzine: {self.player.hp}'
         # text_surface = pygame.font.Font(utils.font, 15).render(text4, True, (255, 255, 255))
         #self.game.screen.blit(text_surface, (0, 160))

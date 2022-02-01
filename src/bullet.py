@@ -1,7 +1,6 @@
 import math
 import pygame
 import random
-
 from particles import EnemyHitParticle, WallHitParticle
 
 
@@ -34,7 +33,6 @@ class Bullet(pygame.sprite.Sprite):
         self.dir = (self.dir[0] / length, self.dir[1] / length)
         self.entity = entity
         self.bounce_back = True
-
         self.vector = None
 
     def update(self):
