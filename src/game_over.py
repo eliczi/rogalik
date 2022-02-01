@@ -9,7 +9,7 @@ class GameOver:
         self.text = 'GAME OVER'
         self.counter = 0
         self.image_size = (360, 360)
-        self.image = pygame.transform.scale(pygame.image.load('./assets/game_over.png'), self.image_size)
+        self.image = pygame.transform.scale(pygame.image.load('../assets/game_over.png'), self.image_size)
         self.rect = self.image.get_rect()
         self.rect.center = (utils.world_size[0] / 2, utils.world_size[1] /2)
         self.position = [utils.world_size[0] / 2 - 180, - 800]

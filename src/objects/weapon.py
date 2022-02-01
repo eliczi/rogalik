@@ -78,7 +78,7 @@ class SlashImage:
     def load_slash_images(self):
         for i in range(5):
             self.slash.append(
-                pygame.transform.scale(pygame.image.load(f'./assets/vfx/slash/slash{i}.png').convert_alpha(),
+                pygame.transform.scale(pygame.image.load(f'../assets/vfx/slash/slash{i}.png').convert_alpha(),
                                        (int(57 * 2.5), int(32 * 2.5))))
 
     def rotate_slash(self, side):
@@ -130,12 +130,12 @@ class Weapon(Object):
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.size = tuple(self.scale * x for x in Image.open(f'./assets/weapon/{self.name}/{self.name}.png').size)
-        self.original_image = pygame.image.load(f'./assets/weapon/{self.name}/{self.name}.png').convert_alpha()
+        self.size = tuple(self.scale * x for x in Image.open(f'../assets/weapon/{self.name}/{self.name}.png').size)
+        self.original_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
-        self.image_picked = pygame.image.load(f'./assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
+        self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
-        self.hud_image = pygame.image.load(f'./assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
+        self.hud_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)

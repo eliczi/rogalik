@@ -25,16 +25,16 @@ class PowerUp(Object):
         self.particles = []
 
     def load_image(self):
-        image = pygame.image.load(f'./assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
+        image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
         image = pygame.transform.scale(image, self.size)
         self.image = image
 
     def detect_collision(self):
         if self.game.player.rect.colliderect(self.rect):
-            self.image = pygame.image.load(f'./assets/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
+            self.image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
             self.interaction = True
         else:
-            self.image = pygame.image.load(f'./assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
+            self.image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
             self.interaction = False
             self.show_name.reset_line_length()
 

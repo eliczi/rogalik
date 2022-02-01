@@ -20,11 +20,11 @@ class PlayerHP:
 
     def load_images(self):
         self.images.append(
-            pygame.transform.scale(pygame.image.load('./assets/full_heart.png').convert_alpha(), self.image_size))
+            pygame.transform.scale(pygame.image.load('../assets/full_heart.png').convert_alpha(), self.image_size))
         self.images.append(
-            pygame.transform.scale(pygame.image.load('./assets/half_heart.png').convert_alpha(), self.image_size))
+            pygame.transform.scale(pygame.image.load('../assets/half_heart.png').convert_alpha(), self.image_size))
         self.images.append(
-            pygame.transform.scale(pygame.image.load('./assets/empty_heart.png').convert_alpha(), self.image_size))
+            pygame.transform.scale(pygame.image.load('../assets/empty_heart.png').convert_alpha(), self.image_size))
 
     def calculate_hearts(self):  # how many hearth to display and what kind
         if self.player.hp >= 0:
@@ -60,7 +60,7 @@ class PlayerGold:
         self.text = None
 
     def load_image(self):
-        self.image = pygame.transform.scale(pygame.image.load('./assets/coin/coin/coin0.png').convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load('../assets/coin/coin/coin0.png').convert_alpha(),
                                             self.image_size)
 
     def update(self):
@@ -83,7 +83,7 @@ class PlayerShield:
         self.text = None
 
     def load_image(self):
-        self.image = pygame.transform.scale(pygame.image.load('./assets/power_ups/armor/armor.png').convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load('../assets/power_ups/armor/armor.png').convert_alpha(),
                                             self.image_size)
 
     def update(self):
@@ -101,7 +101,7 @@ class Hud:
 
     def __init__(self, game):
         self.game = game
-        self.hud_frame = pygame.image.load('./assets/hud_frame.png').convert_alpha()
+        self.hud_frame = pygame.image.load('../assets/hud_frame.png').convert_alpha()
         self.rect = self.hud_frame.get_rect()
         self.rect.midtop = (21 / 2 * 64, utils.world_size[1] - 1.4 * 64)
         self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4],

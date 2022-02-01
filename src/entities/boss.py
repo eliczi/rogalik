@@ -54,13 +54,13 @@ class Boss(Enemy):
     def __init__(self, game, room):
         super().__init__(game, speed=self.speed, max_hp=self.max_hp, room=room, name=self.name)
         self.room = room
-        self.image = pygame.transform.scale(pygame.image.load(f'./assets/{self.name}/idle/idle0.png'),
+        self.image = pygame.transform.scale(pygame.image.load(f'../assets/{self.name}/idle/idle0.png'),
                                             (96, 96)).convert_alpha()
         self.rect = self.image.get_rect(center=(512, 400))
         self.rect.midbottom = (21 * 64 / 2, 7.25 * 64)
         self.bullets = pygame.sprite.Group()
         self.shooter = Shooting(self)
-        self.animation_database = load_animation_sprites(f'./assets/{self.name}/')
+        self.animation_database = load_animation_sprites(f'../assets/{self.name}/')
         self.entity_animation = BossAnimation(self)
 
         self.items = [Flask(self.game, self.room)]

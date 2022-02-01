@@ -88,11 +88,11 @@ class Object:
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.original_image = pygame.image.load(f'./assets/{self.object_type}/{self.name}.png').convert_alpha()
+        self.original_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
-        self.image_picked = pygame.image.load(f'./assets/{self.object_type}/{self.name}_picked.png').convert_alpha()
+        self.image_picked = pygame.image.load(f'../assets/{self.object_type}/{self.name}_picked.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
-        self.hud_image = pygame.image.load(f'./assets/{self.object_type}/{self.name}_hud.png').convert_alpha()
+        self.hud_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
 
     def detect_collision(self):
