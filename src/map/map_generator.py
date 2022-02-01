@@ -11,10 +11,12 @@ from entities.boss import Boss
 from objects.power_up import ShieldPowerUp, AttackPowerUp
 from entities.merchant import Merchant
 
+
 class Room:
     def __init__(self, x, y):
         self.x = x  # position in game world
         self.y = y
+        self.position = [x, y]
         self.neighbours = []  # neighbouring rooms coordinates
         self.doors = []  # door locations
         self.type = None  # type of the room
@@ -43,13 +45,14 @@ class Room:
         self.doors.append(direction)
 
     def add_doors(self):
-        if len(self.neighbours) == 1:  # if only 1 neighbour, there must be a door to that neighbour
-            position = [self.x - self.neighbours[0][0], self.y - self.neighbours[0][1]]
-            self.position_to_direction(position)  # add position to door list
-        else:
-            for neighbour in self.neighbours:
-                position = [self.x - neighbour[0], self.y - neighbour[1]]
-                self.position_to_direction(position)
+        # if len(self.neighbours) == 1:  # if only 1 neighbour, there must be a door to that neighbour
+        #     position = [self.x - self.neighbours[0][0], self.y - self.neighbours[0][1]]
+        #     self.position_to_direction(position)  # add position to door list
+        # else:
+        print(self.neighbours)
+        for neighbour in self.neighbours:
+            position = [self.x - neighbour[0], self.y - neighbour[1]]
+            self.position_to_direction(position)
 
 
 class World:
@@ -66,7 +69,7 @@ class World:
     def create_world(self):
         self.generate_rooms()
         self.assign_type()
-        self.add_neighbors()
+        # self.add_neighbors()
         self.add_room_map('mapa4')
         self.add_room_map('mapa3')
         self.add_room_map('floor_layer')
@@ -91,20 +94,29 @@ class World:
     def reset_world(self):  # resets game world
         self.world = [[None for _ in range(self.width)] for _ in range(self.height)]
 
+    def add_neighbour(self, target_room, room):
+        target_room.neighbours.append(room.position)
+
     def generate_rooms(self):
         room_counter = 0  # counts current number of rooms
+        prev_room = [self.x, self.y]  # added
+        current_room = None
         while room_counter < self.num_of_rooms:  # this while loop populates game world with one possible room-layout
             if room_counter == 0:
-                self.starting_room = self.world[self.x][self.y] = Room(self.x, self.y)
-                self.world[self.x][self.y].type = 'starting_room'
+                self.starting_room = self.world[self.x][self.y] = current_room = Room(self.x, self.y)
+                current_room.type = 'starting_room'
             else:
                 self.world[self.x][self.y] = Room(self.x, self.y)
+                self.world[self.x][self.y].neighbours.append(prev_room)
+                prev_room = [self.x, self.y]
             empty_spaces = self.check_free_space()
             if empty_spaces:
                 new_room = random.choice(empty_spaces)
                 self.x, self.y = new_room[0], new_room[1]
+                self.world[prev_room[0]][prev_room[1]].neighbours.append([self.x, self.y])
+                self.world[prev_room[0]][prev_room[1]].add_doors()
                 room_counter += 1
-            elif room_counter == self.width * self.height - 1:
+            elif room_counter == self.width * self.height:  # - 1:
                 break
             else:
                 self.reset_world()
@@ -186,10 +198,6 @@ class World:
                         room.objects.append(Chest(self.game, room))
                     elif room.type == 'starting_room':
                         room.objects.append(FireSword(self.game, room, (650, 300)))
-                        # room.objects.append(Weapon(self.game, 24, 'katana', (24, 93), room, (540, 300)))
-                        # room.objects.append(Weapon(self.game, 24, 'cleaver', (24, 57), room, (420, 300)))
-                        # room.objects.append(Weapon(self.game, 24, 'mace', (36, 78), room, (660, 300)))
-                        # room.objects.append(Flask(self.game, room, (660, 300)))
                     elif room.type == 'power_up':
                         power_ups = [ShieldPowerUp(self.game, room), AttackPowerUp(self.game, room)]
                         room.objects.append(random.choice(power_ups))
@@ -201,7 +209,10 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room):
-                    print(1, end=' ')
+                    if room.type == 'starting_room':
+                        print('x', end=' ')
+                    else:
+                        print(1, end=' ')
                 else:
                     print(0, end=' ')
             print('')
@@ -213,7 +224,7 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[0, 0,0, 1], k=1)[0]
+                    room.type = random.choices(self.types, weights=[0, 0, 0, 1], k=1)[0]
                     ok_rooms.append(room)
 
         x = random.choice(ok_rooms)

@@ -11,6 +11,7 @@ from background import BackgroundEffects
 from map.world_manager import WorldManager
 from objects.object_manager import ObjectManager
 from game_over import GameOver
+import time
 
 pygame.init()
 pygame.mixer.init()
@@ -31,11 +32,12 @@ class Game:
         self.menu = MainMenu(self)
         self.mini_map = MiniMap(self)
         self.game_time = None
-        self.fps = 60
+        self.fps = 300
         self.background = BackgroundEffects()
         self.game_over = GameOver(self)
         self.can_exit = False
         pygame.mixer.init()
+        self.dt = 0
 
     def refresh(self):
         self.__init__()
@@ -84,16 +86,20 @@ class Game:
 
     def run_game(self):
         self.enemy_manager.add_enemies()
+        prev_time = time.time()
         while self.running:
-            self.menu.show()
             self.clock.tick(self.fps)
+            now = time.time()
+            self.dt = now - prev_time
+            prev_time = now
+            self.menu.show()
             self.screen.fill(utils.BLACK)
             self.input()
             self.update_groups()
             self.draw_groups()
             self.game_time = pygame.time.get_ticks()
             self.display.blit(self.screen, (0, 0))
-            if self.running == True:
+            if self.running:
                 pygame.display.flip()
         pygame.quit()
         quit()

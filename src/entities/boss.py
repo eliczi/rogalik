@@ -201,8 +201,8 @@ class Shooting:
     def half_circle_shoot(self):
         if self.time_passed(self.circle_time, 1000):
             self.circle_time = pygame.time.get_ticks()
-            for i in range(-12, 12):
+            for i in range(-36, 36):
                 self.bullets.add(
                     Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                            self.boss.game.player.hitbox.center,
-                           'boss', 15 * i))
+                           'boss', 15/3 * i))

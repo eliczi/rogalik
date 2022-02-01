@@ -41,7 +41,7 @@ class Coin(Object):
 
     def update(self):
         self.update_animation_frame()
-        if self.bounce.speed < 0.001:
+        if self.bounce.speed < 0.004:
             self.dropped = False
             self.bounce.reset()
         if self.dropped:
@@ -56,14 +56,13 @@ class Coin(Object):
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect):
-            print(self.game.player.gold)
             self.game.player.gold += self.value
             self.game.world_manager.current_room.objects.remove(self)
 
     def magnet(self):
         dir_vector = pygame.math.Vector2(self.game.player.hitbox.center[0] - self.rect.x,
                                          self.game.player.hitbox.center[1] - self.rect.y)
-        if 0 < dir_vector.length() < 200 :
+        if 0 < dir_vector.length() < 200:
             speed = 1 / dir_vector.length() * 250
             dir_vector.normalize_ip()
             dir_vector.scale_to_length(speed)

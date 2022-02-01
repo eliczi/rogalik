@@ -73,13 +73,6 @@ class Player(Entity):
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]
-        if pressed[pygame.K_p]:
-            self.enlarge()
-            self.weapon.enlarge()
-            self.game.world_manager.current_map.enlarge()
-        if pressed[pygame.K_o]:
-            self.unlarge()
-            self.weapon.unlarge()
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
@@ -93,6 +86,7 @@ class Player(Entity):
                     self.weapon = self.items[0]
 
         constant_dt = 0.06
+        #constant_dt = self.game.dt
         vel_up = [0, -self.speed * constant_dt]
         vel_up = [i * pressed[pygame.K_w] for i in vel_up]
         vel_down = [0, self.speed * constant_dt]
@@ -123,8 +117,6 @@ class Player(Entity):
 
     def shift_items_left(self):
         self.items = self.items[1:] + [self.items[0]]
-
-
 
     def detect_death(self):
         if self.hp <= 0 and self.dead is False:

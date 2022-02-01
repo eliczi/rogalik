@@ -40,7 +40,7 @@ class Bullet(pygame.sprite.Sprite):
                     self.pos[1] + self.dir[1] * self.speed)
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
-        self.wall_collision()
+        #self.wall_collision()
         if self.bounce_back is False:
             for enemy in self.game.enemy_manager.enemy_list:
                 if self.rect.colliderect(enemy.hitbox):
@@ -50,7 +50,7 @@ class Bullet(pygame.sprite.Sprite):
                     self.kill()
         self.player_collision(self.game.player)
         self.bounce()
-        if self.rect.y < 0 or self.rect.y > 1000:
+        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1200:
             self.kill()
 
     def draw(self, surface):
