@@ -65,7 +65,7 @@ class Enemy(Entity):
             return True
 
     def attack_player(self, player):
-        if self.hitbox.colliderect(player.hitbox) and self.can_attack():
+        if self.hitbox.colliderect(player.hitbox) and self.can_attack() and not self.game.world_manager.switch_room:
             player.calculate_collision(self)
             # play attack sound
 
