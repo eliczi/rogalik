@@ -70,7 +70,7 @@ class WeaponSwing:
         surface.blit(shape_surf, self.shadow_position)
 
     def hovering(self):
-        #self.update_shadow_position()
+        # self.update_shadow_position()
         if self.weapon.player is None:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
@@ -94,7 +94,7 @@ class Weapon(Object):
         self.time = 0
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
-        #self.slash_image = SlashImage(self)
+        # self.slash_image = SlashImage(self)
         self.up = False
 
     def load_image(self):
@@ -157,7 +157,7 @@ class Weapon(Object):
                 self.weapon_swing.swing()
             else:
                 self.weapon_swing.rotate()
-        #self.update_bounce()
+        self.update_bounce()
         self.update_hitbox()
 
     def draw(self):
@@ -170,6 +170,18 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
+        pygame.draw.rect(self.game.screen, (255, 255,255), self.hitbox, 1)
+        print(self.weapon_swing.angle)
+
+
+class Staff(Weapon):
+    name = 'staff'
+    damage = 10
+    size = (30, 96)
+
+    def __init__(self, game, room=None, position=None):
+        super().__init__(game, self.name, self.size, room, position)
+        self.value = 150
 
 
 class AnimeSword(Weapon):
@@ -180,7 +192,6 @@ class AnimeSword(Weapon):
     def __init__(self, game, room=None, position=None):
         super().__init__(game, self.name, self.size, room, position)
         self.value = 100
-
 
 
 class FireSword(Weapon):

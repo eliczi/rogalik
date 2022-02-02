@@ -4,7 +4,7 @@ import random
 
 from objects.chest import Chest
 from .map import TileMap, Spritesheet
-from objects.weapon import Weapon, AnimeSword, FireSword
+from objects.weapon import Weapon, AnimeSword, FireSword, Staff
 from objects.flask import Flask
 from particles import Fire
 from entities.boss import Boss
@@ -240,5 +240,5 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[1, 3, 1, 10], k=1)[0]
+                    room.type = random.choices(self.types, weights=[1, 3, 1, 1], k=1)[0]
                     ok_rooms.append(room)

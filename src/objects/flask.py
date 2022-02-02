@@ -26,7 +26,11 @@ class Flask(Object):
         self.interaction = False
         self.show_name.reset_line_length()
         self.image = self.original_image
+        if self.game.player.hp == self.game.player.max_hp:
+            self.game.player.max_hp += 20
         self.game.player.hp += 20
+
+
 
     def update(self):
         if self.bounce.speed < 0.001:

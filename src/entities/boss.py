@@ -12,6 +12,7 @@ from entities.animation import EntityAnimation
 from entities.enemy import Enemy
 from objects.hole import Hole
 
+
 def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
 
@@ -62,7 +63,6 @@ class Boss(Enemy):
         self.shooter = Shooting(self)
         self.animation_database = load_animation_sprites(f'../assets/{self.name}/')
         self.entity_animation = BossAnimation(self)
-
         self.items = [Flask(self.game, self.room)]
         self.add_treasure()
         self.dupa = True
@@ -96,7 +96,6 @@ class Boss(Enemy):
         #     self.room.objects.append(Hole(self.game, position,self.room))
         #     self.dupa = False
 
-
     def move(self):
         if not self.dead and self.hp > 0:
             self.move_towards_player()
@@ -118,11 +117,13 @@ class Boss(Enemy):
             self.entity_animation.animation_frame = 0
         if self.death_counter == 0:
             self.drop_items()
-            position = self.rect.center
-            self.room.objects.append(Hole(self.game, position,self.room))
+
+            #position = self.rect.center
+            #self.room.objects.append(Hole(self.game, position, self.room))
+
             self.room.enemy_list.remove(self)
             position = (self.rect.x - 36, self.rect.y - 64)
-            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, entity='boss'))
+            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
 
     def draw(self):
         self.draw_shadow(self.room.tile_map.map_surface)
@@ -209,8 +210,8 @@ class Shooting:
     def half_circle_shoot(self):
         if self.time_passed(self.circle_time, 1000):
             self.circle_time = pygame.time.get_ticks()
-            for i in range(-36, 36):
+            for i in range(-12, 12):
                 self.bullets.add(
                     Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                            self.boss.game.player.hitbox.center,
-                           'boss', 15 / 3 * i))
+                           'boss', 15 * i))
