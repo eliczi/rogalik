@@ -22,7 +22,7 @@ class WeaponSwing:
         self.hover_value = 5
         self.up = False
         self.shadow_width = self.weapon.hitbox.width
-        self.shadow_position = [self.weapon.rect.midbottom[0] - 28, self.weapon.rect.midbottom[1]]
+        self.shadow_position = pygame.Rect(0, 0, 0, 0)
 
     def reset(self):
         self.counter = 0
@@ -54,20 +54,23 @@ class WeaponSwing:
         self.counter += 1
 
     def update_shadow_position(self):
-        self.shadow_position = [self.weapon.rect.midbottom[0] - 15, self.weapon.rect.midbottom[1]]
+        self.shadow_position = [self.weapon.rect.midbottom[0] - 14, self.weapon.rect.midbottom[1]]
+        if not self.up:
+            self.shadow_position = [self.weapon.rect.midbottom[0] - 18, self.weapon.rect.midbottom[1] - 5]
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
         if self.up:
-            pygame.draw.ellipse(shape_surf, color, (1, 0, self.shadow_width / 2 - 2, 12))
+            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2, 10))
         else:
-            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4, 14))
+            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4, 12))
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        self.shadow_position.center = self.weapon.rect.midbottom
         surface.blit(shape_surf, self.shadow_position)
 
     def hovering(self):
-        self.update_shadow_position()
+        #self.update_shadow_position()
         if self.weapon.player is None:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
@@ -77,56 +80,6 @@ class WeaponSwing:
             elif pygame.time.get_ticks() % 1000 > 500:
                 self.hover_value = 5
             self.counter += 1
-
-
-class SlashImage:
-    def __init__(self, weapon):
-        self.weapon = weapon
-        self.slash = []
-        self.load_slash_images()
-        self.original_slash_image = self.slash[2]
-        self.slash_image = self.slash[2]
-        self.slash_rect = None
-        self.weapon = weapon
-        self.counter = 0
-        self.rotate = False
-
-    def load_slash_images(self):
-        for i in range(5):
-            self.slash.append(
-                pygame.transform.scale(pygame.image.load(f'../assets/vfx/slash/slash{i}.png').convert_alpha(),
-                                       (int(57 * 2.5), int(32 * 2.5))))
-
-    def rotate_slash(self, side):
-        if side == -1 and self.rotate is False:
-            self.rotate = True
-            self.original_slash_image = pygame.transform.flip(self.original_slash_image, 1, 0)
-        elif side == 1 and self.rotate is True:
-            self.rotate = False
-            self.original_slash_image = pygame.transform.flip(self.original_slash_image, 1, 0)
-
-    def weapon_slash(self, side):
-        self.rotate_slash(side)
-        offset = Vector2(-0, -side * 70)
-
-        self.slash_image = pygame.transform.rotozoom(self.original_slash_image,
-                                                     self.weapon.weapon_swing.angle - side * 100, 1)
-        offset_rotated = offset.rotate(-(self.weapon.weapon_swing.angle - 100))
-        self.slash_rect = self.slash_image.get_rect(center=self.weapon.game.player.hitbox.center + offset_rotated)
-
-    def draw(self, surface):
-        mx, my = pygame.mouse.get_pos()
-        if self.weapon.player and not self.weapon.player.attacking:
-            self.weapon_slash(self.weapon.weapon_swing.swing_side)
-            self.counter = 0
-        if self.weapon.player and self.weapon.player.attacking:
-            mouse_vector = Vector2(mx - self.weapon.player.hitbox.x - 64, my - self.weapon.player.hitbox.y).normalize()
-            self.slash_rect.x += mouse_vector[0] * 2
-            self.slash_rect.y += mouse_vector[1] * 2
-            surface.blit(self.slash_image, self.slash_rect)
-            self.counter += 0.3
-        if self.counter > 3:
-            self.counter = 0
 
 
 class Weapon(Object):
@@ -141,7 +94,7 @@ class Weapon(Object):
         self.time = 0
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
-        self.slash_image = SlashImage(self)
+        #self.slash_image = SlashImage(self)
         self.up = False
 
     def load_image(self):
@@ -204,6 +157,7 @@ class Weapon(Object):
                 self.weapon_swing.swing()
             else:
                 self.weapon_swing.rotate()
+        #self.update_bounce()
         self.update_hitbox()
 
     def draw(self):
@@ -228,6 +182,7 @@ class AnimeSword(Weapon):
         self.value = 100
 
 
+
 class FireSword(Weapon):
     name = 'fire_sword'
     damage = 30
@@ -239,7 +194,7 @@ class FireSword(Weapon):
         self.enemy_list = []
 
     def update(self):
-       # self.burning()
+        self.burning()
         self.show_price.update()
         self.weapon_swing.hovering()
         if self.player:

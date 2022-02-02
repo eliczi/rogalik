@@ -87,11 +87,6 @@ class TileMap:
         b = number % 32
         return b * 16, a * 16
 
-    def add_ladder(self):
-        x, y = self.tiles[2][100].rect.x, self.tiles[2][100].rect.y
-        self.tiles[2][100] = Tile((*self.get_location(294), 16, 16), x, y, self.spritesheet,
-                                  (self.tile_size, self.tile_size))
-        self.load_map()
 
     def load_tiles(self, filename):
         for file in filename:

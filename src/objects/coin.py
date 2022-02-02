@@ -41,15 +41,7 @@ class Coin(Object):
 
     def update(self):
         self.update_animation_frame()
-        if self.bounce.speed < 0.004:
-            self.dropped = False
-            self.bounce.reset()
-        if self.dropped:
-            for _ in range(15):
-                self.bounce.move()
-                self.bounce.bounce()
-            self.rect.x = self.bounce.x
-            self.rect.y = self.bounce.y
+        self.update_bounce()
         self.magnet()
         self.update_hitbox()
         self.rect.y += 0.1

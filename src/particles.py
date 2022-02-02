@@ -209,10 +209,10 @@ class DeathAnimation:
         for i in range(12):
             self.images.append(pygame.image.load(f'../assets/vfx/death/death{i + 1}.png').convert_alpha())
             if self.entity == 'boss':
-                self.images[-1] = pygame.transform.scale(self.images[-1], (96, 96))
+                self.images[-1] = pygame.transform.scale(self.images[-1], (192, 192))
 
     def update(self):
-        self.counter += 0.4
+        self.counter += 0.3
         if self.counter >= 12:
             self.game.particle_manager.particle_list.remove(self)
 

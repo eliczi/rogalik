@@ -2,6 +2,7 @@ import pygame
 from utils import get_mask_rect
 import utils
 import random
+import math
 
 
 class ShowName:
@@ -100,7 +101,7 @@ class ShowPrice(ShowName):
 
 
 class Object:
-    def __init__(self, game, name, object_type, size, room=None, position=None):
+    def __init__(self, game, name, object_type, size=None, room=None, position=None):
         self.game = game
         self.room = room
         self.name = name
@@ -119,13 +120,28 @@ class Object:
         self.value = None
         self.show_price = ShowPrice(self)
         self.interaction = False
-
-
+        self.dropped = False
         self.for_sale = False
 
     def __repr__(self):
         return self.name
 
+    def activate_bounce(self):
+        if self.chest:
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
+        else:
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
+
+    def update_bounce(self):
+        if self.bounce.speed < 0.004:
+            self.dropped = False
+            self.bounce.reset()
+        if self.dropped:
+            for _ in range(15):
+                self.bounce.move()
+                self.bounce.bounce()
+            self.rect.x = self.bounce.x
+            self.rect.y = self.bounce.y
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -155,9 +171,6 @@ class Object:
         if self.game.player.items:
             self.game.player.weapon = self.game.player.items[-1]
 
-    # def set_size(self, filepath):
-    #     self.size = tuple(3 * x for x in Image.open(filepath).size)
-
     def update(self):
         pass
 
@@ -172,6 +185,7 @@ class Object:
         if self.game.player.gold >= self.value:
             self.game.player.gold -= self.value
             self.interact()
+            self.for_sale = False
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -179,3 +193,58 @@ class Object:
         surface.blit(self.image, (self.rect.x, self.rect.y))
         if self.interaction:
             self.show_name.draw(surface, self.rect)
+
+
+class Bounce:
+    def __init__(self, x, y, limit, size):
+        self.speed = random.uniform(0.5, 0.6)  # 0.5
+        self.angle = random.randint(-10, 10) / 10  # random.choice([10, -10])
+        self.drag = 0.999
+        self.elasticity = random.uniform(0.75, 0.9)  # 0.75
+        self.gravity = (math.pi, 0.002)
+        self.limit = limit
+        self.limits = [limit, 654]
+        self.x, self.y = x, y
+        self.size = size
+
+    @staticmethod
+    def add_vectors(angle1, length1, angle2, length2):
+        x = math.sin(angle1) * length1 + math.sin(angle2) * length2
+        y = math.cos(angle1) * length1 + math.cos(angle2) * length2
+        angle = 0.5 * math.pi - math.atan2(y, x)
+        length = math.hypot(x, y)
+        return angle, length
+
+    def move(self):
+        self.angle, self.speed = self.add_vectors(self.angle, self.speed, *self.gravity)
+        self.x += math.sin(self.angle) * self.speed
+        self.y -= math.cos(self.angle) * self.speed
+        self.speed *= self.drag
+
+    def bounce(self):
+        # if self.y > any(self.limits):
+        if self.y > self.limit:
+            self.y = 2 * self.limit - self.y
+            self.angle = math.pi - self.angle
+            self.speed *= self.elasticity
+
+        elif self.y > 654 - self.size[0]:
+            self.y = 2 * (654 - self.size[0]) - self.y
+            self.angle = math.pi - self.angle
+            self.speed *= self.elasticity
+
+        if self.x < 198 + 10:
+            self.x = 2 * (198 + 10) - self.x
+            self.angle = - self.angle
+            self.speed *= self.elasticity
+
+        elif self.x > 1136 - self.size[0]:
+            self.x = 2 * (1136 - self.size[0]) - self.x
+            self.angle = - self.angle
+            self.speed *= self.elasticity
+
+    def reset(self):
+        self.speed = 0.5
+        self.angle = random.choice([10, -10])
+        self.drag = 0.999
+        self.elasticity = 0.75

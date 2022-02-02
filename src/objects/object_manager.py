@@ -24,7 +24,11 @@ class ObjectManager:
 
     def draw(self):
         for o in self.current_objects:
-            o.draw()
+            if o.name == 'next_level':
+                o.draw()
+        for o in self.current_objects:
+            if o.name != 'next_level':
+                o.draw()
 
     def interact(self):
         for o in self.current_objects:

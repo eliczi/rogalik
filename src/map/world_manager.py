@@ -6,9 +6,9 @@ import utils
 
 
 class WorldManager:
-    number_of_rooms = 3
-    world_width = 2
-    world_height = 2
+    number_of_rooms = 10 # add random values?
+    world_width = 4
+    world_height = 4
     map_width = 13
     map_height = 19
 
@@ -22,6 +22,10 @@ class WorldManager:
         self.next_room_map = None
         self.switch_room = False
         self.direction, self.value = None, None
+
+    def load_new_level(self):
+        self.__init__(self.game)
+        self.game.enemy_manager.add_enemies()
 
     def set_current_room(self, room):
         self.current_room = room
@@ -120,5 +124,3 @@ class WorldManager:
         self.switch_room = False
         self.x, self.y = self.next_room.x, self.next_room.y
         self.change_room()
-
-

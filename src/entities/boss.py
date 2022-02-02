@@ -10,7 +10,7 @@ from objects.coin import Coin
 from entities.enemy import Enemy, draw_health_bar
 from entities.animation import EntityAnimation
 from entities.enemy import Enemy
-
+from objects.hole import Hole
 
 def load_animation_sprites(path):
     """Loads animation frames(.png files) from specified directory to a dictionary"""
@@ -46,7 +46,7 @@ class BossAnimation(EntityAnimation):
 
 class Boss(Enemy):
     name = "boss"
-    max_hp = 500
+    max_hp = 100
     hp = max_hp
     damage = 10
     speed = 10
@@ -65,6 +65,7 @@ class Boss(Enemy):
 
         self.items = [Flask(self.game, self.room)]
         self.add_treasure()
+        self.dupa = True
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -90,8 +91,11 @@ class Boss(Enemy):
             self.wall_collision()
         self.entity_animation.update()
         self.shooter.update()
-        if self.dead:
-            self.room.tile_map.add_ladder()
+        # if self.dead and self.dupa:
+        #     position = self.rect.center
+        #     self.room.objects.append(Hole(self.game, position,self.room))
+        #     self.dupa = False
+
 
     def move(self):
         if not self.dead and self.hp > 0:
@@ -114,8 +118,10 @@ class Boss(Enemy):
             self.entity_animation.animation_frame = 0
         if self.death_counter == 0:
             self.drop_items()
+            position = self.rect.center
+            self.room.objects.append(Hole(self.game, position,self.room))
             self.room.enemy_list.remove(self)
-            position = (self.rect.x, self.rect.y)
+            position = (self.rect.x - 36, self.rect.y - 64)
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, entity='boss'))
 
     def draw(self):
@@ -156,7 +162,7 @@ class Shooting:
             bullet.update()
         self.moving_timer()
         self.other_timer()
-        if self.boss.can_move:
+        if self.boss.can_move and not self.boss.dead:
             if self.normal_shooting:
                 self.shoot()
             else:
