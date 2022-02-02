@@ -32,7 +32,7 @@ class Game:
         self.menu = MainMenu(self)
         self.mini_map = MiniMap(self)
         self.game_time = None
-        self.fps = 200
+        self.fps = 60
         self.background = BackgroundEffects()
         self.game_over = GameOver(self)
         self.can_exit = False

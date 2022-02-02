@@ -37,7 +37,7 @@ class Dust:
 class Player(Entity):
     def __init__(self, game):
         Entity.__init__(self, game, 'player')
-        self.rect = self.image.get_rect(center=(512, 400))
+        self.rect = self.image.get_rect(center=(512 + 2.5 * 64, 600))
         self.speed = 100
         self.max_hp = 60
         self.hp = self.max_hp
@@ -47,15 +47,14 @@ class Player(Entity):
         self.interaction = True
         self.gold = 0
         self.walking_particles = []
-        self.size = 64
         self.shield = 2
         self.strength = 1
-        self.step = pygame.mixer.Sound('../assets/sound/footsteps.wav')
-        self.attack_cooldown = 400
+        self.attack_cooldown = 400  # ms
         self.death_counter = 1
         self.dupa = False
         self.falling = False
         self.pupa = None
+        self.fall()
 
     def input(self):
         pressed = pygame.key.get_pressed()
@@ -137,9 +136,15 @@ class Player(Entity):
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
             self.dupa = False
 
+    def falling_condition(self):
+        if self.rect.y >= self.pupa:
+            self.falling = False
+
     def update(self) -> None:
+
+        self.falling_condition()
         if self.falling and self.rect.y < self.pupa:
-            self.rect.y += 10
+            self.rect.y += 15
         else:
             if self.death_counter == 0:
                 return
@@ -157,8 +162,6 @@ class Player(Entity):
         self.pupa = self.rect.y
         self.rect.y = -50
         self.falling = True
-
-
 
     def calculate_collision(self, enemy):
         if not self.shield:
