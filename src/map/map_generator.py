@@ -105,6 +105,7 @@ class World:
             if room_counter == 0:
                 self.starting_room = self.world[self.x][self.y] = current_room = Room(self.x, self.y)
                 current_room.type = 'starting_room'
+                
             else:
                 self.world[self.x][self.y] = Room(self.x, self.y)
                 self.world[self.x][self.y].neighbours.append(prev_room)
