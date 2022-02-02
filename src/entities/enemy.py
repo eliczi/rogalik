@@ -74,7 +74,6 @@ class Enemy(Entity):
         self.change_speed()
         self.move()
         self.attack_player(self.game.player)  # enemy attacks player
-        self.wall_collision()
         self.entity_animation.update()
 
     def change_speed(self): # changes speed every 1.5s
