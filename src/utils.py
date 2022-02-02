@@ -9,13 +9,14 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 basic_entity_size = (64, 64)
 # wall_list = (135, 15, 17, 60, 61, 62, 63, 1, 18, 3, 46, 45, 40, 42, 47, 0, 30, 2, 32, 33, 3)
-wall_list = (1, 2, 3,33, 34, 35,67, 99, 224,227, 225,226, 256, 257, 258, 259, 288, 289)
-floor_tiles = (129, 130, 132,161, 162, 163, 193, 194)
+wall_list = (1, 2, 3, 33, 34, 35, 67, 99, 224, 227, 225, 226, 256, 257, 258, 259, 288, 289)
+floor_tiles = [129, 130, 131, 161, 162, 163, 193, 194]
 font = '../assets/font/Minecraft.ttf'
 wall_side_left, wall_side_right = 256, 257
 wall_side_left_top, wall_side_right_top = 224, 225
 wall_side_front_left, wall_side_front_right = 288, 289
 map_center = []
+
 
 def read_csv(filename):
     mapa = []
@@ -126,6 +127,3 @@ class PlayerInfo:
         self.time_text_rect = self.time_text.get_rect(center=(self.pos[0], self.pos[1] + 4 * self.space_between))
         self.enemy_count_text_rect = self.enemy_count_text.get_rect(
             center=(self.pos[0], self.pos[1] + 5 * self.space_between))
-
-
-

@@ -33,6 +33,10 @@ class Tile(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
 
+    def change_image(self, rectangle, spritesheet):
+        self.image = spritesheet.image_at(rectangle)
+        self.image = pygame.transform.scale(self.image, self.size)
+
 
 class TileMap:
     def __init__(self, room, filename, spritesheet, tile_size=64):
@@ -83,11 +87,10 @@ class TileMap:
         b = number % 32
         return b * 16, a * 16
 
-    def enlarge(self):
-        self.tile_size *= 1.01
-        self.tile_size = math.ceil(self.tile_size)
-        self.tiles.clear()
-        self.load_tiles(self.filename)
+    def add_ladder(self):
+        x, y = self.tiles[2][100].rect.x, self.tiles[2][100].rect.y
+        self.tiles[2][100] = Tile((*self.get_location(294), 16, 16), x, y, self.spritesheet,
+                                  (self.tile_size, self.tile_size))
         self.load_map()
 
     def load_tiles(self, filename):

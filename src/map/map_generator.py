@@ -10,6 +10,7 @@ from particles import Fire
 from entities.boss import Boss
 from objects.power_up import ShieldPowerUp, AttackPowerUp
 from entities.merchant import Merchant
+import utils
 
 
 class Room:
@@ -100,6 +101,7 @@ class World:
         room_counter = 0  # counts current number of rooms - 1
         prev_room = [self.x, self.y]  # added
         current_room = None
+        last_room = None
         while room_counter < self.num_of_rooms:  # this while loop populates game world with one possible room-layout
             if room_counter == 0:
                 self.starting_room = self.world[self.x][self.y] = current_room = Room(self.x, self.y)
@@ -115,6 +117,9 @@ class World:
                 self.x, self.y = new_room[0], new_room[1]
                 if room_counter != self.num_of_rooms - 1:
                     self.world[prev_room[0]][prev_room[1]].neighbours.append([self.x, self.y])
+                else:
+                    last_room = self.world[prev_room[0]][prev_room[1]]
+                    last_room.type = 'boss'
                 self.world[prev_room[0]][prev_room[1]].add_doors()
                 room_counter += 1
             elif room_counter == self.width * self.height - 1:
@@ -173,6 +178,14 @@ class World:
             if file == 'floor_layer':
                 room_map[9][9] = 130
 
+    def random_floor_layout(self, room_map):
+        w = [10, 1, 1, 1, 1, 0.2, 0.2, 0.2]
+        floor_tiles = [129, 130, 131, 161, 162, 163, 193, 194]
+        for x in range(len(room_map)):
+            for y in range(len(room_map[0])):
+                if int(room_map[x][y]) in utils.floor_tiles:
+                    room_map[x][y] = random.choices(utils.floor_tiles, w, k=1)[0]
+
     def add_room_map(self, file):
         with open(f'../maps/{file}.csv', newline='') as f:  # load room template
             reader = csv.reader(f)
@@ -182,6 +195,8 @@ class World:
             for room in row:
                 if isinstance(room, Room):
                     room_map = copy.deepcopy(basic_map)  # csv file
+                    if file == 'floor_layer':
+                        self.random_floor_layout(room_map)
                     self.shut_doors(room.doors, room_map, file)
                     room.room_map.append(room_map)
 
@@ -227,6 +242,3 @@ class World:
                 if isinstance(room, Room) and room.type is None:
                     room.type = random.choices(self.types, weights=[0, 0, 0, 1], k=1)[0]
                     ok_rooms.append(room)
-
-        x = random.choice(ok_rooms)
-        x.type = 'boss'

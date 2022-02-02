@@ -48,7 +48,7 @@ class EntityAnimation:
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
     def death_animation(self):
-        self.animation_frame += 1.0 / 15
+        self.animation_frame += 1.0 / 25
         if self.animation_frame >= 4:
             self.entity.death_counter = 0
         state = 'HURT' if self.animation_frame < 1 else 'DEAD'

@@ -146,7 +146,8 @@ class Player(Entity):
     def calculate_collision(self, enemy):
         if not self.shield:
             self.hp -= enemy.damage
-            self.hurt = True
+            if not self.dead:
+                self.hurt = True
             self.entity_animation.hurt_timer = pygame.time.get_ticks()
         if self.shield:
             self.shield -= 1

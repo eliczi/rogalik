@@ -90,6 +90,8 @@ class Boss(Enemy):
             self.wall_collision()
         self.entity_animation.update()
         self.shooter.update()
+        if self.dead:
+            self.room.tile_map.add_ladder()
 
     def move(self):
         if not self.dead and self.hp > 0:
@@ -205,4 +207,4 @@ class Shooting:
                 self.bullets.add(
                     Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                            self.boss.game.player.hitbox.center,
-                           'boss', 15/3 * i))
+                           'boss', 15 / 3 * i))
