@@ -132,7 +132,7 @@ class Player(Entity):
 
         if self.death_counter == 0 and self.dupa:
             position = (self.rect.x, self.rect.y)
-            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position))
+            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
             self.dupa = False
 
     def update(self) -> None:

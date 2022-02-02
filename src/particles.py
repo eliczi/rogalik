@@ -197,7 +197,7 @@ class ShieldParticle(PowerUpParticle):
 
 
 class DeathAnimation:
-    def __init__(self, game, x, y, entity='normal'):
+    def __init__(self, game, x, y, entity):
         self.game = game
         self.x = x
         self.y = y
@@ -209,15 +209,16 @@ class DeathAnimation:
     def load_images(self):
         for i in range(12):
             self.images.append(pygame.image.load(f'../assets/vfx/death/death{i + 1}.png').convert_alpha())
-            if self.entity == 'boss' or self.entity.name == 'boss':
+            if self.entity.name == 'boss':
                 self.images[-1] = pygame.transform.scale(self.images[-1], (192, 192))
 
     def update(self):
         self.counter += 0.3
         if self.counter >= 12:
             self.game.particle_manager.particle_list.remove(self)
-            position = self.entity.rect.center
-            self.entity.room.objects.append(Hole(self.game, position, self.entity.room))
+            if self.entity.name == 'boss':
+                position = self.entity.rect.center
+                self.entity.room.objects.append(Hole(self.game, position, self.entity.room))
 
     def draw(self, surface):
         surface.blit(self.images[int(self.counter)], (self.x, self.y))
