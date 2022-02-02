@@ -49,7 +49,6 @@ class Room:
         #     position = [self.x - self.neighbours[0][0], self.y - self.neighbours[0][1]]
         #     self.position_to_direction(position)  # add position to door list
         # else:
-        print(self.neighbours)
         for neighbour in self.neighbours:
             position = [self.x - neighbour[0], self.y - neighbour[1]]
             self.position_to_direction(position)
@@ -95,29 +94,30 @@ class World:
         self.world = [[None for _ in range(self.width)] for _ in range(self.height)]
 
     def add_neighbour(self, target_room, room):
-        target_room.neighbours.append(room.position)
+        target_room.neighbours.append(room)
 
     def generate_rooms(self):
-        room_counter = 0  # counts current number of rooms
+        room_counter = 0  # counts current number of rooms - 1
         prev_room = [self.x, self.y]  # added
         current_room = None
         while room_counter < self.num_of_rooms:  # this while loop populates game world with one possible room-layout
             if room_counter == 0:
                 self.starting_room = self.world[self.x][self.y] = current_room = Room(self.x, self.y)
                 current_room.type = 'starting_room'
-                
             else:
-                self.world[self.x][self.y] = Room(self.x, self.y)
-                self.world[self.x][self.y].neighbours.append(prev_room)
+                self.world[self.x][self.y] = current_room = Room(self.x, self.y)
+                self.add_neighbour(current_room, prev_room)
+                current_room.add_doors()
                 prev_room = [self.x, self.y]
             empty_spaces = self.check_free_space()
             if empty_spaces:
                 new_room = random.choice(empty_spaces)
                 self.x, self.y = new_room[0], new_room[1]
-                self.world[prev_room[0]][prev_room[1]].neighbours.append([self.x, self.y])
+                if room_counter != self.num_of_rooms - 1:
+                    self.world[prev_room[0]][prev_room[1]].neighbours.append([self.x, self.y])
                 self.world[prev_room[0]][prev_room[1]].add_doors()
                 room_counter += 1
-            elif room_counter == self.width * self.height:  # - 1:
+            elif room_counter == self.width * self.height - 1:
                 break
             else:
                 self.reset_world()

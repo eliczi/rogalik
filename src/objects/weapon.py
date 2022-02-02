@@ -239,7 +239,7 @@ class FireSword(Weapon):
         self.enemy_list = []
 
     def update(self):
-        self.burning()
+       # self.burning()
         self.show_price.update()
         self.weapon_swing.hovering()
         if self.player:

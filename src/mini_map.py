@@ -6,7 +6,7 @@ class MiniMap:
     room_height = 21
     room_width = 33
     room_dimensions = (room_width, room_height)
-    offset_x = 10
+    offset_x = 1150
     offset_y = 10
 
     def __init__(self, game):

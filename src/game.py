@@ -53,7 +53,7 @@ class Game:
         self.background.update()
         self.world_manager.update()
         self.game_over.update()
-        # self.mini_map.update()
+        self.mini_map.update()
 
     def draw_groups(self):
         self.background.draw(self.screen)
@@ -62,7 +62,7 @@ class Game:
             self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
         self.object_manager.draw()
-        # self.mini_map.draw(self.screen)
+        self.mini_map.draw(self.screen)
         self.hud.draw()
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
         self.particle_manager.draw_fire_particles()

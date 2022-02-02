@@ -2,7 +2,6 @@ import random
 
 import pygame
 import utils
-from collections import namedtuple
 
 
 class BackgroundLines:
