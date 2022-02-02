@@ -14,8 +14,8 @@ class Player(Entity):
     speed = 120
     max_hp = 60
     gold = 0
-    shield = 0
-    strength = 1
+    shield = 10
+    strength = 10
     hp = max_hp
     items = []
 
