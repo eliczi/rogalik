@@ -143,7 +143,7 @@ class Enemy(Entity):
             self.drop_items()
             self.room.enemy_list.remove(self)
             position = (self.rect.x, self.rect.y)
-            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position))
+            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
 
     def time_passed(self, time, amount):
         """Wait 'amount' amount of time"""

@@ -3,12 +3,6 @@ import random
 import pygame
 import utils
 
-
-class BackgroundLines:
-    def __init__(self):
-        pass
-
-
 class BackgroundEffects:
     class Circle:
         def __init__(self, radius, color, x, y, width):

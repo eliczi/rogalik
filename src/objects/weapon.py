@@ -170,8 +170,7 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        pygame.draw.rect(self.game.screen, (255, 255,255), self.hitbox, 1)
-        print(self.weapon_swing.angle)
+        pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 1)
 
 
 class Staff(Weapon):
@@ -202,7 +201,37 @@ class FireSword(Weapon):
     def __init__(self, game, room=None, position=None):
         super().__init__(game, self.name, self.size, room, position)
         self.value = 150
-        self.enemy_list = []
+        self.burning_enemies = []
+
+    class Burn:
+        def __init__(self, game, enemy, weapon):
+            self.game = game
+            self.enemy = enemy
+            self.weapon = weapon
+            self.counter = 0
+            self.tick = 0
+
+        def get_enemy(self):
+            return self.enemy
+
+        def update(self):
+            if self.tick == 30 and self.counter < 5:
+                self.enemy.hp -= 5
+                self.tick = 0
+                self.counter += 1
+            self.tick += 1
+            if self.counter == 5:
+                self.unburn()
+
+        def unburn(self):
+            self.weapon.burning_enemies.remove(self)
+
+        def draw(self):
+            self.game.particle_manager.add_fire_particle(
+                Fire(self.game, self.enemy.rect.center[0] / 4, self.enemy.rect.center[1] / 4, 'enemy'))
+
+    def special_effect(self, enemy):
+        self.burning_enemies.append(self.Burn(self.game, enemy, self))
 
     def update(self):
         self.burning()
@@ -219,10 +248,9 @@ class FireSword(Weapon):
             else:
                 self.weapon_swing.rotate()
         self.update_hitbox()
-        # self.special_effect()
-
-    def special_effect(self):
-        print(self.enemy_list)
+        for e in self.burning_enemies:
+            e.update()
+            e.draw()
 
     def burning(self):
         x, y = self.weapon_swing.offset_rotated.xy

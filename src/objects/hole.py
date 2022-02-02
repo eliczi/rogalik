@@ -34,6 +34,7 @@ class Hole:
 
     def interact(self):
         self.game.world_manager.load_new_level()
+        self.game.player.fall()
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect) and self.game.player.interaction:

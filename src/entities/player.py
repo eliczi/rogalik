@@ -54,6 +54,8 @@ class Player(Entity):
         self.attack_cooldown = 400
         self.death_counter = 1
         self.dupa = False
+        self.falling = False
+        self.pupa = None
 
     def input(self):
         pressed = pygame.key.get_pressed()
@@ -91,7 +93,7 @@ class Player(Entity):
                     self.weapon = self.items[0]
 
         constant_dt = 0.06
-        #constant_dt = self.game.dt
+        # constant_dt = self.game.dt
         vel_up = [0, -self.speed * constant_dt]
         vel_up = [i * pressed[pygame.K_w] for i in vel_up]
         vel_down = [0, self.speed * constant_dt]
@@ -136,17 +138,27 @@ class Player(Entity):
             self.dupa = False
 
     def update(self) -> None:
-        if self.death_counter == 0:
-            return
-        if self.weapon:
-            self.weapon.update()
-        self.entity_animation.update()
-        self.wall_collision()
-        if self.can_move:
-            self.rect.move_ip(*self.velocity)
-            self.hitbox.move_ip(*self.velocity)
-        self.update_hitbox()
-        self.detect_death()
+        if self.falling and self.rect.y < self.pupa:
+            self.rect.y += 10
+        else:
+            if self.death_counter == 0:
+                return
+            if self.weapon:
+                self.weapon.update()
+            self.entity_animation.update()
+            self.wall_collision()
+            if self.can_move:
+                self.rect.move_ip(*self.velocity)
+                self.hitbox.move_ip(*self.velocity)
+            self.update_hitbox()
+            self.detect_death()
+
+    def fall(self):
+        self.pupa = self.rect.y
+        self.rect.y = -50
+        self.falling = True
+
+
 
     def calculate_collision(self, enemy):
         if not self.shield:

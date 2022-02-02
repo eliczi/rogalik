@@ -54,7 +54,7 @@ class Fire(Particle):
     to display fire plarticles, it is 4x times smaller than default window, but during blitting, it is resized to
     window size, as to achieve pixelated fire)"""
 
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, option='normal'):
         super().__init__(game, x, y)
         self.color = ((255, 255, 0),
                       (255, 173, 51),
@@ -62,16 +62,28 @@ class Fire(Particle):
                       (191, 74, 46),
                       (115, 61, 56),
                       (61, 38, 48))
-        self.max_life = random.randint(6, 13)
-        self.life = self.max_life
-        self.sin = random.randint(-10, 10) / 7
-        self.sin_r = random.randint(5, 10)
-        self.radius = random.randint(0, 2)
-        self.ox = random.randint(-1, 1)
-        self.oy = random.randint(-1, 1)
-        self.j = random.randint(0, 360)
-        self.i = int(((self.life - 1) / self.max_life) * 6)
-        self.alpha = None
+        if option == 'normal':
+            self.max_life = random.randint(6, 13)
+            self.life = self.max_life
+            self.sin = random.randint(-10, 10) / 7
+            self.sin_r = random.randint(5, 10)
+            self.radius = random.randint(0, 4)
+            self.ox = random.randint(-1, 1)
+            self.oy = random.randint(-1, 1)
+            self.j = random.randint(0, 360)
+            self.i = int(((self.life - 1) / self.max_life) * 6)
+            self.alpha = None
+        elif option == 'enemy':
+            self.max_life = random.randint(6, 9)
+            self.life = self.max_life
+            self.sin = random.randint(-10, 10) / 7
+            self.sin_r = random.randint(5, 10)
+            self.radius = random.randint(0, 2)
+            self.ox = random.randint(-1, 1)
+            self.oy = random.randint(-1, 1)
+            self.j = random.randint(0, 360)
+            self.i = int(((self.life - 1) / self.max_life) * 6)
+            self.alpha = None
         self.draw_x = x
         self.draw_y = y
 

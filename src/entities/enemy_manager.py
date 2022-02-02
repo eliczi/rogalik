@@ -40,11 +40,11 @@ class EnemyManager:
                     and enemy.dead is False
                     and enemy.can_get_hurt_from_weapon()
             ):
-
+                self.game.player.weapon.special_effect(enemy)
                 enemy.hurt = True
                 enemy.hp -= self.game.player.weapon.damage
                 enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
-                enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
+                #enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
 
     def add_enemies(self):
         for row in self.game.world_manager.world.world:
