@@ -53,8 +53,9 @@ class Player(Entity):
         self.death_counter = 1
         self.dupa = False
         self.falling = False
-        self.pupa = None
-        self.fall()
+        self.floor_value = self.rect.y
+        self.fall(-100)
+
 
     def input(self):
         pressed = pygame.key.get_pressed()
@@ -136,15 +137,16 @@ class Player(Entity):
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
             self.dupa = False
 
-    def falling_condition(self):
-        if self.rect.y >= self.pupa:
+    def falling_update(self):
+        value = 15
+        if self.rect.y < self.floor_value:
+            self.rect.y += value
+        else:
             self.falling = False
 
     def update(self) -> None:
-
-        self.falling_condition()
-        if self.falling and self.rect.y < self.pupa:
-            self.rect.y += 15
+        if self.falling:
+            self.falling_update()
         else:
             if self.death_counter == 0:
                 return
@@ -158,9 +160,8 @@ class Player(Entity):
             self.update_hitbox()
             self.detect_death()
 
-    def fall(self):
-        self.pupa = self.rect.y
-        self.rect.y = -50
+    def fall(self, value):
+        self.rect.y = value
         self.falling = True
 
     def calculate_collision(self, enemy):

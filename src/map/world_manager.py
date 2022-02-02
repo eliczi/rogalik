@@ -68,6 +68,7 @@ class WorldManager:
         self.end_condition()
 
     def update(self):
+        print(self.game.player.falling)
         self.detect_next_room()
         if self.switch_room:
             self.move_rooms(self.direction, self.value)
@@ -78,7 +79,7 @@ class WorldManager:
             self.move_current_rom()
 
     def detect_next_room(self):  # checks if player goes through one of 4 possible doors
-        if not self.switch_room and self.game.player and not self.game.player.falling and not self.move_current_room:
+        if not self.switch_room and self.game.player and self.game.player.falling is False and not self.move_current_room:
             player = self.game.player
             if player.rect.y <= 96:
                 self.initialize_room_change('up', -1)
@@ -150,24 +151,23 @@ class WorldManager:
             self.load_world_manager()
             self.current_map.x = -19 * 64
             self.move_current_room = True
-            self.game.player.fall()
+            self.game.player.fall(-100)
             self.game.enemy_manager.add_enemies()
 
     def move_current_rom(self):
-        print(self.current_map.x)
         anim_speed = 30
         self.current_map.x += anim_speed
         self.end_cod()
 
     def end_cod(self):
-        if self.current_map.x >=0:
+        if self.current_map.x >= 0:
             self.move_current_room = False
             self.current_map.correct_map_position()
 
     def level_transition(self):
         self.new_level = True
-        self.game.player.rect.y = -100
-        self.game.player.falling = True
+        self.game.player.floor_value = self.game.player.rect.y
+        self.game.player.fall(-1000)
 
     def load_new_level(self):
         self.level_transition()
