@@ -170,7 +170,6 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 1)
 
 
 class Staff(Weapon):

@@ -235,6 +235,32 @@ class DeathAnimation:
     def draw(self, surface):
         surface.blit(self.images[int(self.counter)], (self.x, self.y))
 
+class Dust(Particle):
+    def __init__(self, game, player, x, y):
+        super().__init__(game, x, y)
+        self.player = player
+        self.x = x
+        self.y = y
+        self.color = pygame.Color(173, 173, 172, 0)
+        self.life = random.randint(4, 5)
+
+    def update(self):
+        if self.player.velocity:
+            if self.player.velocity[0] > 0:
+                self.x -= random.randint(1, 2) / 4
+            elif self.player.velocity[0] < 0:
+                self.x += random.randint(1, 2) / 4
+            self.y -= random.randint(-2, 3) / 4
+            self.life -= 0.5
+            if self.life < 0:
+                self.game.particle_manager.particle_list.remove(self)
+
+    def draw(self, surface):
+        if self.player.velocity:
+            rect = (self.x, self.y, 5, 5)
+            pygame.draw.rect(surface, self.color, rect)
+
+
 
 class ParticleManager:
     def __init__(self, game):

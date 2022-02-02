@@ -71,13 +71,13 @@ class Enemy(Entity):
 
     def update(self):
         self.detect_death()
-        self.get_move()
+        self.change_speed()
         self.move()
         self.attack_player(self.game.player)  # enemy attacks player
         self.wall_collision()
         self.entity_animation.update()
 
-    def get_move(self):
+    def change_speed(self): # changes speed every 1.5s
         if self.time_passed(self.move_time, 1500):
             self.move_time = pygame.time.get_ticks()
             self.speed = random.randint(100, 150) / 10

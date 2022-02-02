@@ -68,7 +68,6 @@ class WorldManager:
         self.end_condition()
 
     def update(self):
-        print(self.game.player.falling)
         self.detect_next_room()
         if self.switch_room:
             self.move_rooms(self.direction, self.value)
@@ -146,12 +145,12 @@ class WorldManager:
         self.end_conditi()
 
     def end_conditi(self):
-        if self.current_map.x > 1200:
+        if self.current_map.x > 1100:
             self.new_level = False
             self.load_world_manager()
-            self.current_map.x = -19 * 64
+            self.current_map.x = -20 * 64
             self.move_current_room = True
-            self.game.player.fall(-100)
+            self.game.player.fall(-300)
             self.game.enemy_manager.add_enemies()
 
     def move_current_rom(self):
@@ -164,10 +163,9 @@ class WorldManager:
             self.move_current_room = False
             self.current_map.correct_map_position()
 
-    def level_transition(self):
+    def load_new_level(self):
         self.new_level = True
         self.game.player.floor_value = self.game.player.rect.y
         self.game.player.fall(-1000)
 
-    def load_new_level(self):
-        self.level_transition()
+

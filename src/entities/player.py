@@ -5,57 +5,32 @@ from objects.weapon import Weapon
 from .entity import Entity
 from .animation import load_animation_sprites
 from utils import get_mask_rect
-from particles import DeathAnimation
+from particles import DeathAnimation, Dust
 import utils
 
 
-class Dust:
-    def __init__(self, player, x, y):
-        self.player = player
-        self.x = x
-        self.y = y
-        self.color = pygame.Color(173, 173, 172, 0)
-        self.life = random.randint(4, 5)
-
-    def update(self):
-        if self.player.velocity:
-            if self.player.velocity[0] > 0:
-                self.x -= random.randint(1, 2) / 4
-            elif self.player.velocity[0] < 0:
-                self.x += random.randint(1, 2) / 4
-            self.y -= random.randint(-2, 3) / 4
-            self.life -= 0.5
-            if self.life < 0:
-                self.player.walking_particles.remove(self)
-
-    def draw(self):
-        if self.player.velocity:
-            rect = (self.x, self.y, 5, 5)
-            pygame.draw.rect(self.player.game.screen, self.color, rect)
-
-
 class Player(Entity):
+    name = 'player'
+    speed = 120
+    max_hp = 60
+    gold = 0
+    shield = 0
+    strength = 1
+    hp = max_hp
+    items = []
+
     def __init__(self, game):
-        Entity.__init__(self, game, 'player')
+        Entity.__init__(self, game, self.name)
         self.rect = self.image.get_rect(center=(512 + 2.5 * 64, 600))
-        self.speed = 100
-        self.max_hp = 60
-        self.hp = self.max_hp
         self.weapon = None
         self.attacking = False
-        self.items = []
         self.interaction = True
-        self.gold = 0
-        self.walking_particles = []
-        self.shield = 2
-        self.strength = 1
         self.attack_cooldown = 400  # ms
         self.death_counter = 1
         self.dupa = False
         self.falling = False
         self.floor_value = self.rect.y
         self.fall(-100)
-
 
     def input(self):
         pressed = pygame.key.get_pressed()
@@ -113,6 +88,7 @@ class Player(Entity):
             self.set_velocity(vel_list_fixed)
         else:
             self.set_velocity(vel_list)
+
         if pygame.mouse.get_pressed()[
             0] and pygame.time.get_ticks() - self.time > self.attack_cooldown and self.weapon:  # player attacking
             self.time = pygame.time.get_ticks()
@@ -138,8 +114,8 @@ class Player(Entity):
             self.dupa = False
 
     def falling_update(self):
-        value = 15
         if self.rect.y < self.floor_value:
+            value = 15
             self.rect.y += value
         else:
             self.falling = False
@@ -177,10 +153,7 @@ class Player(Entity):
         if self.death_counter == 0:
             return
         if (self.velocity[0] != 0 or self.velocity[1] != 0) and random.randint(1, 8) % 4 == 0:
-            self.walking_particles.append(Dust(self, *self.rect.midbottom))
-        for p in self.walking_particles:
-            p.update()
-            p.draw()
+            self.game.particle_manager.add_particle(Dust(self.game,self , *self.rect.midbottom))
         self.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.weapon:

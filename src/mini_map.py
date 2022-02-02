@@ -3,8 +3,8 @@ import copy
 
 
 class MiniMap:
-    room_height = 21
-    room_width = 33
+    room_height = 25
+    room_width = 36
     room_dimensions = (room_width, room_height)
     offset_x = 1150
     offset_y = 10
@@ -58,20 +58,18 @@ class MiniMap:
 
     def draw_all(self, surface):
         for i, room in enumerate(self.visited_rooms):
-            position = (
-                self.offset_x + room[1] * self.room_width * 1.2, self.offset_y + room[0] * self.room_height * 1.2)
+            position = (self.offset_x + room[1] * self.room_width * 1.2,
+                        self.offset_y + room[0] * self.room_height * 1.2)
             pygame.draw.rect(surface, self.color, (*position, *self.room_dimensions), 4)
-        position = (
-            self.offset_x + self.current_room.y * self.room_width * 1.2,
-            self.offset_y + self.current_room.x * self.room_height * 1.2)
+        position = (self.offset_x + self.current_room.y * self.room_width * 1.2,
+                    self.offset_y + self.current_room.x * self.room_height * 1.2)
         pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))
 
     def draw(self, surface):
         for room in self.adjacent_rooms:
-            position = (
-                self.offset_x + room[1] * self.room_width * 1.2, self.offset_y + room[0] * self.room_height * 1.2)
+            position = (self.offset_x + room[1] * self.room_width * 1.2,
+                        self.offset_y + room[0] * self.room_height * 1.2)
             pygame.draw.rect(surface, self.color, (*position, *self.room_dimensions), 4)
-        position = (
-            self.offset_x + self.current_y * self.room_width * 1.2,
-            self.offset_y + self.current_x * self.room_height * 1.2)
+        position = (self.offset_x + self.current_y * self.room_width * 1.2,
+                    self.offset_y + self.current_x * self.room_height * 1.2)
         pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))

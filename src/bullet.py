@@ -40,7 +40,7 @@ class Bullet(pygame.sprite.Sprite):
                     self.pos[1] + self.dir[1] * self.speed)
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
-        #self.wall_collision()
+        # self.wall_collision()
         if self.bounce_back is False:
             for enemy in self.game.enemy_manager.enemy_list:
                 if self.rect.colliderect(enemy.hitbox):
@@ -89,3 +89,9 @@ class Bullet(pygame.sprite.Sprite):
             self.dir = (-self.dir[0] + random.randint(-20, 10) / 100, -self.dir[1] + random.randint(-10, 10) / 100)
             self.speed *= random.randint(10, 20) / 10
             self.bounce_back = False
+
+
+class BulletManager:
+
+    def __init__(self, game):
+        self.game = game
