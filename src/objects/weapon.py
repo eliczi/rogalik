@@ -144,20 +144,24 @@ class Weapon(Object):
         self.player = None
         self.weapon_swing.offset_rotated = Vector2(0, -25)
 
+    def player_update(self):
+        self.interaction = False
+        if self.weapon_swing.counter == 10:
+            self.original_image = pygame.transform.flip(self.original_image, 1, 0)
+            self.player.attacking = False
+            self.weapon_swing.counter = 0
+        if self.player.attacking and self.weapon_swing.counter <= 10:
+            self.weapon_swing.swing()
+        else:
+            self.weapon_swing.rotate()
+
     def update(self):
-        self.weapon_swing.hovering()
-        self.show_price.update()
         if self.player:
-            self.interaction = False
-            if self.weapon_swing.counter == 10:
-                self.original_image = pygame.transform.flip(self.original_image, 1, 0)
-                self.player.attacking = False
-                self.weapon_swing.counter = 0
-            if self.player.attacking and self.weapon_swing.counter <= 10:
-                self.weapon_swing.swing()
-            else:
-                self.weapon_swing.rotate()
-        self.update_bounce()
+            self.player_update()
+        else:
+            self.weapon_swing.hovering()
+            self.show_price.update()
+            self.update_bounce()
         self.update_hitbox()
 
     def draw(self):
@@ -234,18 +238,12 @@ class FireSword(Weapon):
 
     def update(self):
         self.burning()
-        self.show_price.update()
-        self.weapon_swing.hovering()
         if self.player:
-            self.interaction = False
-            if self.weapon_swing.counter == 10:
-                self.original_image = pygame.transform.flip(self.original_image, 1, 0)
-                self.player.attacking = False
-                self.weapon_swing.counter = 0
-            if self.player.attacking and self.weapon_swing.counter <= 10:
-                self.weapon_swing.swing()
-            else:
-                self.weapon_swing.rotate()
+            self.player_update()
+        else:
+            self.weapon_swing.hovering()
+            self.show_price.update()
+            self.update_bounce()
         self.update_hitbox()
         for e in self.burning_enemies:
             e.update()

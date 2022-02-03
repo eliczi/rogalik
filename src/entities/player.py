@@ -120,21 +120,26 @@ class Player(Entity):
         else:
             self.falling = False
 
+    def add_walking_particles(self):
+        if self.moving():
+            self.game.particle_manager.add_particle(Dust(self.game, self, *self.rect.midbottom))
+
     def update(self) -> None:
         if self.falling:
             self.falling_update()
         else:
+            self.add_walking_particles()
             if self.death_counter == 0:
                 return
-            if self.weapon:
-                self.weapon.update()
             self.entity_animation.update()
             self.wall_collision()
             if self.can_move:
                 self.rect.move_ip(*self.velocity)
                 self.hitbox.move_ip(*self.velocity)
-            self.update_hitbox()
             self.detect_death()
+        if self.weapon:
+            self.weapon.update()
+        self.update_hitbox()
 
     def fall(self, value):
         self.rect.y = value
@@ -152,8 +157,6 @@ class Player(Entity):
     def draw(self, surface):
         if self.death_counter == 0:
             return
-        if (self.velocity[0] != 0 or self.velocity[1] != 0) and random.randint(1, 8) % 4 == 0:
-            self.game.particle_manager.add_particle(Dust(self.game,self , *self.rect.midbottom))
         self.draw_shadow(surface)
         surface.blit(self.image, self.rect)
         if self.weapon:

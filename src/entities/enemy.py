@@ -237,3 +237,8 @@ class Imp(Enemy):
             self.update_hitbox()
             self.old_position = self.position
             self.position = [self.rect.x, self.rect.y]
+
+class Slime(Enemy):
+
+    def __init__(self, game):
+        super().__init__()

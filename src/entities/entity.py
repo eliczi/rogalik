@@ -42,7 +42,7 @@ class Entity:
                 self.velocity = [0, 0]
 
     def update_hitbox(self):
-        # self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
+        self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox.midbottom = self.rect.midbottom
 
     def draw_shadow(self, surface):
@@ -54,7 +54,7 @@ class Entity:
         surface.blit(shape_surf, position)
 
     def moving(self):
-        return sum(self.velocity) > 0
+        return self.velocity[0] != 0 or self.velocity[1] !=0
 
 
 

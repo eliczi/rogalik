@@ -134,16 +134,17 @@ class Object:
             self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
 
     def update_bounce(self):
-        if self.bounce:
-            if self.bounce.speed < 0.004:
-                self.dropped = False
-                self.bounce.reset()
-            if self.dropped:
-                for _ in range(15):
-                    self.bounce.move()
-                    self.bounce.bounce()
-                self.rect.x = self.bounce.x
-                self.rect.y = self.bounce.y
+        if not self.bounce:
+            return
+        if self.bounce.speed < 0.004:
+            self.dropped = False
+            self.bounce.reset()
+        if self.dropped:
+            for _ in range(15):
+                self.bounce.move()
+                self.bounce.bounce()
+            self.rect.x = self.bounce.x
+            self.rect.y = self.bounce.y
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""

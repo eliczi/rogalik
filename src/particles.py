@@ -243,17 +243,20 @@ class Dust(Particle):
         self.y = y
         self.color = pygame.Color(173, 173, 172, 0)
         self.life = random.randint(4, 5)
+        if random.randint(1, 8) % 4 != 0:
+            self.life = 0
+
 
     def update(self):
-        if self.player.velocity:
-            if self.player.velocity[0] > 0:
-                self.x -= random.randint(1, 2) / 4
-            elif self.player.velocity[0] < 0:
-                self.x += random.randint(1, 2) / 4
-            self.y -= random.randint(-2, 3) / 4
-            self.life -= 0.5
-            if self.life < 0:
-                self.game.particle_manager.particle_list.remove(self)
+        #if self.player.velocity:
+        if self.player.velocity[0] > 0:
+            self.x -= random.randint(1, 2) / 4
+        elif self.player.velocity[0] < 0:
+            self.x += random.randint(1, 2) / 4
+        self.y -= random.randint(-2, 3) / 4
+        self.life -= 0.5
+        if self.life <= 0:
+            self.game.particle_manager.particle_list.remove(self)
 
     def draw(self, surface):
         if self.player.velocity:
