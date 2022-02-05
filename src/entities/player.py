@@ -93,7 +93,8 @@ class Player(Entity):
             0] and pygame.time.get_ticks() - self.time > self.attack_cooldown and self.weapon:  # player attacking
             self.time = pygame.time.get_ticks()
             self.attacking = True
-            self.weapon.weapon_swing.swing_side *= (-1)
+            if self.weapon.name != 'staff':
+                self.weapon.weapon_swing.swing_side *= (-1)
 
     def shift_items_right(self):
         self.items = [self.items[-1]] + self.items[:-1]

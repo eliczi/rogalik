@@ -159,8 +159,7 @@ class Shooting:
         self.normal_shooting = True
 
     def update(self):
-        for bullet in self.bullets:
-            bullet.update()
+        self.bullets.update()
         self.moving_timer()
         self.other_timer()
         if self.boss.can_move and not self.boss.dead:
@@ -172,8 +171,8 @@ class Shooting:
             self.half_circle_shoot()
 
     def draw(self, surface):
-        for bullet in self.bullets:
-            bullet.draw(surface)
+        self.bullets.draw(surface)
+
 
     def time_passed(self, time, amount):
         """Wait 'amount' amount of time"""

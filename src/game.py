@@ -12,6 +12,7 @@ from map.world_manager import WorldManager
 from objects.object_manager import ObjectManager
 from game_over import GameOver
 import time
+from bullet import BulletManager
 
 pygame.init()
 pygame.mixer.init()
@@ -27,6 +28,7 @@ class Game:
         self.particle_manager = ParticleManager(self)
         self.world_manager = WorldManager(self)
         self.object_manager = ObjectManager(self)
+        self.bullet_manager = BulletManager(self)
         self.hud = Hud(self)
         self.running = True
         self.menu = MainMenu(self)
@@ -50,6 +52,7 @@ class Game:
         self.player.update()
         self.particle_manager.update_particles()
         self.particle_manager.update_fire_particles()
+        self.bullet_manager.update()
         self.background.update()
         self.world_manager.update()
         self.game_over.update()
@@ -62,6 +65,7 @@ class Game:
             self.player.draw(self.screen)
         self.enemy_manager.draw_enemies(self.screen)
         self.object_manager.draw()
+        self.bullet_manager.draw()
         #elf.mini_map.draw(self.screen)
         self.hud.draw()
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)

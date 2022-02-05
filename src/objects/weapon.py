@@ -6,6 +6,7 @@ import utils
 from PIL import Image
 from .object import Object
 from particles import ParticleManager, Fire
+from bullet import Bullet
 
 
 class WeaponSwing:
@@ -27,7 +28,7 @@ class WeaponSwing:
     def reset(self):
         self.counter = 0
 
-    def rotate(self):
+    def rotate(self, weapon=None):
         mx, my = pygame.mouse.get_pos()
         dx = mx - self.weapon.player.hitbox.centerx  # - 64
         dy = my - self.weapon.player.hitbox.centery  # - 32
@@ -37,7 +38,11 @@ class WeaponSwing:
             self.angle = (180 / math.pi) * math.atan2(self.swing_side * dy, dx) + self.right_swing
 
         position = self.weapon.player.hitbox.center
-        self.weapon.image = pygame.transform.rotozoom(self.weapon.original_image, self.angle, 1)
+        if weapon:
+            self.weapon.image = pygame.transform.rotozoom(self.weapon.image, self.angle, 1)
+        else:
+            self.weapon.image = pygame.transform.rotozoom(self.weapon.original_image, self.angle, 1)
+
         offset_rotated = self.offset.rotate(-self.angle)
         self.weapon.rect = self.weapon.image.get_rect(center=position + offset_rotated)
         self.weapon.hitbox = pygame.mask.from_surface(self.weapon.image)
@@ -174,6 +179,7 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
+        pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
 
 
 class Staff(Weapon):
@@ -184,6 +190,74 @@ class Staff(Weapon):
     def __init__(self, game, room=None, position=None):
         super().__init__(game, self.name, self.size, room, position)
         self.value = 150
+        self.animation_frame = 0
+        self.images = []
+        self.load_images()
+        self.firing_position = self.hitbox.topleft
+        self.bullets = []
+
+    def load_images(self):
+        for i in range(4):
+            image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.transform.scale(image, self.size)
+            self.images.append(image)
+        self.image = self.images[0]
+
+    def calculate_firing_position(self):
+        if 0 <= self.weapon_swing.angle < 90:
+            self.firing_position = self.hitbox.topleft
+        elif 90 <= self.weapon_swing.angle < 180:
+            self.firing_position = (self.hitbox.bottomleft[0], self.hitbox.bottomleft[1] - 15)
+        elif 0 > self.weapon_swing.angle > -90:
+            self.firing_position = self.hitbox.topright
+        else:
+            self.firing_position = (self.hitbox.bottomright[0], self.hitbox.bottomright[1] - 15)
+
+    def fire(self):
+        pos = pygame.mouse.get_pos()
+        self.update_hitbox()
+        self.calculate_firing_position()
+        self.bullets.append(Bullet(self, self.game, self.firing_position[0], self.firing_position[1], pos))
+
+    def player_update(self):
+        self.interaction = False
+        self.weapon_swing.rotate(self)
+        if self.player.attacking:
+            self.fire()
+            self.player.attacking = False
+
+    def animate(self):
+        self.animation_frame += 1.5 / 15
+        if self.animation_frame > 4:
+            self.animation_frame = 0
+        self.image = self.images[int(self.animation_frame)]
+
+    def update(self):
+        #print(self.weapon_swing.angle)
+        for b in self.bullets:
+            b.update()
+        self.animate()
+        if self.player:
+            self.player_update()
+        else:
+            self.weapon_swing.hovering()
+            self.show_price.update()
+            self.update_bounce()
+        self.update_hitbox()
+
+    def draw(self):
+        surface = self.room.tile_map.map_surface
+        if self.player:
+            surface = self.game.screen
+        else:
+            self.weapon_swing.draw_shadow(surface)
+        surface.blit(self.image, self.rect)
+        if self.interaction:
+            self.show_name.draw(surface, self.rect)
+        self.show_price.draw(surface)
+        pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
+        for b in self.bullets:
+            b.draw(surface)
 
 
 class AnimeSword(Weapon):

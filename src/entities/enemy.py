@@ -2,7 +2,7 @@ import pygame
 import random
 from particles import DeathAnimation
 from .entity import Entity
-from bullet import Bullet
+from bullet import ImpBullet
 from objects.coin import Coin, Emerald, Ruby
 
 
@@ -83,7 +83,7 @@ class Enemy(Entity):
             return True
 
     def move(self):
-        if not self.dead and self.hp > 0:
+        if not self.dead and self.hp > 0 and self.can_move:
             if self.game.player.death_counter != 0:
                 self.move_towards_player()
             else:
@@ -167,7 +167,6 @@ class Enemy(Entity):
 class Imp(Enemy):
     def __init__(self, game, speed, max_hp, room, name):
         Enemy.__init__(self, game, speed, max_hp, room, name)
-        self.bullets = pygame.sprite.Group()
         self.moved = False
         self.position = [self.rect.x, self.rect.y]
         self.old_position = None
@@ -176,9 +175,10 @@ class Imp(Enemy):
     def shoot(self):
         if not sum(self.velocity) and self.time_passed(self.time, 750):
             self.time = pygame.time.get_ticks()
-            self.bullets.add(
-                Bullet(self, self.game, self.hitbox.midbottom[0], self.hitbox.midbottom[1],
-                       self.game.player.hitbox.midbottom))
+            self.game.bullet_manager.add_bullet(
+                ImpBullet(self.game, self, self.room, self.hitbox.midbottom[0], self.hitbox.midbottom[1],
+                          self.game.player.hitbox.midbottom))
+
 
     def update(self):
         self.detect_death()
@@ -190,9 +190,6 @@ class Imp(Enemy):
         self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
         self.draw_health(self.room.tile_map.map_surface)
-        for bullet in self.bullets:
-            bullet.update()
-            bullet.draw(self.room.tile_map.map_surface)
 
     def move_away_from_player(self):
         distance_to_player = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,

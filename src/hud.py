@@ -74,6 +74,7 @@ class PlayerGold:
 
 
 class PlayerShield:
+    name = 'armor'
     def __init__(self, player):
         self.image_size = (24, 24)
         self.image = None
@@ -81,9 +82,11 @@ class PlayerShield:
         self.starting_position = (0, 0)
         self.player = player
         self.text = None
+        self.image_position = (0, 70)
+        self.text_position = (25, 75)
 
     def load_image(self):
-        self.image = pygame.transform.scale(pygame.image.load('../assets/power_ups/armor/armor.png').convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha(),
                                             self.image_size)
 
     def update(self):
@@ -94,6 +97,12 @@ class PlayerShield:
         surface.blit(self.image, (0, 70))
         text_surface = pygame.font.Font(utils.font, 24).render(self.text, True, (255, 255, 255))
         surface.blit(text_surface, (25, 75))
+
+class PlayerAttack(PlayerShield):
+
+    def __init__(self, player):
+        super().__init__(player)
+
 
 
 class Hud:

@@ -213,7 +213,7 @@ class World:
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
                     elif room.type == 'starting_room':
-                        room.objects.append(FireSword(self.game, room, (650, 300)))
+                        room.objects.append(Staff(self.game, room, (650, 300)))
                     elif room.type == 'power_up':
                         power_ups = [ShieldPowerUp(self.game, room), AttackPowerUp(self.game, room)]
                         room.objects.append(random.choice(power_ups))

@@ -6,7 +6,7 @@ import utils
 
 
 class WorldManager:
-    number_of_rooms = 3  # add random values?
+    number_of_rooms = 12  # add random values?
     world_width = 4
     world_height = 4
     map_width = 13
