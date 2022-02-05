@@ -134,6 +134,9 @@ class Hud:
         text2 = f'FPS: {int(self.game.clock.get_fps())}'
         text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (0, 120))
+        text2 = f'LEVEL: {int(self.game.world_manager.level) + 1}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (600, 0))
         # text3 = f'C1111pa: {str(int(self.player.rect.x)), str(int(self.game.player.rect.midbottom[1]))}'
         # text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
         # self.game.screen.blit(text_surface, (0, 140))

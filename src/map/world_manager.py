@@ -6,12 +6,12 @@ import utils
 
 
 class WorldManager:
-    number_of_rooms = 12  # add random values?
+    number_of_rooms = 2  # add random values?
     world_width = 4
     world_height = 4
     map_width = 13
     map_height = 19
-    level = 1
+    level = 0
 
     def __init__(self, game):
         self.game = game
@@ -28,7 +28,7 @@ class WorldManager:
         self.load_world_manager()
 
     def load_world_manager(self):
-        self.world = World(self.game, self.number_of_rooms, self.world_width, self.world_height)
+        self.world = World(self, self.game, self.number_of_rooms, self.world_width, self.world_height)
         self.x, self.y = self.world.starting_room.x, self.world.starting_room.y
         self.current_room = self.world.starting_room
         self.current_map = self.current_room.tile_map
@@ -162,6 +162,7 @@ class WorldManager:
         if self.current_map.x >= 0:
             self.move_current_room = False
             self.current_map.correct_map_position()
+            self.level+=1
 
     def load_new_level(self):
         self.new_level = True

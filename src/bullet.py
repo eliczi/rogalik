@@ -19,11 +19,10 @@ class Bullet():
         self.dir = pygame.math.Vector2(target[0] - x, target[1] - y)
         self.calculate_dir()
         self.bounce_back = True
-        self.draw_surface = self.game.screen
 
     def calculate_dir(self):
         length = math.hypot(*self.dir)
-        self.dir = (self.dir[0] / length, self.dir[1] / length)
+        self.dir = pygame.math.Vector2(self.dir[0] / length, self.dir[1] / length)
 
     def load_image(self):
         self.image = pygame.Surface([self.bullet_size, self.bullet_size])
@@ -32,10 +31,10 @@ class Bullet():
 
     def update_position(self):
         self.pos = (self.pos[0] + self.dir[0] * self.speed,
-                     self.pos[1] + self.dir[1] * self.speed)
+                    self.pos[1] + self.dir[1] * self.speed)
 
-        self.rect.x = self.pos[0] #
-        self.rect.y = self.pos[1] #
+        self.rect.x = self.pos[0]  #
+        self.rect.y = self.pos[1]  #
 
     def kill(self):
         self.game.bullet_manager.bullets.remove(self)
@@ -49,15 +48,17 @@ class Bullet():
                     self.game.particle_manager.particle_list.append(
                         EnemyHitParticle(self.game, self.rect.x, self.rect.y))
                     self.kill()
+                    break
         self.player_collision(self.game.player)
         self.bounce()
         if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1200:
             self.kill()
 
     def draw(self):
-        pygame.draw.circle(self.draw_surface, (255, 255, 255), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
+        surface = self.master.room.tile_map.map_surface
+        pygame.draw.circle(surface, (255, 255, 255), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
                            self.radius)
-        pygame.draw.circle(self.draw_surface, (58, 189, 74), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
+        pygame.draw.circle(surface, (58, 189, 74), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
                            self.radius - 1)
 
     def wall_collision(self):
@@ -65,9 +66,12 @@ class Bullet():
         upper_boundary = ()
 
     def player_collision(self, collision_enemy):
-        if self.rect.colliderect(collision_enemy.hitbox):
-            self.game.player.hp -= self.damage
-            self.game.player.hurt = True
+        if self.rect.colliderect(collision_enemy.hitbox) and not self.game.world_manager.switch_room:
+            if collision_enemy.shield:
+                collision_enemy.shield -= 1
+            else:
+                self.game.player.hp -= self.damage
+                self.game.player.hurt = True
             self.sparkle()
             self.kill()
 
@@ -98,12 +102,44 @@ class ImpBullet(Bullet):
 
 
 class StaffBullet(Bullet):
-    pass
+    speed = 9
+    damage = 35
+    bullet_size = 12
+    radius = 7
+
+    def __init__(self, game, master, room, x, y, target):
+        super().__init__(game, master, room, x, y, target)
+        self.bounce_back = False
+
+    def update(self):
+        self.update_position()
+        if self.bounce_back is False:
+            for enemy in self.game.enemy_manager.enemy_list:
+                if self.rect.colliderect(enemy.hitbox):
+                    enemy.hp -= self.damage
+                    self.game.particle_manager.particle_list.append(
+                        EnemyHitParticle(self.game, self.rect.x, self.rect.y))
+                    self.kill()
+                    break
+        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1200:
+            self.kill()
+
+    def draw(self):
+        surface = self.game.world_manager.current_map.map_surface
+        pygame.draw.circle(surface, (255, 255, 255), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
+                           self.radius)
+        pygame.draw.circle(surface, (58, 189, 74), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
+                           self.radius - 1)
 
 
 class BossBullet(Bullet):
+    speed = 10
+    damage = 10
+    bullet_size = 7
+    radius = 5
 
-    def __init__(self, rotation=None):
+    def __init__(self, game, master, room, x, y, target, rotation=None):
+        super().__init__(game, master, room, x, y, target)
         if rotation:
             self.dir.rotate_ip(rotation)
 
@@ -116,6 +152,9 @@ class BulletManager:
 
     def add_bullet(self, bullet):
         self.bullets.append(bullet)
+
+    def kill(self, bullet):
+        self.bullets.remove(bullet)
 
     def update(self):
         for bullet in self.bullets:

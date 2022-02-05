@@ -4,7 +4,7 @@ from utils import get_mask_rect
 import utils
 import os
 from particles import DeathAnimation
-from bullet import Bullet
+from bullet import BossBullet
 from objects.flask import Flask
 from objects.coin import Coin
 from entities.enemy import Enemy, draw_health_bar
@@ -193,24 +193,22 @@ class Shooting:
     def shoot(self):
         if self.time_passed(self.shoot_time, 1000):
             self.shoot_time = pygame.time.get_ticks()
-            self.bullets.add(
-                Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
-                       self.boss.game.player.hitbox.center,
-                       'boss'))
+            self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
+                                                       self.boss.hitbox.center[0], self.boss.hitbox.center[1],
+                                                       self.boss.game.player.hitbox.center))
 
     def machine_gun(self):
         if self.time_passed(self.machine_time, 100):
             self.machine_time = pygame.time.get_ticks()
-            self.bullets.add(
-                Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
-                       self.boss.game.player.hitbox.center,
-                       'boss'))
+            self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
+                                                                self.boss.hitbox.center[0], self.boss.hitbox.center[1],
+                                                                self.boss.game.player.hitbox.center))
 
     def half_circle_shoot(self):
         if self.time_passed(self.circle_time, 1000):
             self.circle_time = pygame.time.get_ticks()
             for i in range(-12, 12):
-                self.bullets.add(
-                    Bullet(self, self.boss.game, self.boss.hitbox.center[0], self.boss.hitbox.center[1],
-                           self.boss.game.player.hitbox.center,
-                           'boss', 15 * i))
+                self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
+                                                                    self.boss.hitbox.center[0],
+                                                                    self.boss.hitbox.center[1],
+                                                                    self.boss.game.player.hitbox.center,15 * i))

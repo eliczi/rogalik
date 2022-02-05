@@ -56,7 +56,8 @@ class Room:
 
 
 class World:
-    def __init__(self, game, num_of_rooms, width, height):
+    def __init__(self, wm, game, num_of_rooms, width, height):
+        self.level = wm.level
         self.game = game
         self.num_of_rooms = num_of_rooms
         self.width = width
@@ -212,8 +213,10 @@ class World:
                 if isinstance(room, Room):
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
-                    elif room.type == 'starting_room':
+                    elif room.type == 'starting_room' and self.level == 0:
                         room.objects.append(Staff(self.game, room, (650, 300)))
+                        room.objects.append(AnimeSword(self.game, room, (550, 300)))
+                        room.objects.append(FireSword(self.game, room, (750, 300)))
                     elif room.type == 'power_up':
                         power_ups = [ShieldPowerUp(self.game, room), AttackPowerUp(self.game, room)]
                         room.objects.append(random.choice(power_ups))
@@ -240,5 +243,5 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[1, 30, 1, 1], k=1)[0]
+                    room.type = random.choices(self.types, weights=[1, 10, 1, 1], k=1)[0]
                     ok_rooms.append(room)

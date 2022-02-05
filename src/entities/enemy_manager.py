@@ -27,24 +27,9 @@ class EnemyManager:
         self.set_enemy_list()
         for enemy in self.game.world_manager.current_room.enemy_list:
             enemy.update()
-        if not self.game.world_manager.switch_room:
-            self.check_collide()
         self.debug()
 
-    def check_collide(self):
-        for enemy in self.enemy_list:
-            if (
-                    self.game.player.weapon
-                    and pygame.sprite.collide_mask(self.game.player.weapon, enemy)
-                    and self.game.player.attacking
-                    and enemy.dead is False
-                    and enemy.can_get_hurt_from_weapon()
-            ):
-                self.game.player.weapon.special_effect(enemy)
-                enemy.hurt = True
-                enemy.hp -= self.game.player.weapon.damage
-                enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
-                #enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
+
 
     def add_enemies(self):
         for row in self.game.world_manager.world.world:

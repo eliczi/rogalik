@@ -58,6 +58,10 @@ class Coin(Object):
             speed = 1 / dir_vector.length() * 250
             dir_vector.normalize_ip()
             dir_vector.scale_to_length(speed)
+            if dir_vector[0] < 1:
+                dir_vector[0] = math.ceil(dir_vector[0])
+            if dir_vector[1] < 1:
+                dir_vector[1] = math.ceil(dir_vector[1])
             self.rect.move_ip(*dir_vector)
 
     def draw_shadow(self, surface):

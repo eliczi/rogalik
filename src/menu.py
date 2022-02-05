@@ -59,17 +59,17 @@ class MainMenu:
         self.exit_button = ExitButton(self, 21 * 64 / 2, 7 * 64 / 2 + 240)
         self.rogalik = pygame.image.load('../assets/rogalik.png').convert_alpha()
         self.rogalik = pygame.transform.scale(self.rogalik, (320, 240))
-        #self.rogalik.set_colorkey((0, 0, 0, 0))
+        # self.rogalik.set_colorkey((0, 0, 0, 0))
         self.rogalik_rect = self.rogalik.get_rect()
-        self.rogalik_rect.midtop = (21 * 64 / 2,50)
+        self.rogalik_rect.midtop = (21 * 64 / 2, 50)
 
-
-
-    @staticmethod
-    def input():
+    def input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_ESCAPE]:
+            self.game.running = False
 
     def update(self):
         self.game.background.update()

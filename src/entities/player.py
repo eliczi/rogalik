@@ -25,7 +25,7 @@ class Player(Entity):
         self.weapon = None
         self.attacking = False
         self.interaction = True
-        self.attack_cooldown = 400  # ms
+        self.attack_cooldown = 250  # ms
         self.death_counter = 1
         self.dupa = False
         self.falling = False
@@ -50,11 +50,7 @@ class Player(Entity):
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]
-        if pressed[pygame.K_v]:
-            print('d')
-            shape_surf = pygame.Surface((64, 64), pygame.SRCALPHA).convert_alpha()
-            shape_surf.fill((255, 122, 122))
-            self.game.screen.blit(shape_surf, (500, 500))
+
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:

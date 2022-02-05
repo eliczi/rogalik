@@ -6,7 +6,7 @@ import utils
 from PIL import Image
 from .object import Object
 from particles import ParticleManager, Fire
-from bullet import Bullet
+from bullet import StaffBullet
 
 
 class WeaponSwing:
@@ -80,9 +80,9 @@ class WeaponSwing:
             if self.counter % 30 == 0:
                 self.weapon.rect.y += self.hover_value
                 self.up = self.hover_value < 0
-            if pygame.time.get_ticks() % 1000 < 500:
+            if self.weapon.game.dt % 1000 < 500:
                 self.hover_value = -5
-            elif pygame.time.get_ticks() % 1000 > 500:
+            elif self.weapon.game.dt % 1000 > 500:
                 self.hover_value = 5
             self.counter += 1
 
@@ -149,6 +149,19 @@ class Weapon(Object):
         self.player = None
         self.weapon_swing.offset_rotated = Vector2(0, -25)
 
+    def enemy_collision(self):
+        for enemy in self.game.enemy_manager.enemy_list:
+            if (
+                    pygame.sprite.collide_mask(self.game.player.weapon, enemy)
+                    and enemy.dead is False
+                    and enemy.can_get_hurt_from_weapon()
+            ):
+                self.game.player.weapon.special_effect(enemy)
+                enemy.hurt = True
+                enemy.hp -= self.game.player.weapon.damage
+                enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
+                # enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
+
     def player_update(self):
         self.interaction = False
         if self.weapon_swing.counter == 10:
@@ -157,6 +170,7 @@ class Weapon(Object):
             self.weapon_swing.counter = 0
         if self.player.attacking and self.weapon_swing.counter <= 10:
             self.weapon_swing.swing()
+            self.enemy_collision()
         else:
             self.weapon_swing.rotate()
 
@@ -179,7 +193,7 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
+        #pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
 
 
 class Staff(Weapon):
@@ -217,7 +231,8 @@ class Staff(Weapon):
         pos = pygame.mouse.get_pos()
         self.update_hitbox()
         self.calculate_firing_position()
-        self.bullets.append(Bullet(self, self.game, self.firing_position[0], self.firing_position[1], pos))
+        self.game.bullet_manager.add_bullet(
+            StaffBullet(self.game, self, self.room, self.firing_position[0], self.firing_position[1], pos))
 
     def player_update(self):
         self.interaction = False
@@ -233,7 +248,7 @@ class Staff(Weapon):
         self.image = self.images[int(self.animation_frame)]
 
     def update(self):
-        #print(self.weapon_swing.angle)
+        # print(self.weapon_swing.angle)
         for b in self.bullets:
             b.update()
         self.animate()
@@ -255,7 +270,6 @@ class Staff(Weapon):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
         for b in self.bullets:
             b.draw(surface)
 
