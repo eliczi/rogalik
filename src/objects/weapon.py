@@ -77,12 +77,12 @@ class WeaponSwing:
     def hovering(self):
         # self.update_shadow_position()
         if self.weapon.player is None:
-            if self.counter % 30 == 0:
+            if self.counter % 60 == 0:
                 self.weapon.rect.y += self.hover_value
                 self.up = self.hover_value < 0
-            if self.weapon.game.dt % 1000 < 500:
+            if self.weapon.game.up > 0:
                 self.hover_value = -5
-            elif self.weapon.game.dt % 1000 > 500:
+            elif self.weapon.game.up < 500:
                 self.hover_value = 5
             self.counter += 1
 

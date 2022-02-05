@@ -9,9 +9,11 @@ from particles import DeathAnimation, Dust
 import utils
 
 
+
+
 class Player(Entity):
     name = 'player'
-    speed = 120
+    speed = 360
     max_hp = 60
     gold = 0
     shield = 10
@@ -63,8 +65,9 @@ class Player(Entity):
                     self.shift_items_right()
                     self.weapon = self.items[0]
 
-        constant_dt = 0.06
-        # constant_dt = self.game.dt
+
+        #constant_dt = 0.06
+        constant_dt = self.game.dt
         vel_up = [0, -self.speed * constant_dt]
         vel_up = [i * pressed[pygame.K_w] for i in vel_up]
         vel_down = [0, self.speed * constant_dt]

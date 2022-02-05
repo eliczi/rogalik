@@ -29,6 +29,7 @@ class Game:
         self.world_manager = WorldManager(self)
         self.object_manager = ObjectManager(self)
         self.bullet_manager = BulletManager(self)
+        self.up = 1
         self.hud = Hud(self)
         self.running = True
         self.menu = MainMenu(self)
@@ -40,6 +41,7 @@ class Game:
         self.can_exit = False
         pygame.mixer.init()
         self.dt = 0
+        pygame.time.set_timer(pygame.USEREVENT, 1000)
 
     def refresh(self):
         self.__init__()
@@ -66,17 +68,23 @@ class Game:
         self.enemy_manager.draw_enemies(self.screen)
         self.object_manager.draw()
         self.bullet_manager.draw()
-        #elf.mini_map.draw(self.screen)
+        # elf.mini_map.draw(self.screen)
         self.hud.draw()
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
         self.particle_manager.draw_fire_particles()
         self.game_over.draw()
 
     def input(self):
-        self.player.input()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.USEREVENT:
+                print(pygame.time.get_ticks())
+                print('dupa')
+                self.up = -self.up
+        self.player.input()
+
+
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.refresh()
