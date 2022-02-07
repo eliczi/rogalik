@@ -37,6 +37,7 @@ class PlayButton(Button):
     def detect_action(self, pos):
         if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
             self.menu.running = False
+            self.menu.game.running = True
             self.clicked = True
 
 
@@ -70,6 +71,7 @@ class MainMenu:
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_ESCAPE]:
             self.game.running = False
+
 
     def update(self):
         self.game.background.update()

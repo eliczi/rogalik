@@ -89,7 +89,7 @@ class AttackPowerUp(PowerUp):
         super().__init__(game, room, self.name, position)
 
     def interact(self):
-        self.game.player.strength += 1
+        self.game.player.strength *= 1.1
         self.room.objects.remove(self)
 
     def beautify(self, surface):

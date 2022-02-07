@@ -235,6 +235,26 @@ class DeathAnimation:
     def draw(self, surface):
         surface.blit(self.images[int(self.counter)], (self.x, self.y))
 
+
+class StaffParticle(Particle):
+    colors = ((151, 218, 63), (140, 218, 63), (160, 218, 63))
+    radius = random.randint(7, 8)
+
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y)
+
+    def update(self):
+        self.x += random.randint(-1, 1)
+        self.y += random.randint(-1, 1)
+        self.radius -= 0.20
+        if self.radius <= 0:
+            self.game.particle_manager.particle_list.remove(self)
+
+    def draw(self, surface):
+        color = random.choice(self.colors)
+        pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
+
+
 class Dust(Particle):
     def __init__(self, game, player, x, y):
         super().__init__(game, x, y)
@@ -246,9 +266,8 @@ class Dust(Particle):
         if random.randint(1, 8) % 4 != 0:
             self.life = 0
 
-
     def update(self):
-        #if self.player.velocity:
+        # if self.player.velocity:
         if self.player.velocity[0] > 0:
             self.x -= random.randint(1, 2) / 4
         elif self.player.velocity[0] < 0:
@@ -264,13 +283,12 @@ class Dust(Particle):
             pygame.draw.rect(surface, self.color, rect)
 
 
-
 class ParticleManager:
     def __init__(self, game):
         self.game = game
         self.particle_list = []
         self.fire_particles = []
-        #self.surface = self.game.screen
+        # self.surface = self.game.screen
         self.surface = pygame.Surface((utils.world_size[0] // 4, utils.world_size[1] // 4),
                                       pygame.SRCALPHA).convert_alpha()
         self.dest_surf = pygame.Surface((utils.world_size[0], utils.world_size[1])).convert_alpha()
@@ -285,7 +303,7 @@ class ParticleManager:
             p.update()
 
     def draw_fire_particles(self):
-        self.surface.fill((0,0,0,0))
+        self.surface.fill((0, 0, 0, 0))
         for p in self.fire_particles:
             p.draw(self.surface)
         s = self.game.world_manager.current_map.map_surface

@@ -23,6 +23,7 @@ class Entity:
         self.entity_animation = EntityAnimation(self)
         self.counter = 0
         self.time = 0
+        self.can_get_hurt = True
 
 
     def __repr(self):

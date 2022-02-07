@@ -6,12 +6,12 @@ import utils
 
 
 class WorldManager:
-    number_of_rooms = 2  # add random values?
+    number_of_rooms = 3  # add random values?
     world_width = 4
     world_height = 4
     map_width = 13
     map_height = 19
-    level = 0
+    level = 1
 
     def __init__(self, game):
         self.game = game
@@ -147,6 +147,7 @@ class WorldManager:
     def end_conditi(self):
         if self.current_map.x > 1100:
             self.new_level = False
+            self.level += 1
             self.load_world_manager()
             self.current_map.x = -20 * 64
             self.move_current_room = True
@@ -162,11 +163,10 @@ class WorldManager:
         if self.current_map.x >= 0:
             self.move_current_room = False
             self.current_map.correct_map_position()
-            self.level+=1
 
     def load_new_level(self):
         self.new_level = True
+        self.game.enemy_manager.damage_multiplier += 0.1
+        self.game.enemy_manager.health_multiplier += 0.1
         self.game.player.floor_value = self.game.player.rect.y
         self.game.player.fall(-1000)
-
-

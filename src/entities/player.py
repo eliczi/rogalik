@@ -14,10 +14,10 @@ import utils
 class Player(Entity):
     name = 'player'
     speed = 360
-    max_hp = 60
+    max_hp = 100
     gold = 0
-    shield = 10
-    strength = 10
+    shield = 1
+    strength = 1
     hp = max_hp
     items = []
 
@@ -52,8 +52,6 @@ class Player(Entity):
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]
-
-
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:

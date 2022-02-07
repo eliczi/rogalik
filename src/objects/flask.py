@@ -18,19 +18,15 @@ class Flask(Object):
         self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + 20)
 
     def interact(self):
-        # if not self.game.player.weapon:
-        #     self.game.player.weapon = self
-        # self.game.player.items.append(self)
         if self.room == self.game.world_manager.current_room:
             self.room.objects.remove(self)
         self.interaction = False
         self.show_name.reset_line_length()
         self.image = self.original_image
-        if self.game.player.hp == self.game.player.max_hp:
-            self.game.player.max_hp += 20
-        self.game.player.hp += 20
-
-
+        if self.game.player.hp <= self.game.player.max_hp - 20:
+            self.game.player.hp += 20
+        else:
+            self.game.player.hp = self.game.player.max_hp
 
     def update(self):
         if self.bounce.speed < 0.001:

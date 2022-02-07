@@ -4,6 +4,7 @@ from particles import DeathAnimation
 from .entity import Entity
 from bullet import ImpBullet
 from objects.coin import Coin, Emerald, Ruby
+from objects.flask import Flask
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -25,7 +26,7 @@ class Enemy(Entity):
         self.death_counter = 1
         self.type = None
         self.move_time = 0
-        self.damage = 10
+        self.damage = 13
         self.attack_cooldown = 0
         self.weapon_hurt_cooldown = 0
         self.items = []
@@ -39,6 +40,8 @@ class Enemy(Entity):
             self.items.append(Emerald(self.game, self.room, self))
         for _ in range(random.randint(0, 4)):
             self.items.append(Ruby(self.game, self.room, self))
+        for _ in range(random.randint(0, 4)):
+            self.items.append(Flask(self.game, self.room))
 
     def drop_items(self):
         for item in self.items:
@@ -65,7 +68,8 @@ class Enemy(Entity):
             return True
 
     def attack_player(self, player):
-        if self.hitbox.colliderect(player.hitbox) and self.can_attack() and not self.game.world_manager.switch_room and not self.hurt:
+        if self.hitbox.colliderect(
+                player.hitbox) and self.can_attack() and not self.game.world_manager.switch_room and not self.hurt:
             player.calculate_collision(self)
             # play attack sound
 
@@ -76,7 +80,7 @@ class Enemy(Entity):
         self.attack_player(self.game.player)  # enemy attacks player
         self.entity_animation.update()
 
-    def change_speed(self): # changes speed every 1.5s
+    def change_speed(self):  # changes speed every 1.5s
         if self.time_passed(self.move_time, 1500):
             self.move_time = pygame.time.get_ticks()
             self.speed = random.randint(100, 150) / 10
@@ -165,6 +169,8 @@ class Enemy(Entity):
 
 
 class Imp(Enemy):
+    damage = 10
+
     def __init__(self, game, speed, max_hp, room, name):
         Enemy.__init__(self, game, speed, max_hp, room, name)
         self.moved = False
@@ -178,7 +184,6 @@ class Imp(Enemy):
             self.game.bullet_manager.add_bullet(
                 ImpBullet(self.game, self, self.room, self.hitbox.midbottom[0], self.hitbox.midbottom[1],
                           self.game.player.hitbox.midbottom))
-
 
     def update(self):
         self.detect_death()
@@ -234,6 +239,7 @@ class Imp(Enemy):
             self.update_hitbox()
             self.old_position = self.position
             self.position = [self.rect.x, self.rect.y]
+
 
 class Slime(Enemy):
 

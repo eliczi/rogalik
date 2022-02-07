@@ -49,7 +49,8 @@ class Boss(Enemy):
     name = "boss"
     max_hp = 100
     hp = max_hp
-    damage = 10
+    damage = 25
+    bullet_damage = 15
     speed = 10
 
     def __init__(self, game, room):
@@ -65,7 +66,6 @@ class Boss(Enemy):
         self.entity_animation = BossAnimation(self)
         self.items = [Flask(self.game, self.room)]
         self.add_treasure()
-        self.dupa = True
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
@@ -91,10 +91,7 @@ class Boss(Enemy):
             self.wall_collision()
         self.entity_animation.update()
         self.shooter.update()
-        # if self.dead and self.dupa:
-        #     position = self.rect.center
-        #     self.room.objects.append(Hole(self.game, position,self.room))
-        #     self.dupa = False
+
 
     def move(self):
         if not self.dead and self.hp > 0:

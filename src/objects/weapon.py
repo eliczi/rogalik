@@ -21,12 +21,15 @@ class WeaponSwing:
         self.counter = 0
         self.swing_side = 1
         self.hover_value = 5
-        self.up = False
         self.shadow_width = self.weapon.hitbox.width
-        self.shadow_position = pygame.Rect(0, 0, 0, 0)
+        self.up = None
+        self.position = 1
+        self.shadow_position = None
+        self.shadow_set = False
 
     def reset(self):
         self.counter = 0
+        self.shadow_set = False
 
     def rotate(self, weapon=None):
         mx, my = pygame.mouse.get_pos()
@@ -58,33 +61,35 @@ class WeaponSwing:
         self.weapon.hitbox = pygame.mask.from_surface(self.weapon.image)
         self.counter += 1
 
-    def update_shadow_position(self):
-        self.shadow_position = [self.weapon.rect.midbottom[0] - 14, self.weapon.rect.midbottom[1]]
-        if not self.up:
-            self.shadow_position = [self.weapon.rect.midbottom[0] - 18, self.weapon.rect.midbottom[1] - 5]
-
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        if self.up:
-            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2, 10))
-        else:
-            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4, 12))
+        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4 + self.position, 12 + self.position))
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        self.shadow_position.center = self.weapon.rect.midbottom
+        position = [self.weapon.hitbox.midbottom[0], self.weapon.hitbox.midbottom[1] + self.hover_value]
         surface.blit(shape_surf, self.shadow_position)
 
+    def set_shadow_position(self):
+        self.shadow_position = [self.weapon.hitbox.midbottom[0] - 16, self.weapon.hitbox.midbottom[1]]
+        self.shadow_set = True
+
+    def set_hover_value(self):
+        num = self.weapon.game.up // 2
+        if num % 2 == 0:
+            self.hover_value = -5
+        elif num % 2 == 1:
+            self.hover_value = 5
+
     def hovering(self):
-        # self.update_shadow_position()
-        if self.weapon.player is None:
-            if self.counter % 60 == 0:
-                self.weapon.rect.y += self.hover_value
-                self.up = self.hover_value < 0
-            if self.weapon.game.up > 0:
-                self.hover_value = -5
-            elif self.weapon.game.up < 500:
-                self.hover_value = 5
-            self.counter += 1
+        if self.weapon.player is not None:
+            return
+        if self.weapon.game.hover:
+            self.weapon.rect.y += self.hover_value
+            if self.hover_value > 0:
+                self.position += 1
+            else:
+                self.position -= 1
+        self.set_hover_value()
 
 
 class Weapon(Object):
@@ -99,8 +104,6 @@ class Weapon(Object):
         self.time = 0
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
-        # self.slash_image = SlashImage(self)
-        self.up = False
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -158,7 +161,7 @@ class Weapon(Object):
             ):
                 self.game.player.weapon.special_effect(enemy)
                 enemy.hurt = True
-                enemy.hp -= self.game.player.weapon.damage
+                enemy.hp -= self.game.player.weapon.damage * self.game.player.strength
                 enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
                 # enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
 
@@ -182,6 +185,8 @@ class Weapon(Object):
             self.show_price.update()
             self.update_bounce()
         self.update_hitbox()
+        if not self.weapon_swing.shadow_set:
+            self.weapon_swing.set_shadow_position()
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -193,7 +198,7 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        #pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
+        # pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
 
 
 class Staff(Weapon):
@@ -259,6 +264,8 @@ class Staff(Weapon):
             self.show_price.update()
             self.update_bounce()
         self.update_hitbox()
+        if not self.weapon_swing.shadow_set:
+            self.weapon_swing.set_shadow_position()
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -336,6 +343,8 @@ class FireSword(Weapon):
         for e in self.burning_enemies:
             e.update()
             e.draw()
+        if not self.weapon_swing.shadow_set:
+            self.weapon_swing.set_shadow_position()
 
     def burning(self):
         x, y = self.weapon_swing.offset_rotated.xy

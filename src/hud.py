@@ -3,51 +3,43 @@ import utils
 from math import ceil
 
 
-class PlayerHP:
-    def __init__(self, player):
-        self.image_size = (32, 32)
-        self.images = []
+class HealthBar:
+    def __init__(self, player, game):
+        self.game = game
+        self.block = None
+        self.end = None
+        self.start = None
         self.load_images()
         self.starting_position = (0, 0)
         self.player = player
-        self.num_of_hearts = 0
-        self.full_heart = self.images[0]
-        self.half_heart = self.images[1]
-        self.empty_heart = self.images[2]
-        self.num_full_hearts = 0
-        self.num_half_hearts = 0
-        self.num_empty_heart = 0
+        self.max_hp_color = (98, 35, 47)
+        self.hp_color = (217, 78, 56)
 
     def load_images(self):
-        self.images.append(
-            pygame.transform.scale(pygame.image.load('../assets/full_heart.png').convert_alpha(), self.image_size))
-        self.images.append(
-            pygame.transform.scale(pygame.image.load('../assets/half_heart.png').convert_alpha(), self.image_size))
-        self.images.append(
-            pygame.transform.scale(pygame.image.load('../assets/empty_heart.png').convert_alpha(), self.image_size))
+        self.block = pygame.image.load('../assets/health_bar/block.png').convert_alpha()
+        self.end = pygame.image.load('../assets/health_bar/end.png').convert_alpha()
+        self.start = pygame.image.load('../assets/health_bar/start.png').convert_alpha()
 
-    def calculate_hearts(self):  # how many hearth to display and what kind
-        if self.player.hp >= 0:
-            self.num_of_hearts = ceil(self.player.max_hp / 20)
-            self.num_full_hearts = self.player.hp // 20
-            self.num_half_hearts = 1 if not (self.player.hp / 20).is_integer() else 0
-            self.num_empty_heart = self.num_of_hearts - self.num_half_hearts - self.num_full_hearts
+    def draw_health_rectangle(self):
+        current_hp = self.player.hp
+        max_hp = self.player.max_hp
+        pygame.draw.rect(self.game.screen, self.max_hp_color, (25, 10, max_hp + max_hp / 2, 20))
+        num_of_blocks = current_hp // 10
+        end_position = None
+        print((num_of_blocks)
+        for i in range(num_of_blocks):
+            pygame.draw.rect(self.game.screen, self.hp_color, (25 + i * 15, 15, 10, 15))
+            end_position = (25 + i * 15 + 15)
+        pygame.draw.rect(self.game.screen, self.hp_color, (end_position, 15, current_hp % 10, 15))
+        self.draw()
 
-    def update(self):
-        self.calculate_hearts()
-
-    def draw(self, surface):
-        self.update()
-        x, y = 0, 5
-        for _ in range(self.num_full_hearts):
-            surface.blit(self.full_heart, (x * 36, y))
-            x += 1
-        for _ in range(self.num_half_hearts):
-            surface.blit(self.half_heart, (x * 36, y))
-            x += 1
-        for _ in range(self.num_empty_heart):
-            surface.blit(self.empty_heart, (x * 36, y))
-            x += 1
+    def draw(self):
+        end_position = None
+        self.game.screen.blit(self.start, (0, 0))
+        for i in range(self.player.max_hp // 10):
+            self.game.screen.blit(self.block, (i * 15 + 40, 0))
+            end_position = (i * 15 + 40, 0)
+        self.game.screen.blit(self.end, end_position)
 
 
 class PlayerGold:
@@ -58,6 +50,8 @@ class PlayerGold:
         self.starting_position = (0, 0)
         self.player = player
         self.text = None
+        self.image_position = (0, 50)
+        self.text_position = (25, 55)
 
     def load_image(self):
         self.image = pygame.transform.scale(pygame.image.load('../assets/coin/coin/coin0.png').convert_alpha(),
@@ -68,13 +62,14 @@ class PlayerGold:
 
     def draw(self, surface):
         self.update()
-        surface.blit(self.image, (0, 40))
+        surface.blit(self.image, (0, 50))
         text_surface = pygame.font.Font(utils.font, 24).render(self.text, True, (255, 255, 255))
-        surface.blit(text_surface, (25, 45))
+        surface.blit(text_surface, (25, 55))
 
 
 class PlayerShield:
     name = 'armor'
+
     def __init__(self, player):
         self.image_size = (24, 24)
         self.image = None
@@ -82,27 +77,32 @@ class PlayerShield:
         self.starting_position = (0, 0)
         self.player = player
         self.text = None
-        self.image_position = (0, 70)
-        self.text_position = (25, 75)
+        self.image_position = (0, 80)
+        self.text_position = (25, 85)
 
     def load_image(self):
-        self.image = pygame.transform.scale(pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha(),
-                                            self.image_size)
+        self.image = pygame.transform.scale(
+            pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}_hud.png').convert_alpha(),
+            self.image_size)
 
     def update(self):
         self.text = f'x{self.player.shield}'
 
     def draw(self, surface):
         self.update()
-        surface.blit(self.image, (0, 70))
+        surface.blit(self.image, self.image_position)
         text_surface = pygame.font.Font(utils.font, 24).render(self.text, True, (255, 255, 255))
-        surface.blit(text_surface, (25, 75))
+        surface.blit(text_surface, self.text_position)
+
 
 class PlayerAttack(PlayerShield):
+    name = 'attack'
 
     def __init__(self, player):
         super().__init__(player)
 
+    def update(self):
+        self.text = f'x{self.player.attack}'
 
 
 class Hud:
@@ -116,9 +116,9 @@ class Hud:
         self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4],
                                 [708 + 8, self.position[1] + 4]]
         self.player = self.game.player
-        self.hp = PlayerHP(self.game.player)
         self.gold = PlayerGold(self.game.player)
         self.shield = PlayerShield(self.game.player)
+        self.health_bar = HealthBar(self.game.player, self.game)
 
     def draw_items(self):
         # works for 3 items
@@ -134,16 +134,17 @@ class Hud:
         text2 = f'FPS: {int(self.game.clock.get_fps())}'
         text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (0, 120))
-        text2 = f'LEVEL: {int(self.game.world_manager.level) + 1}'
+        text2 = f'LEVEL: {int(self.game.world_manager.level)}'
         text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (600, 0))
         # text3 = f'C1111pa: {str(int(self.player.rect.x)), str(int(self.game.player.rect.midbottom[1]))}'
         # text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
         # self.game.screen.blit(text_surface, (0, 140))
-        # text4 = f'konie na godzine: {self.player.hp}'
-        # text_surface = pygame.font.Font(utils.font, 15).render(text4, True, (255, 255, 255))
-        #self.game.screen.blit(text_surface, (0, 160))
-        self.hp.draw(self.game.screen)
+        text4 = f'HP: {self.player.hp}/{self.player.max_hp}'
+        text_surface = pygame.font.Font(utils.font, 15).render(text4, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (0, 200))
+        # self.hp.draw(self.game.screen)
+        self.health_bar.draw_health_rectangle()
         self.gold.draw(self.game.screen)
         self.shield.draw(self.game.screen)
 

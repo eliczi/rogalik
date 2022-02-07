@@ -6,6 +6,8 @@ class ObjectManager:
         self.current_objects = []
         self.game = game
         self.interaction = True
+        self.up = None
+        self.hover = None
 
     def set_current_objects(self):
         self.current_objects.clear()

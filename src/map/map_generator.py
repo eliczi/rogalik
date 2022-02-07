@@ -76,7 +76,7 @@ class World:
         self.add_room_map('floor_layer')
         self.add_room_map('wall_layer')
         self.add_graphics()
-        self.print_world()
+        #self.print_world()
         self.assign_objects()
 
     @staticmethod
@@ -213,7 +213,7 @@ class World:
                 if isinstance(room, Room):
                     if room.type == 'chest':
                         room.objects.append(Chest(self.game, room))
-                    elif room.type == 'starting_room' and self.level == 0:
+                    elif room.type == 'starting_room' and self.level == 1:
                         room.objects.append(Staff(self.game, room, (650, 300)))
                         room.objects.append(AnimeSword(self.game, room, (550, 300)))
                         room.objects.append(FireSword(self.game, room, (750, 300)))
