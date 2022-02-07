@@ -151,7 +151,7 @@ class StaffBullet(Bullet):
 
 
 class BossBullet(Bullet):
-    speed = 10
+    speed = 7
     bullet_size = 7
     radius = 5
 

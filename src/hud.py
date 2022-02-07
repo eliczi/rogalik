@@ -26,11 +26,12 @@ class HealthBar:
         pygame.draw.rect(self.game.screen, self.max_hp_color, (25, 10, max_hp + max_hp / 2, 20))
         num_of_blocks = current_hp // 10
         end_position = None
-        print((num_of_blocks)
+        print(num_of_blocks)
         for i in range(num_of_blocks):
             pygame.draw.rect(self.game.screen, self.hp_color, (25 + i * 15, 15, 10, 15))
             end_position = (25 + i * 15 + 15)
-        pygame.draw.rect(self.game.screen, self.hp_color, (end_position, 15, current_hp % 10, 15))
+        if end_position:
+            pygame.draw.rect(self.game.screen, self.hp_color, (end_position, 15, current_hp % 10, 15))
         self.draw()
 
     def draw(self):
