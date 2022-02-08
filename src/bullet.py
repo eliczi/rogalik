@@ -40,6 +40,7 @@ class Bullet():
         self.rect.y = self.pos[1]  #
 
     def kill(self):
+        print('s')
         self.game.bullet_manager.bullets.remove(self)
 
     def update(self):
@@ -139,7 +140,7 @@ class StaffBullet(Bullet):
                         EnemyHitParticle(self.game, self.rect.x, self.rect.y))
                     self.kill()
                     break
-        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1200:
+        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1400:
             self.kill()
 
     def draw(self):
