@@ -40,7 +40,6 @@ class Bullet():
         self.rect.y = self.pos[1]  #
 
     def kill(self):
-        print('s')
         self.game.bullet_manager.bullets.remove(self)
 
     def update(self):

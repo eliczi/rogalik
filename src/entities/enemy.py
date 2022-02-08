@@ -187,9 +187,9 @@ class Imp(Enemy):
 
     def update(self):
         self.detect_death()
-        self.shoot()
         self.move()
         self.entity_animation.update()
+        self.shoot()
 
     def draw(self):  # if current room or the next room
         self.draw_shadow(self.room.tile_map.map_surface)
