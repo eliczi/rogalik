@@ -4,8 +4,8 @@ import math
 import random
 
 
-class GreenFlask(Object):
-    name = 'green_flask'
+class Flask(Object):
+    name = 'flask'
     type = 'flask'
     size = (48, 48)
 
@@ -23,27 +23,36 @@ class GreenFlask(Object):
         self.interaction = False
         self.show_name.reset_line_length()
         self.image = self.original_image
-        if self.game.player.hp <= self.game.player.max_hp - 20:
-            self.game.player.hp += 20
-        else:
-            self.game.player.hp = self.game.player.max_hp
+        self.apply_effect()
+
+    def apply_effect(self):
+        pass
 
     def update(self):
-        if self.bounce.speed < 0.001:
-            self.dropped = False
-            self.bounce.reset()
-        if self.dropped:
-            for _ in range(15):
-                self.bounce.move()
-                self.bounce.bounce()
-            self.rect.x = self.bounce.x
-            self.rect.y = self.bounce.y
+        self.update_bounce()
         if self in self.game.player.items:
             self.bounce.reset()
             self.rect.bottomright = self.game.player.hitbox.topleft
 
 
-class RedFlask(GreenFlask):
+class GreenFlask(Flask):
+    name = 'green_flask'
+    type = 'flask'
+    size = (48, 48)
+
+    def __init__(self, game, room, position=None):
+        Object.__init__(self, game, self.name, self.type, self.size, room, position)
+        self.dropped = False
+        self.bounce = None
+
+    def apply_effect(self):
+        if self.game.player.hp <= self.game.player.max_hp - 20:
+            self.game.player.hp += 20
+        else:
+            self.game.player.hp = self.game.player.max_hp
+
+
+class RedFlask(Flask):
     name = 'red_flask'
     type = 'flask'
     size = (48, 48)
@@ -53,13 +62,7 @@ class RedFlask(GreenFlask):
         self.dropped = False
         self.bounce = None
 
-
-    def interact(self):
-        if self.room == self.game.world_manager.current_room:
-            self.room.objects.remove(self)
-        self.interaction = False
-        self.show_name.reset_line_length()
-        self.image = self.original_image
+    def apply_effect(self):
         self.game.player.hp += 20
         self.game.player.max_hp += 20
 

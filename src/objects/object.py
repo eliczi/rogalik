@@ -172,6 +172,8 @@ class Object:
         self.show_name = ShowName(self)
         self.value = None
         self.show_price = ShowPrice(self)
+        self.hovering = Hovering(self.game, self)
+        self.shadow = Shadow(self.game, self)
         self.interaction = False
         self.dropped = False
         self.for_sale = False

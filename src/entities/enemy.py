@@ -30,18 +30,18 @@ class Enemy(Entity):
         self.attack_cooldown = 0
         self.weapon_hurt_cooldown = 0
         self.items = []
-#        self.add_treasure()
+        self.add_treasure()
         self.destination_position = None
 
     def add_treasure(self):
-        #for _ in range(random.randint(10, 20)):
-            #self.items.append(Coin(self.game, self.room, self))
+        for _ in range(random.randint(10, 20)):
+            self.items.append(Coin(self.game, self.room, self))
         for _ in range(random.randint(2, 5)):
             self.items.append(Emerald(self.game, self.room, self))
         for _ in range(random.randint(0, 4)):
             self.items.append(Ruby(self.game, self.room, self))
-        # for _ in range(random.randint(0, 4)):
-        #     self.items.append(Flask(self.game, self.room))
+        for _ in range(random.randint(0, 4)):
+            self.items.append(RedFlask(self.game, self.room))
 
     def drop_items(self):
         for item in self.items:

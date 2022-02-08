@@ -263,13 +263,14 @@ class FireSword(Weapon):
             self.weapon = weapon
             self.counter = 0
             self.tick = 0
+            self.damage = 5 * self.game.player.strength
 
         def get_enemy(self):
             return self.enemy
 
         def update(self):
             if self.tick == 30 and self.counter < 5:
-                self.enemy.hp -= 5
+                self.enemy.hp -= self.damage
                 self.tick = 0
                 self.counter += 1
             self.tick += 1
