@@ -5,7 +5,7 @@ import utils
 from particles import ChestParticle
 from objects.weapon import AnimeSword
 from .object import Object
-from .flask import Flask
+from .flask import RedFlask
 from .coin import Coin, Emerald
 
 
@@ -22,7 +22,7 @@ class Chest(Object):
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
         self.animation_frame = 0
         self.open = False
-        self.items = [AnimeSword(game, room), Flask(game, room)]  # items in chest
+        self.items = [AnimeSword(game, room), RedFlask(game, room)]  # items in chest
         self.items[0].chest = self
         self.add_treasure()
         self.interaction = False

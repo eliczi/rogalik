@@ -4,7 +4,7 @@ import math
 import random
 
 
-class Flask(Object):
+class GreenFlask(Object):
     name = 'green_flask'
     type = 'flask'
     size = (48, 48)
@@ -41,6 +41,27 @@ class Flask(Object):
         if self in self.game.player.items:
             self.bounce.reset()
             self.rect.bottomright = self.game.player.hitbox.topleft
+
+
+class RedFlask(GreenFlask):
+    name = 'red_flask'
+    type = 'flask'
+    size = (48, 48)
+
+    def __init__(self, game, room, position=None):
+        Object.__init__(self, game, self.name, self.type, self.size, room, position)
+        self.dropped = False
+        self.bounce = None
+
+
+    def interact(self):
+        if self.room == self.game.world_manager.current_room:
+            self.room.objects.remove(self)
+        self.interaction = False
+        self.show_name.reset_line_length()
+        self.image = self.original_image
+        self.game.player.hp += 20
+        self.game.player.max_hp += 20
 
 
 class Bounce:

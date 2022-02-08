@@ -100,6 +100,59 @@ class ShowPrice(ShowName):
             self.draw_text(surface)
 
 
+class Hovering:
+    def __init__(self, game, obj):
+        self.game = game
+        self.object = obj
+        self.hover_value = 0
+        self.position = 1
+
+    def set_hover_value(self):
+        num = self.game.up // 2
+        if num % 2 == 0:
+            self.hover_value = -5
+        elif num % 2 == 1:
+            self.hover_value = 5
+
+    def hovering(self):
+        if self.object.player is not None:
+            return
+        if self.object.game.hover:
+            self.object.rect.y += self.hover_value
+            if self.hover_value > 0:
+                self.position += 1
+            else:
+                self.position -= 1
+        self.set_hover_value()
+
+
+class Shadow:
+
+    def __init__(self, game, object):
+        self.game = game
+        self.object = object
+        self.shadow_position = None
+        self.shadow_set = False
+        self.hover_value = 0
+        self.position = 0
+
+    def update(self, hover_value, position):
+        self.hover_value = hover_value
+        self.position = position
+
+    def draw_shadow(self, surface):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4 + self.position, 12 + self.position))
+        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
+        position = [self.object.hitbox.midbottom[0], self.object.hitbox.midbottom[1] + self.hover_value]
+        surface.blit(shape_surf, self.shadow_position)
+
+    def set_shadow_position(self):
+        self.shadow_position = [self.object.hitbox.midbottom[0] - 16, self.object.hitbox.midbottom[1]]
+        self.shadow_set = True
+
+
 class Object:
     def __init__(self, game, name, object_type, size=None, room=None, position=None):
         self.game = game
@@ -128,10 +181,7 @@ class Object:
         return self.name
 
     def activate_bounce(self):
-        if self.chest:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
-        else:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
+        self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
 
     def update_bounce(self):
         if not self.bounce:
@@ -148,11 +198,14 @@ class Object:
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.original_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}.png').convert_alpha()
+        self.original_image = pygame.image.load(
+            f'../assets/{self.object_type}/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
-        self.image_picked = pygame.image.load(f'../assets/{self.object_type}/{self.name}_picked.png').convert_alpha()
+        self.image_picked = pygame.image.load(
+            f'../assets/{self.object_type}/{self.name}/{self.name}_picked.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
-        self.hud_image = pygame.image.load(f'../assets/{self.object_type}/{self.name}_hud.png').convert_alpha()
+        self.hud_image = pygame.image.load(
+            f'../assets/{self.object_type}/{self.name}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
 
     def detect_collision(self):

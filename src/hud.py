@@ -24,9 +24,8 @@ class HealthBar:
         current_hp = self.player.hp
         max_hp = self.player.max_hp
         pygame.draw.rect(self.game.screen, self.max_hp_color, (25, 10, max_hp + max_hp / 2, 20))
-        num_of_blocks = current_hp // 10
+        num_of_blocks = int(current_hp // 10)
         end_position = None
-        print(num_of_blocks)
         for i in range(num_of_blocks):
             pygame.draw.rect(self.game.screen, self.hp_color, (25 + i * 15, 15, 10, 15))
             end_position = (25 + i * 15 + 15)
@@ -101,9 +100,11 @@ class PlayerAttack(PlayerShield):
 
     def __init__(self, player):
         super().__init__(player)
+        self.image_position = (0, 110)
+        self.text_position = (25, 110)
 
     def update(self):
-        self.text = f'x{self.player.attack}'
+        self.text = f'x{round(self.player.strength,2)}'
 
 
 class Hud:
@@ -119,6 +120,7 @@ class Hud:
         self.player = self.game.player
         self.gold = PlayerGold(self.game.player)
         self.shield = PlayerShield(self.game.player)
+        self.attack = PlayerAttack(self.game.player)
         self.health_bar = HealthBar(self.game.player, self.game)
 
     def draw_items(self):
@@ -132,22 +134,23 @@ class Hud:
                 self.game.screen.blit(item.hud_image, position)
 
     def draw_info(self):
-        text2 = f'FPS: {int(self.game.clock.get_fps())}'
-        text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
-        self.game.screen.blit(text_surface, (0, 120))
+        # text2 = f'FPS: {int(self.game.clock.get_fps())}'
+        # text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
+        # self.game.screen.blit(text_surface, (0, 150))
         text2 = f'LEVEL: {int(self.game.world_manager.level)}'
         text_surface = pygame.font.Font(utils.font, 15).render(text2, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (600, 0))
         # text3 = f'C1111pa: {str(int(self.player.rect.x)), str(int(self.game.player.rect.midbottom[1]))}'
         # text_surface = pygame.font.Font(utils.font, 15).render(text3, True, (255, 255, 255))
         # self.game.screen.blit(text_surface, (0, 140))
-        text4 = f'HP: {self.player.hp}/{self.player.max_hp}'
-        text_surface = pygame.font.Font(utils.font, 15).render(text4, True, (255, 255, 255))
-        self.game.screen.blit(text_surface, (0, 200))
-        # self.hp.draw(self.game.screen)
+        # text4 = f'HP: {self.player.hp}/{self.player.max_hp}'
+        # text_surface = pygame.font.Font(utils.font, 15).render(text4, True, (255, 255, 255))
+        # self.game.screen.blit(text_surface, (0, 200))
+        # # self.hp.draw(self.game.screen)
         self.health_bar.draw_health_rectangle()
         self.gold.draw(self.game.screen)
         self.shield.draw(self.game.screen)
+        self.attack.draw(self.game.screen)
 
     def draw(self):
         # self.game.screen.blit(self.hud_frame, self.rect)

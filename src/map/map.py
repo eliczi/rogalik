@@ -69,8 +69,8 @@ class TileMap:
     def draw_map(self, surface):
         surface.blit(self.map_surface, (self.x, self.y))
         self.clear_map()
-        # for wall in self.wall_list:
-        #     pygame.draw.rect(surface, (255, 255, 255), wall.rect, 2)
+        for wall in self.wall_list:
+            pygame.draw.rect(surface, (255, 255, 255), wall.rect, 2)
 
     def clear_map(self):
         self.map_surface = self.original_map_surface.copy()

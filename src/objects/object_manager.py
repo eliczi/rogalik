@@ -6,8 +6,9 @@ class ObjectManager:
         self.current_objects = []
         self.game = game
         self.interaction = True
-        self.up = None
-        self.hover = None
+        self.up = 0
+        pygame.time.set_timer(pygame.USEREVENT, 500)
+        self.hover = False
 
     def set_current_objects(self):
         self.current_objects.clear()
@@ -17,7 +18,14 @@ class ObjectManager:
             for obj in self.game.world_manager.next_room.objects:
                 self.current_objects.append(obj)
 
+    def hover_event(self):
+        for event in pygame.event.get():
+            if event.type == pygame.USEREVENT:
+                self.up += 1
+                self.hover = True
+
     def update(self):
+        self.hover_event()
         self.set_current_objects()
         for o in self.current_objects:
             if self.interaction:

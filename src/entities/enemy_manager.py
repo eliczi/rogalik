@@ -54,8 +54,9 @@ class EnemyManager:
         self.set_enemy_damage(enemy)
 
     def add_normal_enemies(self, room):
-        num_of_demons = random.randint(1, 4)
-        num_of_imps = random.randint(0, 4)
+        level = self.game.world_manager.level
+        num_of_demons = random.randint(1 + level, 4+ level)
+        num_of_imps = random.randint(0 + level, 4+level)
         for _ in range(num_of_imps):
             room.enemy_list.append(Imp(self.game, random.randint(100, 150) / 10, 100, room, 'imp'))
             self.upgrade_enemy(room.enemy_list[-1])

@@ -5,7 +5,7 @@ import utils
 import os
 from particles import DeathAnimation
 from bullet import BossBullet
-from objects.flask import Flask
+from objects.flask import RedFlask, GreenFlask
 from objects.coin import Coin
 from entities.enemy import Enemy, draw_health_bar
 from entities.animation import EntityAnimation
@@ -64,7 +64,7 @@ class Boss(Enemy):
         self.shooter = Shooting(self)
         self.animation_database = load_animation_sprites(f'../assets/{self.name}/')
         self.entity_animation = BossAnimation(self)
-        self.items = [Flask(self.game, self.room)]
+        self.items = [RedFlask(self.game, self.room)]
         self.add_treasure()
 
     def draw_shadow(self, surface):

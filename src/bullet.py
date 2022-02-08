@@ -54,7 +54,7 @@ class Bullet():
                     break
         self.player_collision(self.game.player)
         self.bounce()
-        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1200:
+        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1300:
             self.kill()
         self.wall_collision()
 
@@ -113,12 +113,12 @@ class ImpBullet(Bullet):
 
 class StaffBullet(Bullet):
     speed = 9
-    damage = 35
     bullet_size = 12
     radius = 7
 
     def __init__(self, game, master, room, x, y, target):
         super().__init__(game, master, room, x, y, target)
+        self.damage = 35 * self.game.player.strength
         self.bounce_back = False
 
     def sparkle(self):
