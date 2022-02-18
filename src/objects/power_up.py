@@ -42,9 +42,9 @@ class PowerUp(Object):
         pass
 
     def update(self):
+        self.hovering.hovering()
         self.show_price.update()
         self.update_hitbox()
-        self.hovering()
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -70,16 +70,6 @@ class PowerUp(Object):
 
     def pickup_effect(self):
         pass
-
-    def hovering(self):
-        if self.counter % 30 == 0:
-            self.rect.y += self.hover_value
-            self.up = self.hover_value < 0
-        if pygame.time.get_ticks() % 1000 < 500:
-            self.hover_value = -5
-        elif pygame.time.get_ticks() % 1000 > 500:
-            self.hover_value = 5
-        self.counter += 1
 
 
 class AttackPowerUp(PowerUp):

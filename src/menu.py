@@ -13,6 +13,8 @@ class Button:
         self.rect = self.image.get_rect()
         self.rect.midtop = (x, y)
         self.clicked = False
+        self.sound = pygame.mixer.Sound('../assets/sound/menu select.wav')
+        self.played = False
 
     def load_images(self):
         self.images.append(pygame.image.load(f'../assets/{self.name}1.png').convert_alpha())
@@ -23,8 +25,18 @@ class Button:
 
     def update(self):
         pos = pygame.mouse.get_pos()
-        self.image = self.images[1] if self.rect.collidepoint(pos) else self.images[0]
+        if self.rect.collidepoint(pos):
+            self.image = self.images[1]
+            self.play_sound()
+        else:
+            self.image = self.images[0]
+            self.played = False
         self.detect_action(pos)
+
+    def play_sound(self):
+        if not self.played:
+            pygame.mixer.Sound.play(self.sound)
+            self.played = True
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -51,7 +63,6 @@ class ExitButton(Button):
             self.menu.running = False
             self.clicked = True
 
-
 class MainMenu:
     def __init__(self, game):
         self.game = game
@@ -71,7 +82,6 @@ class MainMenu:
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_ESCAPE]:
             self.game.running = False
-
 
     def update(self):
         self.game.background.update()

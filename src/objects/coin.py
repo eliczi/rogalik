@@ -19,12 +19,16 @@ class Coin(Object):
         self.bounce = None
         self.animation_frame = 0
         self.value = 1
+        self.sound = pygame.mixer.Sound('../assets/sound/Coin.wav')
+
+    def play_sound(self):
+        pygame.mixer.Sound.play(self.sound)
 
     def activate_bounce(self):
         if self.chest:
             self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
         else:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123),self.size)
+            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
 
     def load_image(self):
         for i in range(4):
@@ -50,6 +54,7 @@ class Coin(Object):
         if self.game.player.hitbox.colliderect(self.rect):
             self.game.player.gold += self.value
             self.game.world_manager.current_room.objects.remove(self)
+            self.play_sound()
 
     def magnet(self):
         dir_vector = pygame.math.Vector2(self.game.player.hitbox.center[0] - self.rect.x,
@@ -140,7 +145,7 @@ class Bounce:
             self.speed *= self.elasticity
 
         elif self.x > 1136 - self.size[0]:
-            self.x = 2*(1136 - self.size[0]) - self.x
+            self.x = 2 * (1136 - self.size[0]) - self.x
             self.angle = - self.angle
             self.speed *= self.elasticity
 

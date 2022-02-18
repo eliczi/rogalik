@@ -11,16 +11,23 @@ class GameOver:
         self.image_size = (360, 360)
         self.image = pygame.transform.scale(pygame.image.load('../assets/game_over.png'), self.image_size)
         self.rect = self.image.get_rect()
-        self.rect.center = (utils.world_size[0] / 2, utils.world_size[1] /2)
+        self.rect.center = (utils.world_size[0] / 2, utils.world_size[1] / 2)
         self.position = [utils.world_size[0] / 2 - 180, - 800]
         self.hover_value = -5
         self.game_over = False
+        self.sound = pygame.mixer.Sound('../assets/sound/GameOver2.wav')
+        self.played = False
 
     @staticmethod
     def input():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+
+    def play_sound(self):
+        if not self.played:
+            pygame.mixer.Sound.play(self.sound)
+            self.played = True
 
     def update(self):
         if self.game.player.dead:
@@ -34,8 +41,9 @@ class GameOver:
 
     def draw(self):
         if self.game.player.dead:
+            self.play_sound()
             self.game.screen.blit(self.image, self.position)
-            #pygame.draw.rect(self.game.screen, (255, 255, 255), self.rect, 1)
+            # pygame.draw.rect(self.game.screen, (255, 255, 255), self.rect, 1)
 
     def hover(self):
         if self.counter % 30 == 0:

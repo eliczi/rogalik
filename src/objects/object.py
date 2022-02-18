@@ -108,7 +108,7 @@ class Hovering:
         self.position = 1
 
     def set_hover_value(self):
-        num = self.game.up // 2
+        num = self.game.object_manager.up // 2
         if num % 2 == 0:
             self.hover_value = -5
         elif num % 2 == 1:
@@ -117,7 +117,7 @@ class Hovering:
     def hovering(self):
         if self.object.player is not None:
             return
-        if self.object.game.hover:
+        if self.object.game.object_manager.hover:
             self.object.rect.y += self.hover_value
             if self.hover_value > 0:
                 self.position += 1
@@ -135,17 +135,13 @@ class Shadow:
         self.shadow_set = False
         self.hover_value = 0
         self.position = 0
-
-    def update(self, hover_value, position):
-        self.hover_value = hover_value
-        self.position = position
+        self.shadow_width = object.hitbox.width
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4 + self.position, 12 + self.position))
+        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4 + self.game.object_manager.position, 12 + self.game.object_manager.position))
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        position = [self.object.hitbox.midbottom[0], self.object.hitbox.midbottom[1] + self.hover_value]
         surface.blit(shape_surf, self.shadow_position)
 
     def set_shadow_position(self):
@@ -154,12 +150,13 @@ class Shadow:
 
 
 class Object:
-    def __init__(self, game, name, object_type, size=None, room=None, position=None):
+    def __init__(self, game, name, object_type, size=None, room=None, position=None, player=None):
         self.game = game
         self.room = room
         self.name = name
         self.object_type = object_type
         self.size = size
+        self.player = player
         self.original_image = None
         self.image_picked = None
         self.hud_image = None

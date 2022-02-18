@@ -67,6 +67,11 @@ class Weapon(Object):
         self.time = 0
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
+        self.sound = pygame.mixer.Sound('../assets/sound/get_item.wav')
+
+
+    def play_sound(self):
+        pygame.mixer.Sound.play(self.sound)
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -99,6 +104,7 @@ class Weapon(Object):
             self.room.objects.remove(self)
         self.interaction = False
         self.show_name.reset_line_length()
+        self.play_sound()
 
     def drop(self):
         self.room = self.game.world_manager.current_room
@@ -141,13 +147,13 @@ class Weapon(Object):
             self.weapon_swing.rotate()
 
     def update(self):
+        self.hovering.hovering()
         if self.player:
             self.player_update()
         else:
             self.show_price.update()
             self.update_bounce()
         self.update_hitbox()
-
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -157,7 +163,12 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        # pygame.draw.rect(self.game.screen, (255, 255, 255), self.hitbox, 2)
+        if not self.shadow.shadow_set:
+            self.shadow.set_shadow_position()
+        if self.player:
+            self.shadow.shadow_set = False
+        if self.player is None:
+            self.shadow.draw_shadow(surface)
 
 
 class Staff(Weapon):
@@ -212,7 +223,7 @@ class Staff(Weapon):
         self.image = self.images[int(self.animation_frame)]
 
     def update(self):
-        # print(self.weapon_swing.angle)
+        self.hovering.hovering()
         for b in self.bullets:
             b.update()
         self.animate()
@@ -222,7 +233,6 @@ class Staff(Weapon):
             self.show_price.update()
             self.update_bounce()
         self.update_hitbox()
-
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -244,6 +254,35 @@ class AnimeSword(Weapon):
     def __init__(self, game, room=None, position=None):
         super().__init__(game, self.name, self.size, room, position)
         self.value = 100
+        self.damage_enemies = []
+
+    class Slash:
+        def __init__(self, enemy, weapon):
+            self.enemy = enemy
+            self.weapon = weapon
+            self.damage = 0.1
+
+        def update(self):
+            self.enemy.hp -= self.weapon.damage * self.damage
+            self.update_damage()
+
+        def update_damage(self):
+            self.damage += 0.1
+
+        def draw(self):
+            pass
+
+    def enemy_in_list(self, enemy):
+        for e in self.damage_enemies:
+            if e.enemy is enemy:
+                return True
+
+    def special_effect(self, enemy):
+        for e in self.damage_enemies:
+            e.update()
+        if not self.enemy_in_list(enemy):
+            self.damage_enemies.append(self.Slash(enemy, self))
+
 
 
 class FireSword(Weapon):
@@ -288,6 +327,7 @@ class FireSword(Weapon):
         self.burning_enemies.append(self.Burn(self.game, enemy, self))
 
     def update(self):
+        self.hovering.hovering()
         self.burning()
         if self.player:
             self.player_update()

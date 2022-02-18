@@ -13,6 +13,7 @@ from objects.object_manager import ObjectManager
 from game_over import GameOver
 import time
 from bullet import BulletManager
+from sound_manager import SoundManager
 
 pygame.init()
 pygame.mixer.init()
@@ -39,6 +40,7 @@ class Game:
         self.game_over = GameOver(self)
         pygame.mixer.init()
         self.dt = 0
+        self.sound = pygame.mixer.Sound('../assets/sound/dungeon_theme_1.wav')
 
     def refresh(self):
         self.__init__()
@@ -75,6 +77,9 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.USEREVENT:
+                self.object_manager.up += 1
+                self.object_manager.hover = True
 
         self.player.input()
         pressed = pygame.key.get_pressed()
@@ -91,6 +96,7 @@ class Game:
     def run_game(self):
         self.enemy_manager.add_enemies()
         prev_time = time.time()
+        pygame.mixer.Sound.play(self.sound)
         while self.running:
             self.clock.tick(self.fps)
             now = time.time()

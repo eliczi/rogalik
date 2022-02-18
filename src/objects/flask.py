@@ -29,6 +29,7 @@ class Flask(Object):
         pass
 
     def update(self):
+        self.hovering.hovering()
         self.update_bounce()
         if self in self.game.player.items:
             self.bounce.reset()
