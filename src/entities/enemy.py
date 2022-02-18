@@ -44,6 +44,7 @@ class Enemy(Entity):
             self.items.append(RedFlask(self.game, self.room))
 
     def drop_items(self):
+        self.game.sound_manager.play_drop_items_sound()
         for item in self.items:
             item.rect.center = self.rect.center
             item.dropped = True
@@ -184,6 +185,7 @@ class Imp(Enemy):
             self.game.bullet_manager.add_bullet(
                 ImpBullet(self.game, self, self.room, self.hitbox.midbottom[0], self.hitbox.midbottom[1],
                           self.game.player.hitbox.midbottom))
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Shoot5.wav'))
 
     def update(self):
         self.detect_death()

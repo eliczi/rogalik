@@ -132,21 +132,14 @@ class Boss(Enemy):
         for _ in range(num_of_coins):
             self.items.append(Coin(self.game, self.room))
 
-    def drop_items(self):
-        for item in self.items:
-            item.rect.center = self.rect.center
-            item.dropped = True
-            item.activate_bounce()
-            item.bounce.x = self.hitbox.center[0]
-            item.bounce.y = self.hitbox.center[1]
-            self.room.objects.append(item)
-            self.items.remove(item)
+
 
 
 class Shooting:
 
     def __init__(self, boss):
         self.boss = boss
+        self.game = self.boss.game
         self.bullets = self.boss.bullets
         self.shoot_time = 0
         self.machine_time = 0
@@ -197,12 +190,14 @@ class Shooting:
     def machine_gun(self):
         if self.time_passed(self.machine_time, 100):
             self.machine_time = pygame.time.get_ticks()
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
             self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
                                                                 self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                                                                 self.boss.game.player.hitbox.center))
 
     def half_circle_shoot(self):
         if self.time_passed(self.circle_time, 1000):
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact1.wav'))
             self.circle_time = pygame.time.get_ticks()
             for i in range(-12, 12):
                 self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,

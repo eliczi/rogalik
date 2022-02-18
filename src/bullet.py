@@ -41,6 +41,7 @@ class Bullet():
 
     def kill(self):
         self.game.bullet_manager.bullets.remove(self)
+        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
 
     def update(self):
         self.update_position()
@@ -160,6 +161,9 @@ class BossBullet(Bullet):
         if rotation:
             self.dir.rotate_ip(rotation)
         self.damage = master.bullet_damage
+
+    def kill(self):
+        self.game.bullet_manager.bullets.remove(self)
 
 
 class BulletManager:

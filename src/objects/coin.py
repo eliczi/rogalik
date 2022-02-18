@@ -19,10 +19,9 @@ class Coin(Object):
         self.bounce = None
         self.animation_frame = 0
         self.value = 1
-        self.sound = pygame.mixer.Sound('../assets/sound/Coin.wav')
 
     def play_sound(self):
-        pygame.mixer.Sound.play(self.sound)
+        self.game.sound_manager.play_coin_sound()
 
     def activate_bounce(self):
         if self.chest:

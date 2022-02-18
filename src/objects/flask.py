@@ -24,6 +24,8 @@ class Flask(Object):
         self.show_name.reset_line_length()
         self.image = self.original_image
         self.apply_effect()
+        self.game.sound_manager.play_get_item_sound()
+
 
     def apply_effect(self):
         pass

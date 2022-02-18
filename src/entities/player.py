@@ -27,7 +27,7 @@ class Player(Entity):
         self.weapon = None
         self.attacking = False
         self.interaction = True
-        self.attack_cooldown = 250  # ms
+        self.attack_cooldown = 350  # ms
         self.death_counter = 1
         self.dupa = False
         self.falling = False
@@ -120,6 +120,7 @@ class Player(Entity):
 
     def add_walking_particles(self):
         if self.moving():
+            self.game.sound_manager.play_walk_sound()
             self.game.particle_manager.add_particle(Dust(self.game, self, *self.rect.midbottom))
 
     def update(self) -> None:
@@ -146,11 +147,13 @@ class Player(Entity):
     def calculate_collision(self, enemy):
         if not self.shield:
             self.hp -= enemy.damage
+            self.game.sound_manager.play(self.game.sound_manager.player_hurt)
             if not self.dead:
                 self.hurt = True
             self.entity_animation.hurt_timer = pygame.time.get_ticks()
         if self.shield:
             self.shield -= 1
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Random1.wav'))
 
     def draw(self, surface):
         if self.death_counter == 0:

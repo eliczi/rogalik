@@ -27,6 +27,7 @@ class Chest(Object):
         self.add_treasure()
         self.interaction = False
         self.counter = 0
+        self.x1 = True
 
     def add_treasure(self):
         for _ in range(random.randint(10, 20)):
@@ -58,7 +59,9 @@ class Chest(Object):
             ).convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
             self.drop_items()  # at the last frame of animation, drop items
-
+            if self.x1:
+                self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Magic1.wav'))
+                self.x1 = False
     def update(self):
         self.chest_collision()
         self.chest_particles()
@@ -85,6 +88,7 @@ class Chest(Object):
     def interact(self):
         self.open = True
         self.interaction = False
+
         # self.drop_items()
 
     def drop_items(self):

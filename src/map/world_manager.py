@@ -96,6 +96,7 @@ class WorldManager:
         self.game.player.can_move = False
         self.game.player.interaction = False
         self.game.object_manager.interaction = False
+        self.game.sound_manager.play_passage()
 
     def initialize_next_room(self, direction):
         if direction == 'up':

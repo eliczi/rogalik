@@ -67,11 +67,7 @@ class Weapon(Object):
         self.time = 0
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
-        self.sound = pygame.mixer.Sound('../assets/sound/get_item.wav')
 
-
-    def play_sound(self):
-        pygame.mixer.Sound.play(self.sound)
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
@@ -104,9 +100,10 @@ class Weapon(Object):
             self.room.objects.remove(self)
         self.interaction = False
         self.show_name.reset_line_length()
-        self.play_sound()
+        self.game.sound_manager.play_get_item_sound()
 
     def drop(self):
+        self.game.sound_manager.play_drop_sound()
         self.room = self.game.world_manager.current_room
         self.player.items.remove(self)
         self.player.weapon = None
@@ -132,7 +129,8 @@ class Weapon(Object):
                 enemy.hurt = True
                 enemy.hp -= self.game.player.weapon.damage * self.game.player.strength
                 enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
-                # enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
+                self.game.sound_manager.play_hit_sound()
+                enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
 
     def player_update(self):
         self.interaction = False
@@ -279,11 +277,23 @@ class AnimeSword(Weapon):
 
     def special_effect(self, enemy):
         for e in self.damage_enemies:
-            e.update()
+            if e.enemy is enemy:
+                e.update()
         if not self.enemy_in_list(enemy):
             self.damage_enemies.append(self.Slash(enemy, self))
 
-
+    def player_update(self):
+        self.interaction = False
+        if self.weapon_swing.counter == 10:
+            self.original_image = pygame.transform.flip(self.original_image, 1, 0)
+            self.player.attacking = False
+            self.weapon_swing.counter = 0
+        if self.player.attacking and self.weapon_swing.counter <= 10:
+            self.weapon_swing.swing()
+            self.enemy_collision()
+            self.game.sound_manager.play_sword_sound()
+        else:
+            self.weapon_swing.rotate()
 
 class FireSword(Weapon):
     name = 'fire_sword'

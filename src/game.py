@@ -14,7 +14,6 @@ from game_over import GameOver
 import time
 from bullet import BulletManager
 from sound_manager import SoundManager
-
 pygame.init()
 pygame.mixer.init()
 
@@ -30,6 +29,7 @@ class Game:
         self.world_manager = WorldManager(self)
         self.object_manager = ObjectManager(self)
         self.bullet_manager = BulletManager(self)
+        self.sound_manager = SoundManager(self)
         self.hud = Hud(self)
         self.running = True
         self.menu = MainMenu(self)
@@ -96,7 +96,7 @@ class Game:
     def run_game(self):
         self.enemy_manager.add_enemies()
         prev_time = time.time()
-        pygame.mixer.Sound.play(self.sound)
+        pygame.mixer.Sound.play(self.sound, loops=-1)
         while self.running:
             self.clock.tick(self.fps)
             now = time.time()
