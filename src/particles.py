@@ -240,8 +240,9 @@ class StaffParticle(Particle):
     colors = ((151, 218, 63), (140, 218, 63), (160, 218, 63))
     radius = random.randint(7, 8)
 
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, room):
         super().__init__(game, x, y)
+        self.room = room
 
     def update(self):
         self.x += random.randint(-1, 1)
@@ -252,6 +253,7 @@ class StaffParticle(Particle):
 
     def draw(self, surface):
         color = random.choice(self.colors)
+        surface = self.room.tile_map.map_surface
         pygame.draw.circle(surface, color, (self.x, self.y), self.radius)
 
 

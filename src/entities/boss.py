@@ -183,6 +183,7 @@ class Shooting:
     def shoot(self):
         if self.time_passed(self.shoot_time, 1000):
             self.shoot_time = pygame.time.get_ticks()
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
             self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
                                                        self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                                                        self.boss.game.player.hitbox.center))

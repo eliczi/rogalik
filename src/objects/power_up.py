@@ -81,6 +81,7 @@ class AttackPowerUp(PowerUp):
     def interact(self):
         self.game.player.strength *= 1.1
         self.room.objects.remove(self)
+        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/PowerUp.wav'))
 
     def beautify(self, surface):
         if random.randint(1, 20) == 1:

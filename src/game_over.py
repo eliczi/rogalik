@@ -38,10 +38,11 @@ class GameOver:
             else:
                 self.game_over = True
                 self.hover()
+                self.play_sound()
 
     def draw(self):
         if self.game.player.dead:
-            self.play_sound()
+
             self.game.screen.blit(self.image, self.position)
             # pygame.draw.rect(self.game.screen, (255, 255, 255), self.rect, 1)
 

@@ -16,7 +16,7 @@ class SoundManager:
         self.sword_slash.set_volume(0.3)
         self.sword_slash_cooldown = 0
         self.hit_sound = pygame.mixer.Sound('../assets/sound/Hit.wav')
-        self.hit_sound.set_volume(0.3)
+        self.hit_sound.set_volume(0.6)
         self.hit_cd = 0
         self.get_item = pygame.mixer.Sound('../assets/sound/get_item.wav')
         self.drop_items = pygame.mixer.Sound('../assets/sound/Explosion2.wav')

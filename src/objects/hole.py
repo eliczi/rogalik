@@ -34,7 +34,7 @@ class Hole:
 
     def interact(self):
         self.game.world_manager.load_new_level()
-
+        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Explosion3.wav'))
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect) and self.game.player.interaction:

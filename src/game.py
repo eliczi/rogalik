@@ -22,7 +22,6 @@ class Game:
     def __init__(self):
         self.display = pygame.display.set_mode(utils.world_size)
         self.screen = pygame.Surface(utils.world_size).convert()
-        self.player = Player(self)
         self.clock = pygame.time.Clock()
         self.enemy_manager = EnemyManager(self)
         self.particle_manager = ParticleManager(self)
@@ -30,6 +29,7 @@ class Game:
         self.object_manager = ObjectManager(self)
         self.bullet_manager = BulletManager(self)
         self.sound_manager = SoundManager(self)
+        self.player = Player(self)
         self.hud = Hud(self)
         self.running = True
         self.menu = MainMenu(self)

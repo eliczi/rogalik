@@ -9,6 +9,7 @@ from objects.power_up import ShieldPowerUp
 class Merchant:
     name = 'merchant'
     size = (96, 96)
+    hp = 10000
 
     def __init__(self, game, room):
         self.game = game

@@ -98,7 +98,7 @@ class Bullet():
             self.dir = (-self.dir[0] + random.randint(-20, 10) / 100, -self.dir[1] + random.randint(-10, 10) / 100)
             self.speed *= random.randint(10, 20) / 10
             self.bounce_back = False
-
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Hit.wav'))
 
 class ImpBullet(Bullet):
     speed = 5
@@ -108,8 +108,6 @@ class ImpBullet(Bullet):
     def __init__(self, game, master, room, x, y, target):
         super().__init__(game, master, room, x, y, target)
         self.damage = master.damage
-
-
 
 
 class StaffBullet(Bullet):
@@ -124,7 +122,7 @@ class StaffBullet(Bullet):
 
     def sparkle(self):
         for _ in range(random.randint(2, 4)):
-            self.game.particle_manager.particle_list.append(StaffParticle(self.game, self.rect.x, self.rect.y))
+            self.game.particle_manager.particle_list.append(StaffParticle(self.game, self.rect.x, self.rect.y, self.room))
 
     def update(self):
         self.wall_collision()
@@ -144,7 +142,8 @@ class StaffBullet(Bullet):
             self.kill()
 
     def draw(self):
-        surface = self.game.world_manager.current_map.map_surface
+        #surface = self.game.world_manager.current_map.map_surface
+        surface = self.room.tile_map.map_surface
         pygame.draw.circle(surface, (255, 255, 255), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
                            self.radius)
         pygame.draw.circle(surface, (151, 218, 63), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
@@ -163,7 +162,8 @@ class BossBullet(Bullet):
         self.damage = master.bullet_damage
 
     def kill(self):
-        self.game.bullet_manager.bullets.remove(self)
+        if self in self.game.bullet_manager.bullets:
+            self.game.bullet_manager.bullets.remove(self)
 
 
 class BulletManager:

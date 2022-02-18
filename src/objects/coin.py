@@ -100,6 +100,10 @@ class Ruby(Coin):
         self.value = 15
 
 
+def play_sound():
+    pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/Coin.wav'))
+
+
 class Bounce:
     def __init__(self, x, y, limit, size):
         self.speed = random.uniform(0.5, 0.6)  # 0.5

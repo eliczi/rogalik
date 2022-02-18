@@ -117,6 +117,8 @@ class Player(Entity):
             self.rect.y += value
         else:
             self.falling = False
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Hit.wav'))
+
 
     def add_walking_particles(self):
         if self.moving():
@@ -145,7 +147,7 @@ class Player(Entity):
         self.falling = True
 
     def calculate_collision(self, enemy):
-        if not self.shield:
+        if not self.shield and not self.dead:
             self.hp -= enemy.damage
             self.game.sound_manager.play(self.game.sound_manager.player_hurt)
             if not self.dead:

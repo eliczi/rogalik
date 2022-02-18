@@ -205,7 +205,8 @@ class Staff(Weapon):
         self.update_hitbox()
         self.calculate_firing_position()
         self.game.bullet_manager.add_bullet(
-            StaffBullet(self.game, self, self.room, self.firing_position[0], self.firing_position[1], pos))
+            StaffBullet(self.game, self, self.game.world_manager.current_room, self.firing_position[0], self.firing_position[1], pos))
+        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Shoot6.wav'))
 
     def player_update(self):
         self.interaction = False

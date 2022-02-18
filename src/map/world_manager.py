@@ -1,12 +1,12 @@
 from .map_generator import World
 import utils
-
+import pygame
 
 # Responsible for moving player across the rooms and animation
 
 
 class WorldManager:
-    number_of_rooms = 3 # add random values?
+    number_of_rooms = 13 # add random values?
     world_width = 4
     world_height = 4
     map_width = 13
@@ -154,6 +154,8 @@ class WorldManager:
             self.move_current_room = True
             self.game.player.fall(-300)
             self.game.enemy_manager.add_enemies()
+            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Intro.wav'))
+
 
     def move_current_rom(self):
         anim_speed = 30
