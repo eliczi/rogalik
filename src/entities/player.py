@@ -15,7 +15,7 @@ class Player(Entity):
     name = 'player'
     speed = 360
     max_hp = 100
-    gold = 0
+    gold = 11110
     shield = 1
     strength = 1
     hp = max_hp

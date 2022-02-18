@@ -81,6 +81,7 @@ class Bullet():
             else:
                 self.game.player.hp -= self.damage
                 self.game.player.hurt = True
+                self.game.player.entity_animation.hurt_timer = pygame.time.get_ticks()
             self.sparkle()
             self.kill()
 

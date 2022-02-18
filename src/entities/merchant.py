@@ -2,8 +2,9 @@ import pygame
 import random
 from utils import get_mask_rect
 from objects.object import ShowName
-from objects.weapon import AnimeSword
-from objects.power_up import ShieldPowerUp
+from objects.weapon import AnimeSword, FireSword, Staff
+from objects.power_up import ShieldPowerUp, AttackPowerUp
+from objects.flask import GreenFlask, RedFlask
 
 
 class Merchant:
@@ -23,15 +24,16 @@ class Merchant:
         self.items_position = [(650, 350), (750, 350), (850, 350)]
         self.items = []
         self.add_items()
-        # self.texts = ['Hello there', 'How you doin?', 'I\'m an orc']
-        # self.dialog = ShowName(self)
-        # self.dialog.text = 'dupa z trupa'
-        # self.dialog.text_length = len(self.dialog.text)
+        self.texts = ['Hello there', 'How you doin?', 'I\'m a merchant orc', 'My green ass has all the coins!']
+        self.dialog = ShowName(self)
+        self.dialog.text = 'dupa z trupa'
+        self.dialog.text_length = len(self.dialog.text)
         self.interaction = False
         for item in self.items:
             self.room.objects.append(item)
         self.room.tile_map.wall_list.append(self)
         self.dead = False
+        self.player_bought = False
 
     def load_images(self):
         for i in range(4):
@@ -41,7 +43,8 @@ class Merchant:
         self.image = self.images[0]
 
     def add_items(self):
-        self.items.append(AnimeSword(self.game, self.room, self.items_position[0]))
+        items = []
+        self.items.append(RedFlask(self.game, self.room, self.items_position[0]))
         self.items.append(ShieldPowerUp(self.game, self.room, self.items_position[1]))
         self.items[-1].for_sale = True
         self.items[-2].for_sale = True
@@ -60,6 +63,15 @@ class Merchant:
         self.update_animation_frame()
         self.detect_collision()
 
+        if self.interaction:
+            self.dialog.draw(self.room.tile_map.map_surface, self.rect)
+        elif self.player_bought and not self.interaction:
+            self.dialog.text = 'Thank you!'
+        else:
+            self.dialog.text = random.choice(self.texts)
+            self.dialog.text_length = len(self.dialog.text)
+            self.dialog.reset_line_length()
+
     def detect_collision(self):
         self.interaction = bool(self.game.player.hitbox.colliderect(self.hitbox))
 
@@ -75,8 +87,3 @@ class Merchant:
         # self.draw_shadow(self.room.tile_map.map_surface)
         self.draw_shadow(self.room.tile_map.map_surface)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
-
-        # if self.interaction:
-        #     self.dialog.draw(self.room.tile_map.map_surface, self.rect)
-        # else:
-        #     self.dialog.text = random.choice(self.texts)

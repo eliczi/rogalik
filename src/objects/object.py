@@ -242,6 +242,7 @@ class Object:
             self.interact()
             self.for_sale = False
 
+
     def draw(self):
         surface = self.room.tile_map.map_surface
         # self.room.tile_map.map_surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))

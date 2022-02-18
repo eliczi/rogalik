@@ -21,7 +21,7 @@ class SoundManager:
         self.get_item = pygame.mixer.Sound('../assets/sound/get_item.wav')
         self.drop_items = pygame.mixer.Sound('../assets/sound/Explosion2.wav')
         self.passage = pygame.mixer.Sound('../assets/sound/passage.wav')
-        self.passage.set_volume(0.5)
+        self.passage.set_volume(1)
         self.player_hurt = pygame.mixer.Sound('../assets/sound/Impact4.wav')
         self.boss_bullet = pygame.mixer.Sound('../assets/sound/Click6.wav')
         self.boss_bullet.set_volume(0.2)
