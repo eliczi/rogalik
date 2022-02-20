@@ -180,7 +180,7 @@ class Imp(Enemy):
         self.destination_position = None
 
     def shoot(self):
-        if not sum(self.velocity) and self.time_passed(self.time, 750):
+        if not sum(self.velocity) and self.time_passed(self.time, 750) and self.game.player.dead is False:
             self.time = pygame.time.get_ticks()
             self.game.bullet_manager.add_bullet(
                 ImpBullet(self.game, self, self.room, self.hitbox.midbottom[0], self.hitbox.midbottom[1],

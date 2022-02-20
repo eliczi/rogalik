@@ -18,13 +18,12 @@ class Flask(Object):
         self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + 20)
 
     def interact(self):
-        if self.room == self.game.world_manager.current_room:
-            self.room.objects.remove(self)
         self.interaction = False
         self.show_name.reset_line_length()
         self.image = self.original_image
         self.apply_effect()
         self.game.sound_manager.play_get_item_sound()
+
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -57,10 +56,14 @@ class GreenFlask(Flask):
         self.value = 50
 
     def apply_effect(self):
-        if self.game.player.hp <= self.game.player.max_hp - 20:
+        if self.game.player.hp == self.game.player.max_hp:
+            return
+        elif self.game.player.hp <= self.game.player.max_hp - 20:
             self.game.player.hp += 20
         else:
             self.game.player.hp = self.game.player.max_hp
+        if self.room == self.game.world_manager.current_room:
+            self.room.objects.remove(self)
 
 
 class RedFlask(Flask):
@@ -77,6 +80,8 @@ class RedFlask(Flask):
     def apply_effect(self):
         self.game.player.hp += 20
         self.game.player.max_hp += 20
+        if self.room == self.game.world_manager.current_room:
+            self.room.objects.remove(self)
 
 
 class Bounce:

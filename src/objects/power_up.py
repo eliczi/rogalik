@@ -45,6 +45,7 @@ class PowerUp(Object):
         self.hovering.hovering()
         self.show_price.update()
         self.update_hitbox()
+        self.update_bounce()
 
     def draw(self):
         surface = self.room.tile_map.map_surface
@@ -103,6 +104,7 @@ class ShieldPowerUp(PowerUp):
     def interact(self):
         self.game.player.shield += 1
         self.room.objects.remove(self)
+        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/PowerUp.wav'))
 
     def beautify(self, surface):
         if random.randint(1, 10) == 1:

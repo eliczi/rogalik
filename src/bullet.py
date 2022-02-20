@@ -33,11 +33,12 @@ class Bullet():
         self.rect = self.image.get_rect()
 
     def update_position(self):
-        self.pos = (self.pos[0] + self.dir[0] * self.speed,
-                    self.pos[1] + self.dir[1] * self.speed)
+        if self.room == self.game.world_manager.current_room:
+            self.pos = (self.pos[0] + self.dir[0] * self.speed,
+                        self.pos[1] + self.dir[1] * self.speed)
 
-        self.rect.x = self.pos[0]  #
-        self.rect.y = self.pos[1]  #
+            self.rect.x = self.pos[0]  #
+            self.rect.y = self.pos[1]  #
 
     def kill(self):
         self.game.bullet_manager.bullets.remove(self)

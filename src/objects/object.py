@@ -195,6 +195,7 @@ class Object:
             self.rect.x = self.bounce.x
             self.rect.y = self.bounce.y
 
+
     def load_image(self):
         """Load weapon image and initialize instance variables"""
         self.original_image = pygame.image.load(

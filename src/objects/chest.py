@@ -3,9 +3,10 @@ import random
 
 import utils
 from particles import ChestParticle
-from objects.weapon import AnimeSword
+from objects.weapon import AnimeSword, FireSword, Staff
 from .object import Object
-from .flask import RedFlask
+from .flask import RedFlask, GreenFlask
+from .power_up import AttackPowerUp, ShieldPowerUp
 from .coin import Coin, Emerald
 
 
@@ -22,14 +23,20 @@ class Chest(Object):
         self.hitbox = utils.get_mask_rect(self.image, *self.rect.topleft)
         self.animation_frame = 0
         self.open = False
-        self.items = [AnimeSword(game, room), RedFlask(game, room)]  # items in chest
-        self.items[0].chest = self
+        self.items = []
         self.add_treasure()
         self.interaction = False
         self.counter = 0
-        self.x1 = True
+        self.play_sound = True
 
     def add_treasure(self):
+        items = [AnimeSword(self.game, self.room), RedFlask(self.game, self.room),
+                 ShieldPowerUp(self.game, self.room), AttackPowerUp(self.game, self.room),
+                 GreenFlask(self.game, self.room), FireSword(self.game, self.room),
+                 Staff(self.game, self.room)]
+        itm = random.choices(items, weights=[0.1, 0.05, 0.9, 0.9, 0.5, 0.1, 0.1], k=2)[0:2]
+        for it in itm:
+            self.items.append(it)
         for _ in range(random.randint(10, 20)):
             self.items.append(Coin(self.game, self.room, self))
         for _ in range(random.randint(2, 7)):
@@ -59,9 +66,10 @@ class Chest(Object):
             ).convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
             self.drop_items()  # at the last frame of animation, drop items
-            if self.x1:
+            if self.play_sound:
                 self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Magic1.wav'))
-                self.x1 = False
+                self.play_sound = False
+
     def update(self):
         self.chest_collision()
         self.chest_particles()
@@ -78,6 +86,7 @@ class Chest(Object):
         else:
             self.image = pygame.image.load('../assets/chest/full/chest_full0.png').convert_alpha()
             self.image = pygame.transform.scale(self.image, utils.basic_entity_size)
+            self.interaction = False
 
     def chest_collision(self):
         test_rect = self.game.player.hitbox.move(*self.game.player.velocity)
