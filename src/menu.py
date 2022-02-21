@@ -8,6 +8,7 @@ class Button:
         self.name = name
         self.menu = menu
         self.images = []
+        self.path = '../assets/misc/buttons'
         self.load_images()
         self.image = self.images[0]
         self.rect = self.image.get_rect()
@@ -17,8 +18,8 @@ class Button:
         self.played = False
 
     def load_images(self):
-        self.images.append(pygame.image.load(f'../assets/{self.name}1.png').convert_alpha())
-        self.images.append(pygame.image.load(f'../assets/{self.name}2.png').convert_alpha())
+        self.images.append(pygame.image.load(f'{self.path}/{self.name}1.png').convert_alpha())
+        self.images.append(pygame.image.load(f'{self.path}/{self.name}2.png').convert_alpha())
 
     def detect_action(self, pos):
         pass
@@ -69,7 +70,7 @@ class MainMenu:
         self.running = True
         self.play_button = PlayButton(self, 21 * 64 / 2, 8 * 64 / 2)
         self.exit_button = ExitButton(self, 21 * 64 / 2, 7 * 64 / 2 + 240)
-        self.rogalik = pygame.image.load('../assets/rogalik.png').convert_alpha()
+        self.rogalik = pygame.image.load('../assets/misc/rogalik.png').convert_alpha()
         self.rogalik = pygame.transform.scale(self.rogalik, (320, 240))
         # self.rogalik.set_colorkey((0, 0, 0, 0))
         self.rogalik_rect = self.rogalik.get_rect()

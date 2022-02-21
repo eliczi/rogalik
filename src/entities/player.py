@@ -9,13 +9,11 @@ from particles import DeathAnimation, Dust
 import utils
 
 
-
-
 class Player(Entity):
     name = 'player'
     speed = 360
     max_hp = 100
-    gold = 11110
+    gold = 0
     shield = 1
     strength = 1
     hp = max_hp
@@ -63,8 +61,7 @@ class Player(Entity):
                     self.shift_items_right()
                     self.weapon = self.items[0]
 
-
-        #constant_dt = 0.06
+        # constant_dt = 0.06
         constant_dt = self.game.dt
         vel_up = [0, -self.speed * constant_dt]
         vel_up = [i * pressed[pygame.K_w] for i in vel_up]
@@ -118,7 +115,6 @@ class Player(Entity):
         else:
             self.falling = False
             self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Hit.wav'))
-
 
     def add_walking_particles(self):
         if self.moving():

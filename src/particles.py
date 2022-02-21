@@ -220,7 +220,7 @@ class DeathAnimation:
 
     def load_images(self):
         for i in range(12):
-            self.images.append(pygame.image.load(f'../assets/vfx/death/death{i + 1}.png').convert_alpha())
+            self.images.append(pygame.image.load(f'../assets/misc/death/death{i + 1}.png').convert_alpha())
             if self.entity.name == 'boss':
                 self.images[-1] = pygame.transform.scale(self.images[-1], (192, 192))
 

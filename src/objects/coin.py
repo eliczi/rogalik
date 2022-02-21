@@ -11,8 +11,7 @@ class Coin(Object):
     object_type = 'coin'
     size = (16, 16)
 
-    def __init__(self, game, room=None, chest=None):
-        self.chest = chest
+    def __init__(self, game, room=None):
         self.images = []
         Object.__init__(self, game, self.name, self.object_type, self.size, room)
         self.dropped = False
@@ -24,14 +23,11 @@ class Coin(Object):
         self.game.sound_manager.play_coin_sound()
 
     def activate_bounce(self):
-        if self.chest:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
-        else:
-            self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
+        self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
 
     def load_image(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/coin/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.image.load(f'../assets/objects/coin/{self.name}/{self.name}{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]
@@ -85,8 +81,8 @@ class Emerald(Coin):
     object_type = 'coin'
     size = (24, 24)
 
-    def __init__(self, game, room=None, chest=None):
-        super().__init__(game, room, chest)
+    def __init__(self, game, room=None):
+        super().__init__(game, room)
         self.value = 5
 
 
@@ -95,8 +91,8 @@ class Ruby(Coin):
     object_type = 'coin'
     size = (24, 24)
 
-    def __init__(self, game, room=None, chest=None):
-        super().__init__(game, room, chest)
+    def __init__(self, game, room=None):
+        super().__init__(game, room)
         self.value = 15
 
 

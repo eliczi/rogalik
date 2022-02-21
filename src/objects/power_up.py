@@ -15,26 +15,21 @@ class PowerUp(Object):
             self.position = position
         Object.__init__(self, game, self.name, self.type, self.size, room, self.position)
         self.interaction = False
-        self.shadow_position = [self.rect.midbottom[0] - 28, self.rect.midbottom[1]]
-        self.shadow_value = 2
         self.counter = 0
         self.elevated = False
-        self.hover_value = 5
-        self.up = False
-        self.shadow_width = self.hitbox.width
         self.particles = []
 
     def load_image(self):
-        image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
+        image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
         image = pygame.transform.scale(image, self.size)
         self.image = image
 
     def detect_collision(self):
         if self.game.player.rect.colliderect(self.rect):
-            self.image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
+            self.image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
             self.interaction = True
         else:
-            self.image = pygame.image.load(f'../assets/power_ups/{self.name}/{self.name}.png').convert_alpha()
+            self.image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
             self.interaction = False
             self.show_name.reset_line_length()
 
@@ -49,29 +44,15 @@ class PowerUp(Object):
 
     def draw(self):
         surface = self.room.tile_map.map_surface
-        self.draw_shadow(surface)
         surface.blit(self.image, (self.rect.x, self.rect.y))
         self.beautify(surface)
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-
-    def draw_shadow(self, surface):
-        color = (0, 0, 0, 120)
-        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        if self.up:
-            pygame.draw.ellipse(shape_surf, color, (1, 0, self.shadow_width / 2 - 2, 12))
-        else:
-            pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2, 14))
-        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        surface.blit(shape_surf, self.shadow_position)
+        self.draw_shadow(surface, -12)
 
     def beautify(self, surface):
         pass
-
-    def pickup_effect(self):
-        pass
-
 
 class AttackPowerUp(PowerUp):
     name = 'attack'
@@ -89,9 +70,6 @@ class AttackPowerUp(PowerUp):
             x = random.randint(self.rect.midtop[0] - 30, self.rect.midtop[0] + 30)
             y = random.randint(self.rect.midtop[1] - 30, self.rect.midtop[1] + 30)
             self.game.particle_manager.particle_list.append(PowerUpAttackParticle(self.game, x, y))
-
-    def pickup_effect(self):
-        pass
 
 
 class ShieldPowerUp(PowerUp):

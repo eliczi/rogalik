@@ -19,11 +19,13 @@ def load_animation_sprites(path, size=utils.basic_entity_size):
 
 
 class EntityAnimation:
-    def __init__(self, entity):
+    def __init__(self, entity, death_anim=4, speed=25):
         self.entity = entity
         self.animation_direction = 'right'
         self.animation_frame = 0
         self.hurt_timer = 0
+        self.death_animation_frames = death_anim
+        self.speed = speed
 
     def moving(self) -> bool:
         """s"""
@@ -48,11 +50,11 @@ class EntityAnimation:
             self.entity.image = pygame.transform.flip(self.entity.image, 1, 0)
 
     def death_animation(self):
-        self.animation_frame += 1.0 / 25
-        if self.animation_frame >= 4:
+        self.animation_frame += 1.0 / self.speed
+        if self.animation_frame >= self.death_animation_frames:
             self.entity.death_counter = 0
-        state = 'HURT' if self.animation_frame < 1 else 'DEAD'
-        if self.animation_frame <= 4:
+        if self.animation_frame <= self.death_animation_frames:
+            state = 'HURT' if self.animation_frame < 1 else 'DEAD'
             if self.entity.direction == 'left':
                 self.entity.image = self.entity.animation_database[state][int(self.animation_frame)]
             elif self.entity.direction == 'right':

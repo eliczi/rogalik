@@ -20,7 +20,6 @@ class ObjectManager:
                 self.current_objects.append(obj)
 
     def update(self):
-        self.position = self.up % 3
         self.set_current_objects()
         for o in self.current_objects:
             if self.interaction:

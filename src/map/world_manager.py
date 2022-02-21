@@ -6,7 +6,7 @@ import pygame
 
 
 class WorldManager:
-    number_of_rooms = 10 # add random values?
+    number_of_rooms = 2 # add random values?
     world_width = 4
     world_height = 4
     map_width = 13
@@ -169,7 +169,7 @@ class WorldManager:
 
     def load_new_level(self):
         self.new_level = True
-        self.game.enemy_manager.damage_multiplier += 0.1
-        self.game.enemy_manager.health_multiplier += 0.1
+        self.game.enemy_manager.damage_multiplier += 0.2
+        self.game.enemy_manager.health_multiplier += 0.2
         self.game.player.floor_value = self.game.player.rect.y
         self.game.player.fall(-1000)

@@ -35,13 +35,15 @@ class Enemy(Entity):
 
     def add_treasure(self):
         for _ in range(random.randint(10, 20)):
-            self.items.append(Coin(self.game, self.room, self))
+            self.items.append(Coin(self.game, self.room))
         for _ in range(random.randint(2, 5)):
-            self.items.append(Emerald(self.game, self.room, self))
+            self.items.append(Emerald(self.game, self.room))
         for _ in range(random.randint(0, 4)):
-            self.items.append(Ruby(self.game, self.room, self))
-        for _ in range(random.randint(0, 4)):
+            self.items.append(Ruby(self.game, self.room))
+        if random.randint(0, 100) == 1:
             self.items.append(RedFlask(self.game, self.room))
+        if random.randint(0, 5) == 1:
+            self.items.append(GreenFlask(self.game, self.room))
 
     def drop_items(self):
         self.game.sound_manager.play_drop_items_sound()

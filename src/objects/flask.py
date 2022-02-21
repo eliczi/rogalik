@@ -24,7 +24,6 @@ class Flask(Object):
         self.apply_effect()
         self.game.sound_manager.play_get_item_sound()
 
-
     def draw(self):
         surface = self.room.tile_map.map_surface
         surface.blit(self.image, (self.rect.x, self.rect.y))
@@ -32,6 +31,7 @@ class Flask(Object):
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
         self.show_price.update()
+        self.draw_shadow(surface, -1)
 
     def apply_effect(self):
         pass
@@ -39,6 +39,7 @@ class Flask(Object):
     def update(self):
         self.hovering.hovering()
         self.update_bounce()
+        self.update_hitbox()
         if self in self.game.player.items:
             self.bounce.reset()
             self.rect.bottomright = self.game.player.hitbox.topleft
@@ -56,9 +57,9 @@ class GreenFlask(Flask):
         self.value = 50
 
     def apply_effect(self):
-        if self.game.player.hp == self.game.player.max_hp:
-            return
-        elif self.game.player.hp <= self.game.player.max_hp - 20:
+        # if self.game.player.hp == self.game.player.max_hp:
+        #     return
+        if self.game.player.hp <= self.game.player.max_hp - 20:
             self.game.player.hp += 20
         else:
             self.game.player.hp = self.game.player.max_hp
@@ -76,6 +77,7 @@ class RedFlask(Flask):
         self.dropped = False
         self.bounce = None
         self.value = 200
+
 
     def apply_effect(self):
         self.game.player.hp += 20

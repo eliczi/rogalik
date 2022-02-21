@@ -14,6 +14,8 @@ class SoundManager:
         self.drop_sound.set_volume(0.15)
         self.sword_slash = pygame.mixer.Sound('../assets/sound/sword.wav')
         self.sword_slash.set_volume(0.3)
+        self.fire_slash = pygame.mixer.Sound('../assets/sound/Fire.wav')
+        self.fire_slash.set_volume(0.3)
         self.sword_slash_cooldown = 0
         self.hit_sound = pygame.mixer.Sound('../assets/sound/Hit.wav')
         self.hit_sound.set_volume(0.6)
@@ -27,7 +29,7 @@ class SoundManager:
         self.boss_bullet.set_volume(0.2)
 
     def load_coin_sound(self):
-        self.coin_sound = pygame.mixer.Sound('../assets/coin/sound/Pickup Coin.wav')
+        self.coin_sound = pygame.mixer.Sound('../assets/objects/coin/sound/Pickup Coin.wav')
         self.coin_sound.set_volume(0.3)
 
     def play(self, sound):
@@ -48,8 +50,15 @@ class SoundManager:
     def play_drop_sound(self):
         pygame.mixer.Sound.play(self.drop_sound)
 
-    def play_sword_sound(self):
-        if pygame.time.get_ticks() - self.sword_slash_cooldown > 350:
+    def play_sword_sound(self, type='sword'):
+        if (
+            type == 'fire'
+            and pygame.time.get_ticks() - self.sword_slash_cooldown > 350
+        ):
+            self.sword_slash_cooldown = pygame.time.get_ticks()
+            pygame.mixer.Sound.play(self.fire_slash)
+
+        elif pygame.time.get_ticks() - self.sword_slash_cooldown > 350:
             self.sword_slash_cooldown = pygame.time.get_ticks()
             pygame.mixer.Sound.play(self.sword_slash)
 

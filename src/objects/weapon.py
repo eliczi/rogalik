@@ -68,15 +68,14 @@ class Weapon(Object):
         self.weapon_swing = WeaponSwing(self)
         self.starting_position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1]]
 
-
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.size = tuple(self.scale * x for x in Image.open(f'../assets/weapon/{self.name}/{self.name}.png').size)
-        self.original_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}.png').convert_alpha()
+        self.size = tuple(self.scale * x for x in Image.open(f'../assets/objects/weapon/{self.name}/{self.name}.png').size)
+        self.original_image = pygame.image.load(f'../assets/objects/weapon/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
-        self.image_picked = pygame.image.load(f'../assets/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
+        self.image_picked = pygame.image.load(f'../assets/objects/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
-        self.hud_image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
+        self.hud_image = pygame.image.load(f'../assets/objects/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)
@@ -144,6 +143,18 @@ class Weapon(Object):
         else:
             self.weapon_swing.rotate()
 
+    def draw_shadow(self, surface):
+        if self.dropped:
+            self.shadow.set_shadow_position()
+            self.shadow.draw_shadow(surface)
+        else:
+            if not self.shadow.shadow_set:
+                self.shadow.set_shadow_position()
+            if self.player:
+                self.shadow.shadow_set = False
+            if self.player is None:
+                self.shadow.draw_shadow(surface)
+
     def update(self):
         self.hovering.hovering()
         if self.player:
@@ -161,12 +172,7 @@ class Weapon(Object):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        if not self.shadow.shadow_set:
-            self.shadow.set_shadow_position()
-        if self.player:
-            self.shadow.shadow_set = False
-        if self.player is None:
-            self.shadow.draw_shadow(surface)
+        self.draw_shadow(surface)
 
 
 class Staff(Weapon):
@@ -182,10 +188,11 @@ class Staff(Weapon):
         self.load_images()
         self.firing_position = self.hitbox.topleft
         self.bullets = []
+        self.shadow.set_correct(3)
 
     def load_images(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/weapon/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.image.load(f'../assets/objects/weapon/{self.name}/{self.name}{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]
@@ -205,7 +212,8 @@ class Staff(Weapon):
         self.update_hitbox()
         self.calculate_firing_position()
         self.game.bullet_manager.add_bullet(
-            StaffBullet(self.game, self, self.game.world_manager.current_room, self.firing_position[0], self.firing_position[1], pos))
+            StaffBullet(self.game, self, self.game.world_manager.current_room, self.firing_position[0],
+                        self.firing_position[1], pos))
         self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Shoot6.wav'))
 
     def player_update(self):
@@ -223,8 +231,6 @@ class Staff(Weapon):
 
     def update(self):
         self.hovering.hovering()
-        for b in self.bullets:
-            b.update()
         self.animate()
         if self.player:
             self.player_update()
@@ -241,8 +247,7 @@ class Staff(Weapon):
         if self.interaction:
             self.show_name.draw(surface, self.rect)
         self.show_price.draw(surface)
-        for b in self.bullets:
-            b.draw(surface)
+        self.draw_shadow(surface)
 
 
 class AnimeSword(Weapon):
@@ -254,6 +259,7 @@ class AnimeSword(Weapon):
         super().__init__(game, self.name, self.size, room, position)
         self.value = 100
         self.damage_enemies = []
+        self.shadow.set_correct(-3)
 
     class Slash:
         def __init__(self, enemy, weapon):
@@ -296,6 +302,7 @@ class AnimeSword(Weapon):
         else:
             self.weapon_swing.rotate()
 
+
 class FireSword(Weapon):
     name = 'fire_sword'
     damage = 30
@@ -336,6 +343,19 @@ class FireSword(Weapon):
 
     def special_effect(self, enemy):
         self.burning_enemies.append(self.Burn(self.game, enemy, self))
+
+    def player_update(self):
+        self.interaction = False
+        if self.weapon_swing.counter == 10:
+            self.original_image = pygame.transform.flip(self.original_image, 1, 0)
+            self.player.attacking = False
+            self.weapon_swing.counter = 0
+        if self.player.attacking and self.weapon_swing.counter <= 10:
+            self.weapon_swing.swing()
+            self.enemy_collision()
+            self.game.sound_manager.play_sword_sound('fire')
+        else:
+            self.weapon_swing.rotate()
 
     def update(self):
         self.hovering.hovering()

@@ -8,7 +8,7 @@ class Hole:
         self.game = game
         self.room = room
         self.image = None
-        self.image_picked = pygame.image.load('../assets/passage/passage_picked.png').convert_alpha()
+        self.image_picked = pygame.image.load('../assets/objects/passage/passage_picked.png').convert_alpha()
         self.images = []
         self.load_image()
         self.position = position
@@ -22,7 +22,7 @@ class Hole:
 
     def load_image(self):
         for i in range(5):
-            image = pygame.image.load(f'../assets/passage/passage{i}.png').convert_alpha()
+            image = pygame.image.load(f'../assets/objects/passage/passage{i}.png').convert_alpha()
             self.images.append(image)
         self.image = self.images[0]
 

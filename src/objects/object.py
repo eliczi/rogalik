@@ -74,7 +74,7 @@ class ShowPrice(ShowName):
 
     def load_image(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/coin/coin/coin{i}.png').convert_alpha()
+            image = pygame.image.load(f'../assets/objects/coin/coin/coin{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.image_size)
             self.images.append(image)
         self.image = self.images[0]
@@ -120,32 +120,37 @@ class Hovering:
         if self.object.game.object_manager.hover:
             self.object.rect.y += self.hover_value
             if self.hover_value > 0:
-                self.position += 1
+                self.object.shadow.position += 1
             else:
-                self.position -= 1
+                self.object.shadow.position -= 1
         self.set_hover_value()
 
 
 class Shadow:
 
-    def __init__(self, game, object):
+    def __init__(self, game, object, correct=0):
         self.game = game
         self.object = object
         self.shadow_position = None
         self.shadow_set = False
         self.hover_value = 0
         self.position = 0
-        self.shadow_width = object.hitbox.width
+        self.correct = correct
+        self.shadow_width = self.object.hitbox.width
+
+    def set_correct(self, correct=0):
+        self.correct = correct
 
     def draw_shadow(self, surface):
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, self.shadow_width / 2 + 4 + self.game.object_manager.position, 12 + self.game.object_manager.position))
+        pygame.draw.ellipse(shape_surf, color, (
+            self.position/3, 0, self.shadow_width / 2 + 4 + self.correct + self.position, 10 + self.position))
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
         surface.blit(shape_surf, self.shadow_position)
 
-    def set_shadow_position(self):
-        self.shadow_position = [self.object.hitbox.midbottom[0] - 16, self.object.hitbox.midbottom[1]]
+    def set_shadow_position(self, value=0):
+        self.shadow_position = [self.object.hitbox.midbottom[0] - 16 + value, self.object.hitbox.midbottom[1]]
         self.shadow_set = True
 
 
@@ -161,6 +166,7 @@ class Object:
         self.image_picked = None
         self.hud_image = None
         self.image = None
+        self.path = f'../assets/objects/{self.name}'
         self.load_image()
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
@@ -182,6 +188,18 @@ class Object:
     def activate_bounce(self):
         self.bounce = Bounce(self.rect.x, self.rect.y, self.rect.y + random.randint(0, 123), self.size)
 
+    def draw_shadow(self, surface, value=0):
+        if self.dropped:
+            self.shadow.set_shadow_position(value)
+            self.shadow.draw_shadow(surface)
+        else:
+            if not self.shadow.shadow_set:
+                self.shadow.set_shadow_position(value)
+            if self.player:
+                self.shadow.shadow_set = False
+            if self.player is None:
+                self.shadow.draw_shadow(surface)
+
     def update_bounce(self):
         if not self.bounce:
             return
@@ -195,17 +213,15 @@ class Object:
             self.rect.x = self.bounce.x
             self.rect.y = self.bounce.y
 
-
     def load_image(self):
-        """Load weapon image and initialize instance variables"""
         self.original_image = pygame.image.load(
-            f'../assets/{self.object_type}/{self.name}/{self.name}.png').convert_alpha()
+            f'{self.path}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
         self.image_picked = pygame.image.load(
-            f'../assets/{self.object_type}/{self.name}/{self.name}_picked.png').convert_alpha()
+            f'{self.path}/{self.name}_picked.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
         self.hud_image = pygame.image.load(
-            f'../assets/{self.object_type}/{self.name}/{self.name}_hud.png').convert_alpha()
+            f'{self.path}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
 
     def detect_collision(self):
@@ -243,13 +259,14 @@ class Object:
             self.interact()
             self.for_sale = False
 
-
     def draw(self):
         surface = self.room.tile_map.map_surface
         # self.room.tile_map.map_surface.blit(self.image, (self.rect.x + 64, self.rect.y + 32))
         surface.blit(self.image, (self.rect.x, self.rect.y))
         if self.interaction:
             self.show_name.draw(surface, self.rect)
+        if self.dropped:
+            self.shadow.draw_shadow(surface)
 
 
 class Bounce:

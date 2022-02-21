@@ -205,7 +205,7 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room):
-                    room.tile_map = TileMap(room, room.room_map, Spritesheet('../assets/spritesheet.png'))
+                    room.tile_map = TileMap(room, room.room_map, Spritesheet('../assets/misc/spritesheet.png'))
 
     def assign_objects(self):
         for row in self.world:
@@ -243,5 +243,5 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[1, 2, 10, 1], k=1)[0]
+                    room.type = random.choices(self.types, weights=[1, 2, 1, 1], k=1)[0]
                     ok_rooms.append(room)

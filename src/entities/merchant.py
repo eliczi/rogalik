@@ -26,7 +26,6 @@ class Merchant:
         self.add_items()
         self.texts = ['Hello there', 'How you doin?', 'I\'m a merchant orc', 'My green ass has all the coins!']
         self.dialog = ShowName(self)
-        self.dialog.text = 'dupa z trupa'
         self.dialog.text_length = len(self.dialog.text)
         self.interaction = False
         for item in self.items:
@@ -37,7 +36,7 @@ class Merchant:
 
     def load_images(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.image.load(f'../assets/characters/{self.name}/{self.name}{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]
