@@ -1,4 +1,6 @@
 import math
+import random
+
 import pygame
 from pygame.math import Vector2
 from utils import get_mask_rect
@@ -277,6 +279,9 @@ class AnimeSword(Weapon):
         def draw(self):
             pass
 
+    def screen_shake(self):
+        self.game.screen_position = (random.randint(-3, 3), random.randint(-3, 3))
+
     def enemy_in_list(self, enemy):
         for e in self.damage_enemies:
             if e.enemy is enemy:
@@ -295,10 +300,12 @@ class AnimeSword(Weapon):
             self.original_image = pygame.transform.flip(self.original_image, 1, 0)
             self.player.attacking = False
             self.weapon_swing.counter = 0
+            self.game.screen_position = (0, 0)
         if self.player.attacking and self.weapon_swing.counter <= 10:
             self.weapon_swing.swing()
             self.enemy_collision()
             self.game.sound_manager.play_sword_sound()
+            self.screen_shake()
         else:
             self.weapon_swing.rotate()
 

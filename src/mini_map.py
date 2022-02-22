@@ -17,6 +17,7 @@ class MiniMap:
         self.rooms = []
         self.adjacent_rooms = []
         self.visited_rooms = []
+        self.draw_mini_map = True
 
     def add_room(self, room):
         if [room.x, room.y] not in self.visited_rooms:
@@ -66,10 +67,11 @@ class MiniMap:
         pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))
 
     def draw(self, surface):
-        for room in self.adjacent_rooms:
-            position = (self.offset_x + room[1] * self.room_width * 1.2,
-                        self.offset_y + room[0] * self.room_height * 1.2)
-            pygame.draw.rect(surface, self.color, (*position, *self.room_dimensions), 4)
-        position = (self.offset_x + self.current_y * self.room_width * 1.2,
-                    self.offset_y + self.current_x * self.room_height * 1.2)
-        pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))
+        if self.draw_mini_map:
+            for room in self.adjacent_rooms:
+                position = (self.offset_x + room[1] * self.room_width * 1.2,
+                            self.offset_y + room[0] * self.room_height * 1.2)
+                pygame.draw.rect(surface, self.color, (*position, *self.room_dimensions), 4)
+            position = (self.offset_x + self.current_y * self.room_width * 1.2,
+                        self.offset_y + self.current_x * self.room_height * 1.2)
+            pygame.draw.rect(surface, (210, 210, 210,), (*position, *self.room_dimensions))

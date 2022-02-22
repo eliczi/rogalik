@@ -103,12 +103,16 @@ class World:
         prev_room = [self.x, self.y]  # added
         current_room = None
         last_room = None
+        num_monster_rooms = 2
         while room_counter < self.num_of_rooms:  # this while loop populates game world with one possible room-layout
             if room_counter == 0:
                 self.starting_room = self.world[self.x][self.y] = current_room = Room(self.x, self.y)
                 current_room.type = 'starting_room'
             else:
                 self.world[self.x][self.y] = current_room = Room(self.x, self.y)
+                if num_monster_rooms:
+                    current_room.type = 'normal'
+                    num_monster_rooms -= 1
                 self.add_neighbour(current_room, prev_room)
                 current_room.add_doors()
                 prev_room = [self.x, self.y]
@@ -243,5 +247,5 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[1, 2, 1, 1], k=1)[0]
+                    room.type = random.choices(self.types, weights=[2, 4, 1, 100], k=1)[0]
                     ok_rooms.append(room)

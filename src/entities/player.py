@@ -26,8 +26,8 @@ class Player(Entity):
         self.attacking = False
         self.interaction = True
         self.attack_cooldown = 350  # ms
+        self.room = None
         self.death_counter = 1
-        self.dupa = False
         self.falling = False
         self.floor_value = self.rect.y
         self.fall(-100)
@@ -95,18 +95,6 @@ class Player(Entity):
 
     def shift_items_left(self):
         self.items = self.items[1:] + [self.items[0]]
-
-    def detect_death(self):
-        if self.hp <= 0 and self.dead is False:
-            self.dead = True
-            self.entity_animation.animation_frame = 0
-            self.dupa = True
-            self.can_move = False
-
-        if self.death_counter == 0 and self.dupa:
-            position = (self.rect.x, self.rect.y)
-            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
-            self.dupa = False
 
     def falling_update(self):
         if self.rect.y < self.floor_value:

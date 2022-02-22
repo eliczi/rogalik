@@ -41,7 +41,8 @@ class Bullet():
             self.rect.y = self.pos[1]  #
 
     def kill(self):
-        self.game.bullet_manager.bullets.remove(self)
+        if self in self.game.bullet_manager.bullets:
+            self.game.bullet_manager.bullets.remove(self)
         self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
 
     def update(self):
@@ -102,6 +103,7 @@ class Bullet():
             self.bounce_back = False
             self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Hit.wav'))
 
+
 class ImpBullet(Bullet):
     speed = 5
     bullet_size = 7
@@ -124,27 +126,30 @@ class StaffBullet(Bullet):
 
     def sparkle(self):
         for _ in range(random.randint(2, 4)):
-            self.game.particle_manager.particle_list.append(StaffParticle(self.game, self.rect.x, self.rect.y, self.room))
+            self.game.particle_manager.particle_list.append(
+                StaffParticle(self.game, self.rect.x, self.rect.y, self.room))
+
+    def hit_enemy(self):
+        for enemy in self.game.enemy_manager.enemy_list:
+            if self.rect.colliderect(enemy.hitbox) and enemy.can_get_hurt_from_weapon():
+                enemy.hp -= self.damage
+                enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
+                enemy.hurt = True
+                enemy.weapon_hurt_cooldown = pygame.time.get_ticks()
+                self.game.particle_manager.particle_list.append(
+                    EnemyHitParticle(self.game, self.rect.x, self.rect.y))
+                # self.kill()
 
     def update(self):
         self.wall_collision()
         self.update_position()
         self.sparkle()
-        if self.bounce_back is False:
-            for enemy in self.game.enemy_manager.enemy_list:
-                if self.rect.colliderect(enemy.hitbox):
-                    enemy.hp -= self.damage
-                    enemy.entity_animation.hurt_timer = pygame.time.get_ticks()
-                    enemy.hurt = True
-                    self.game.particle_manager.particle_list.append(
-                        EnemyHitParticle(self.game, self.rect.x, self.rect.y))
-                    self.kill()
-                    break
+        self.hit_enemy()
         if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1400:
             self.kill()
 
     def draw(self):
-        #surface = self.game.world_manager.current_map.map_surface
+        # surface = self.game.world_manager.current_map.map_surface
         surface = self.room.tile_map.map_surface
         pygame.draw.circle(surface, (255, 255, 255), (self.rect.x + self.radius / 2, self.rect.y + self.radius / 2),
                            self.radius)
@@ -168,11 +173,30 @@ class BossBullet(Bullet):
             self.game.bullet_manager.bullets.remove(self)
 
 
+class MachineGunBullet(BossBullet):
+
+    def __init__(self, game, master, room, x, y, target, rotation=None):
+        super().__init__(game, master, room, x, y, target)
+
+    def update(self):
+        self.update_position()
+        self.player_collision(self.game.player)
+        if self.rect.y < 0 or self.rect.y > 1000 or self.rect.x < 0 or self.rect.x > 1300:
+            self.kill()
+        self.wall_collision()
+
+
 class BulletManager:
 
     def __init__(self, game):
         self.game = game
         self.bullets = []
+
+    def remove_bullets(self):
+        for bullet in self.bullets:
+            if self.game.world_manager.current_room is not bullet.room:
+                self.bullets.remove(bullet)
+                #self.kill(bullet)
 
     def add_bullet(self, bullet):
         self.bullets.append(bullet)

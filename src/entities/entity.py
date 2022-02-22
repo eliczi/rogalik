@@ -1,9 +1,8 @@
 import pygame
-
 import utils
 from .animation import load_animation_sprites, EntityAnimation
 from utils import get_mask_rect
-
+from particles import DeathAnimation
 
 
 class Entity:
@@ -22,10 +21,8 @@ class Entity:
         self.direction = 'right'
         self.can_move = True
         self.entity_animation = EntityAnimation(self)
-        self.counter = 0
         self.time = 0
         self.can_get_hurt = True
-
 
     def __repr(self):
         return self.name
@@ -35,6 +32,29 @@ class Entity:
 
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity
+
+    def drop_items(self):
+        pass
+
+    def detect_death(self):
+        if self.hp <= 0 and self.dead is False:
+            self.dead = True
+            self.entity_animation.animation_frame = 0
+            self.can_move = False
+            self.velocity = [0, 0]
+        if self.death_counter == 0:
+            self.drop_items()
+            position = (self.rect.x, self.rect.y)
+            self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
+            if self.room:
+                self.room.enemy_list.remove(self)
+
+    def basic_update(self):
+        self.detect_death()
+        self.update_hitbox()
+        self.entity_animation.update()
+        self.rect.move_ip(self.velocity)
+        self.hitbox.move_ip(self.velocity)
 
     def wall_collision(self):
         test_rect = self.hitbox.move(*self.velocity)  # Position after moving, change name later
@@ -47,16 +67,13 @@ class Entity:
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)
         self.hitbox.midbottom = self.rect.midbottom
 
-    def draw_shadow(self, surface):
-        color = (0, 0, 0, 120)
-        shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, 15, 7))  # - self.animation_frame % 4
-        shape_surf = pygame.transform.scale(shape_surf, (100, 100))
-        position = [self.hitbox.bottomleft[0] - 1, self.hitbox.bottomleft[1] - 5]
-        surface.blit(shape_surf, position)
-
     def moving(self):
-        return self.velocity[0] != 0 or self.velocity[1] !=0
+        return self.velocity[0] != 0 or self.velocity[1] != 0
 
-
-
+    def draw_shadow(self, surface, dimension=50, size=(0, 0, 15, 7), vertical_shift=-5, horizontal_shift=-1):
+        color = (0, 0, 0, 120)
+        shape_surf = pygame.Surface((dimension, dimension), pygame.SRCALPHA).convert_alpha()
+        pygame.draw.ellipse(shape_surf, color, size)
+        shape_surf = pygame.transform.scale(shape_surf, (2 * dimension, 2 * dimension))
+        position = [self.hitbox.bottomleft[0] + horizontal_shift, self.hitbox.bottomleft[1] + vertical_shift]
+        surface.blit(shape_surf, position)

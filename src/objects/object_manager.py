@@ -19,6 +19,18 @@ class ObjectManager:
             for obj in self.game.world_manager.next_room.objects:
                 self.current_objects.append(obj)
 
+    def delete_items(self):
+        for o in self.current_objects:
+            o.remove_object()
+
+    def first_weapon(self):
+        if (
+            self.game.world_manager.current_room.type == 'starting_room'
+            and self.game.world_manager.level == 1
+            and self.game.player.weapon
+        ):
+            self.delete_items()
+
     def update(self):
         self.set_current_objects()
         for o in self.current_objects:
@@ -26,6 +38,7 @@ class ObjectManager:
                 o.detect_collision()
             o.update()
         self.hover = False
+        #self.first_weapon()
 
     def draw(self):
         for o in self.current_objects:

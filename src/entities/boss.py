@@ -2,7 +2,7 @@ import pygame
 import random
 import os
 from particles import DeathAnimation
-from bullet import BossBullet
+from bullet import BossBullet, MachineGunBullet
 from objects.flask import RedFlask, GreenFlask
 from objects.coin import Coin
 from entities.animation import EntityAnimation, load_animation_sprites
@@ -15,11 +15,11 @@ class Boss(Enemy):
     hp = max_hp
     damage = 25
     bullet_damage = 15
-    speed = 10
+    speed = 14
     size = (96, 96)
 
     def __init__(self, game, room):
-        super().__init__(game, speed=self.speed, max_hp=self.max_hp, room=room, name=self.name)
+        super().__init__(game, max_hp=self.max_hp, room=room, name=self.name)
         self.room = room
         self.image = pygame.transform.scale(pygame.image.load(f'../assets/characters/{self.name}/idle/idle0.png'),
                                             self.size).convert_alpha()
@@ -32,14 +32,6 @@ class Boss(Enemy):
         self.items = [RedFlask(self.game, self.room)]
         self.add_treasure()
 
-    def draw_shadow(self, surface):
-        color = (0, 0, 0, 120)
-        shape_surf = pygame.Surface((100, 100), pygame.SRCALPHA).convert_alpha()
-        pygame.draw.ellipse(shape_surf, color, (0, 0, 30, 14))  # - self.animation_frame % 4
-        shape_surf = pygame.transform.scale(shape_surf, (200, 200))
-        position = [self.hitbox.bottomleft[0] + 3, self.hitbox.bottomleft[1] - 10]
-        surface.blit(shape_surf, position)
-
     def spawn(self):
         self.rect.x = 800
         self.rect.y = 300
@@ -47,22 +39,20 @@ class Boss(Enemy):
         # self.rect.y = random.randint(200, 600)
 
     def update(self):
-        self.detect_death()
-        if not self.dead:
+        self.basic_update()
+        if not self.dead and not self.game.player.dead:
             if self.can_move:
                 self.move()
             else:
                 self.velocity = [0, 0]
             self.wall_collision()
-        self.entity_animation.update()
-        self.shooter.update()
+            self.shooter.update()
+        else:
+            self.velocity = [0, 0]
 
     def move(self):
         if not self.dead and self.hp > 0:
             self.move_towards_player()
-            self.rect.move_ip(self.velocity)
-            self.hitbox.move_ip(self.velocity)
-            self.update_hitbox()
 
     def move_towards_player(self):
         dir_vector = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,
@@ -76,18 +66,16 @@ class Boss(Enemy):
         if self.hp <= 0 and self.dead is False:
             self.dead = True
             self.entity_animation.animation_frame = 0
+            self.velocity = [0, 0]
         if self.death_counter == 0:
             self.drop_items()
-
-            # position = self.rect.center
-            # self.room.objects.append(Hole(self.game, position, self.room))
-
             self.room.enemy_list.remove(self)
             position = (self.rect.x - 36, self.rect.y - 64)
             self.game.particle_manager.add_particle(DeathAnimation(self.game, *position, self))
 
     def draw(self):
-        self.draw_shadow(self.room.tile_map.map_surface)
+        self.draw_shadow(self.room.tile_map.map_surface, size=(0, 0, 30, 14), dimension=100, vertical_shift=-10,
+                         horizontal_shift=3)
         self.room.tile_map.map_surface.blit(self.image, self.rect)
         self.draw_health(self.room.tile_map.map_surface)
 
@@ -147,9 +135,10 @@ class Shooting:
         if self.time_passed(self.machine_time, 100):
             self.machine_time = pygame.time.get_ticks()
             self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
-            self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
-                                                                self.boss.hitbox.center[0], self.boss.hitbox.center[1],
-                                                                self.boss.game.player.hitbox.center))
+            self.boss.game.bullet_manager.add_bullet(MachineGunBullet(self.boss.game, self.boss, self.boss.room,
+                                                                      self.boss.hitbox.center[0],
+                                                                      self.boss.hitbox.center[1],
+                                                                      self.boss.game.player.hitbox.center))
 
     def half_circle_shoot(self):
         if self.time_passed(self.circle_time, 1000):

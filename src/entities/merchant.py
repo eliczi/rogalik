@@ -24,7 +24,7 @@ class Merchant:
         self.items_position = [(650, 350), (750, 350), (850, 350)]
         self.items = []
         self.add_items()
-        self.texts = ['Hello there', 'How you doin?', 'I\'m a merchant orc', 'My green ass has all the coins!']
+        self.texts = ['Hello there', 'How you doin?', 'I\'m a merchant orc']
         self.dialog = ShowName(self)
         self.dialog.text_length = len(self.dialog.text)
         self.interaction = False

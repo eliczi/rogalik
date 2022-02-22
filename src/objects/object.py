@@ -145,7 +145,7 @@ class Shadow:
         color = (0, 0, 0, 120)
         shape_surf = pygame.Surface((50, 50), pygame.SRCALPHA).convert_alpha()
         pygame.draw.ellipse(shape_surf, color, (
-            self.position/3, 0, self.shadow_width / 2 + 4 + self.correct + self.position, 10 + self.position))
+            self.position / 3, 0, self.shadow_width / 2 + 4 + self.correct + self.position, 10 + self.position))
         shape_surf = pygame.transform.scale(shape_surf, (100, 100))
         surface.blit(shape_surf, self.shadow_position)
 
@@ -206,7 +206,7 @@ class Object:
         if self.bounce.speed < 0.004:
             self.dropped = False
             self.bounce.reset()
-        if self.dropped:
+        elif self.dropped:
             for _ in range(15):
                 self.bounce.move()
                 self.bounce.bounce()
@@ -252,6 +252,9 @@ class Object:
 
     def interact(self):
         pass
+
+    def remove_object(self):
+        self.room.objects.remove(self)
 
     def buy(self):
         if self.game.player.gold >= self.value:

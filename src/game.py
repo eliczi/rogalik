@@ -41,6 +41,7 @@ class Game:
         pygame.mixer.init()
         self.dt = 0
         self.sound = pygame.mixer.Sound('../assets/sound/dungeon_theme_1.wav')
+        self.screen_position = (0,0)
 
     def refresh(self):
         self.__init__()
@@ -67,7 +68,7 @@ class Game:
         self.enemy_manager.draw_enemies(self.screen)
         self.object_manager.draw()
         self.bullet_manager.draw()
-        # elf.mini_map.draw(self.screen)
+        self.mini_map.draw(self.screen)
         self.hud.draw()
         self.particle_manager.draw_particles(self.world_manager.current_map.map_surface)
         self.particle_manager.draw_fire_particles()
@@ -87,6 +88,9 @@ class Game:
             self.refresh()
         if pressed[pygame.K_TAB]:
             self.mini_map.draw_all(self.screen)
+            self.mini_map.draw_mini_map = False
+        else:
+            self.mini_map.draw_mini_map = True
         if pressed[pygame.K_ESCAPE]:
             if self.game_over.game_over:
                 self.refresh()
@@ -102,14 +106,13 @@ class Game:
             now = time.time()
             self.dt = now - prev_time
             prev_time = now
-
             self.menu.show()
             self.screen.fill(utils.BLACK)
             self.input()
             self.update_groups()
             self.draw_groups()
             self.game_time = pygame.time.get_ticks()
-            self.display.blit(self.screen, (0, 0))
+            self.display.blit(self.screen, self.screen_position)
             if self.running:
                 pygame.display.flip()
         pygame.quit()

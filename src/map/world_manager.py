@@ -2,13 +2,14 @@ from .map_generator import World
 import utils
 import pygame
 
+
 # Responsible for moving player across the rooms and animation
 
 
 class WorldManager:
-    number_of_rooms = 2 # add random values?
-    world_width = 4
-    world_height = 4
+    number_of_rooms = 10  # add random values?
+    world_width = 5
+    world_height = 5
     map_width = 13
     map_height = 19
     level = 1
@@ -156,7 +157,6 @@ class WorldManager:
             self.game.enemy_manager.add_enemies()
             self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Intro.wav'))
 
-
     def move_current_rom(self):
         anim_speed = 30
         self.current_map.x += anim_speed
@@ -169,6 +169,7 @@ class WorldManager:
 
     def load_new_level(self):
         self.new_level = True
+        self.game.bullet_manager.remove_bullets()
         self.game.enemy_manager.damage_multiplier += 0.2
         self.game.enemy_manager.health_multiplier += 0.2
         self.game.player.floor_value = self.game.player.rect.y

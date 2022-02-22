@@ -43,3 +43,8 @@ def wait(mil_sec, game):
     if game.counter == game.counter + ticks:
         return True
 
+
+def time_passed(time, amount):
+    if pygame.time.get_ticks() - time > amount:
+        time = pygame.time.get_ticks()
+        return True
