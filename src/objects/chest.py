@@ -8,7 +8,7 @@ from objects.weapon import AnimeSword, FireSword, Staff
 from .object import Object
 from .flask import RedFlask, GreenFlask
 from .power_up import AttackPowerUp, ShieldPowerUp
-from .coin import Coin, Emerald
+from .coin import Coin, Emerald, Ruby
 
 
 class Chest(Object):
@@ -35,13 +35,15 @@ class Chest(Object):
                  ShieldPowerUp(self.game, self.room), AttackPowerUp(self.game, self.room),
                  GreenFlask(self.game, self.room), FireSword(self.game, self.room),
                  Staff(self.game, self.room)]
-        items = numpy.random.choice(items, size = 2, replace=False, p = [0.03, 0.01, 0.2, 0.2, 0.5, 0.03, 0.03])
+        items = numpy.random.choice(items, size=3, replace=False, p=[0.03, 0.01, 0.2, 0.2, 0.5, 0.03, 0.03])
         for it in items:
             self.items.append(it)
-        for _ in range(random.randint(10, 20)):
+        for _ in range(random.randint(20, 30)):
             self.items.append(Coin(self.game, self.room))
         for _ in range(random.randint(2, 7)):
             self.items.append(Emerald(self.game, self.room))
+        for _ in range(random.randint(2, 7)):
+            self.items.append(Ruby(self.game, self.room))
 
     def load_image(self):
         image = pygame.image.load('../assets/objects/chest/full/chest_full0.png').convert_alpha()

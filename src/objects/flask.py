@@ -54,7 +54,7 @@ class GreenFlask(Flask):
         Object.__init__(self, game, self.name, self.type, self.size, room, position)
         self.dropped = False
         self.bounce = None
-        self.value = 50
+        self.value = 100
 
     def apply_effect(self):
         # if self.game.player.hp == self.game.player.max_hp:
@@ -76,7 +76,7 @@ class RedFlask(Flask):
         Object.__init__(self, game, self.name, self.type, self.size, room, position)
         self.dropped = False
         self.bounce = None
-        self.value = 200
+        self.value = 400
 
 
     def apply_effect(self):

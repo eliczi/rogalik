@@ -3,15 +3,10 @@ import utils
 import pygame
 
 
-# Responsible for moving player across the rooms and animation
-
-
 class WorldManager:
     number_of_rooms = 10  # add random values?
-    world_width = 5
-    world_height = 5
-    map_width = 13
-    map_height = 19
+    world_width = 4
+    world_height = 4
     level = 1
 
     def __init__(self, game):

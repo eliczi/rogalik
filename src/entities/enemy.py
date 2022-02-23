@@ -83,7 +83,7 @@ class Enemy(Entity):
     def change_speed(self):  # changes speed every 1.5s
         if time_passed(self.move_time, 1500):
             self.move_time = pygame.time.get_ticks()
-            self.speed = random.randint(100, 150) / 10
+            self.speed = random.randint(250, 300)
             return True
 
     def move(self):
@@ -93,17 +93,19 @@ class Enemy(Entity):
             else:
                 self.move_away_from_player(radius=100)
         else:
-            self.velocity = [0,0]
+            self.velocity = [0, 0]
 
     def move_towards_player(self):
+        dt = self.game.dt
         dir_vector = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,
                                          self.game.player.hitbox.y - self.hitbox.y)
         if dir_vector.length_squared() > 0:  # cant normalize vector of length 0
             dir_vector.normalize_ip()
-            dir_vector.scale_to_length(self.speed / 4)
+            dir_vector.scale_to_length(self.speed * dt)
         self.set_velocity(dir_vector)
 
     def move_away_from_player(self, radius):
+        dt = self.game.dt
         distance_to_player = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,
                                                  self.game.player.hitbox.y - self.hitbox.y).length()
         if self.destination_position:
@@ -118,7 +120,7 @@ class Enemy(Entity):
                                              self.destination_position[1] - self.hitbox.y)
             if dir_vector.length_squared() > 0:
                 dir_vector.normalize_ip()
-                dir_vector.scale_to_length(self.speed / 4)
+                dir_vector.scale_to_length(self.speed * dt)
                 self.set_velocity(dir_vector)
             else:
                 self.pick_random_spot()
@@ -154,7 +156,7 @@ class Enemy(Entity):
 class Demon(Enemy):
     name = 'demon'
     damage = 13
-    speed = random.randint(100, 150) / 15
+    speed = 300
 
     def __init__(self, game, max_hp, room):
         Enemy.__init__(self, game, max_hp, room, self.name)
@@ -163,7 +165,7 @@ class Demon(Enemy):
 class Imp(Enemy):
     damage = 10
     name = 'imp'
-    speed = 10
+    speed = 200
 
     def __init__(self, game, speed, max_hp, room, ):
         Enemy.__init__(self, game, max_hp, room, self.name)

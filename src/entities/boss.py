@@ -35,8 +35,6 @@ class Boss(Enemy):
     def spawn(self):
         self.rect.x = 800
         self.rect.y = 300
-        # self.rect.x = random.randint(200, 1000)
-        # self.rect.y = random.randint(200, 600)
 
     def update(self):
         self.basic_update()
@@ -79,10 +77,6 @@ class Boss(Enemy):
         self.room.tile_map.map_surface.blit(self.image, self.rect)
         self.draw_health(self.room.tile_map.map_surface)
 
-    def add_coins(self, num_of_coins):
-        for _ in range(num_of_coins):
-            self.items.append(Coin(self.game, self.room))
-
 
 class Shooting:
 
@@ -95,6 +89,7 @@ class Shooting:
         self.can_move_timer = 0
         self.normal_shooting_timer = 0
         self.normal_shooting = True
+        self.circle_shooting_timer = 1000 - self.boss.game.world_manager.level * 100
 
     def update(self):
         self.moving_timer()
@@ -141,7 +136,7 @@ class Shooting:
                                                                       self.boss.game.player.hitbox.center))
 
     def half_circle_shoot(self):
-        if self.time_passed(self.circle_time, 1000):
+        if self.time_passed(self.circle_time, self.circle_shooting_timer):
             self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact1.wav'))
             self.circle_time = pygame.time.get_ticks()
             for i in range(-12, 12):

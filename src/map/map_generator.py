@@ -76,7 +76,7 @@ class World:
         self.add_room_map('floor_layer')
         self.add_room_map('wall_layer')
         self.add_graphics()
-        #self.print_world()
+        # self.print_world()
         self.assign_objects()
 
     @staticmethod
@@ -240,12 +240,11 @@ class World:
                     print(0, end=' ')
             print('')
 
-    types = ['power_up', 'normal', 'chest', 'shop']
-
     def assign_type(self):
+        types = ['power_up', 'normal', 'chest', 'shop']
         ok_rooms = []
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[2, 4, 1, 1], k=1)[0]
+                    room.type = random.choices(types, weights=[2, 4, 1, 1], k=1)[0]
                     ok_rooms.append(room)

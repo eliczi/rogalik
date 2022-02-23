@@ -1,8 +1,7 @@
 import pygame
-import utils
+
 from entities.enemy_manager import EnemyManager
 from entities.player import Player
-from map.map_generator import World
 from menu import MainMenu
 from mini_map import MiniMap
 from particles import ParticleManager
@@ -17,11 +16,14 @@ from sound_manager import SoundManager
 pygame.init()
 pygame.mixer.init()
 
+world_size = (21 * 64, 14 * 64)
+
+
 
 class Game:
     def __init__(self):
-        self.display = pygame.display.set_mode(utils.world_size)
-        self.screen = pygame.Surface(utils.world_size).convert()
+        self.display = pygame.display.set_mode(world_size)
+        self.screen = pygame.Surface(world_size).convert()
         self.clock = pygame.time.Clock()
         self.enemy_manager = EnemyManager(self)
         self.particle_manager = ParticleManager(self)
@@ -41,7 +43,7 @@ class Game:
         pygame.mixer.init()
         self.dt = 0
         self.sound = pygame.mixer.Sound('../assets/sound/dungeon_theme_1.wav')
-        self.screen_position = (0,0)
+        self.screen_position = (0, 0)
 
     def refresh(self):
         self.__init__()
@@ -86,11 +88,7 @@ class Game:
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_r]:
             self.refresh()
-        if pressed[pygame.K_TAB]:
-            self.mini_map.draw_all(self.screen)
-            self.mini_map.draw_mini_map = False
-        else:
-            self.mini_map.draw_mini_map = True
+
         if pressed[pygame.K_ESCAPE]:
             if self.game_over.game_over:
                 self.refresh()
@@ -107,7 +105,7 @@ class Game:
             self.dt = now - prev_time
             prev_time = now
             self.menu.show()
-            self.screen.fill(utils.BLACK)
+            self.screen.fill((0, 0, 0))
             self.input()
             self.update_groups()
             self.draw_groups()
@@ -116,4 +114,3 @@ class Game:
             if self.running:
                 pygame.display.flip()
         pygame.quit()
-        quit()

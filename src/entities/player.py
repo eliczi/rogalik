@@ -50,6 +50,11 @@ class Player(Entity):
             self.weapon.drop()
             if self.items:
                 self.weapon = self.items[0]
+        if pressed[pygame.K_TAB]:
+            self.game.mini_map.draw_all(self.game.screen)
+            self.game.mini_map.draw_mini_map = False
+        else:
+            self.game.mini_map.draw_mini_map = True
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
@@ -83,8 +88,8 @@ class Player(Entity):
         else:
             self.set_velocity(vel_list)
 
-        if pygame.mouse.get_pressed()[
-            0] and pygame.time.get_ticks() - self.time > self.attack_cooldown and self.weapon:  # player attacking
+        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.time > self.attack_cooldown \
+                and self.weapon:
             self.time = pygame.time.get_ticks()
             self.attacking = True
             if self.weapon.name != 'staff':

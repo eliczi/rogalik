@@ -1,7 +1,5 @@
 import pygame
 
-import utils
-
 
 class Button:
     def __init__(self, menu, x, y, name):
@@ -18,6 +16,7 @@ class Button:
         self.played = False
 
     def load_images(self):
+
         self.images.append(pygame.image.load(f'{self.path}/{self.name}1.png').convert_alpha())
         self.images.append(pygame.image.load(f'{self.path}/{self.name}2.png').convert_alpha())
 
@@ -63,6 +62,7 @@ class ExitButton(Button):
             self.menu.game.running = False
             self.menu.running = False
             self.clicked = True
+
 
 class MainMenu:
     def __init__(self, game):

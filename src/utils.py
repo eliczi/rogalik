@@ -2,6 +2,8 @@ import csv
 # world_size = namedtuple('Size', ['width','length'])
 import os
 import pygame
+import sys
+
 from collections import namedtuple
 
 world_size = (21 * 64, 14 * 64)
@@ -16,6 +18,16 @@ wall_side_left, wall_side_right = 256, 257
 wall_side_left_top, wall_side_right_top = 224, 225
 wall_side_front_left, wall_side_front_right = 288, 289
 map_center = []
+
+
+def resource_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 def read_csv(filename):

@@ -26,7 +26,8 @@ class PowerUp(Object):
 
     def detect_collision(self):
         if self.game.player.rect.colliderect(self.rect):
-            self.image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
+            self.image = pygame.image.load(
+                f'../assets/objects/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
             self.interaction = True
         else:
             self.image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
@@ -54,12 +55,13 @@ class PowerUp(Object):
     def beautify(self, surface):
         pass
 
+
 class AttackPowerUp(PowerUp):
     name = 'attack'
 
     def __init__(self, game, room, position=None):
         super().__init__(game, room, self.name, position)
-        self.value = 100
+        self.value = 250
 
     def interact(self):
         self.game.player.strength *= 1.1
@@ -78,7 +80,7 @@ class ShieldPowerUp(PowerUp):
 
     def __init__(self, game, room, position=None):
         super().__init__(game, room, self.name, position)
-        self.value = 50
+        self.value = 150
 
     def interact(self):
         self.game.player.shield += 1
