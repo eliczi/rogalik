@@ -8,7 +8,6 @@ from objects.flask import GreenFlask, RedFlask
 import numpy
 from entities.entity import Entity
 
-
 class Merchant(Entity):
     name = 'merchant'
     size = (96, 96)
@@ -66,21 +65,21 @@ class Merchant(Entity):
             self.animation_frame = 0
         self.image = self.images[int(self.animation_frame)]
 
-    def update_dialog(self):
+    def update(self):
+        self.update_animation_frame()
+        self.detect_collision()
         if self.interaction:
             self.dialog.draw(self.room.tile_map.map_surface, self.rect)
+        else:
             self.dialog.text = random.choice(self.texts)
             self.dialog.text_length = len(self.dialog.text)
             self.dialog.reset_line_length()
 
-    def update(self):
-        self.update_animation_frame()
-        self.detect_collision()
-        self.update_dialog()
-
     def detect_collision(self):
         self.interaction = bool(self.game.player.hitbox.colliderect(self.hitbox))
 
+
     def draw(self):
-        self.draw_shadow(self.room.tile_map.map_surface, 100, (0, 0, 40, 14), -15 + self.animation_frame, 3)
+        # self.draw_shadow(self.room.tile_map.map_surface)
+        self.draw_shadow(self.room.tile_map.map_surface, 100, (0,0,40, 14), -15 + self.animation_frame,3)
         self.room.tile_map.map_surface.blit(self.image, self.rect)

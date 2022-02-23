@@ -33,15 +33,15 @@ class Enemy(Entity):
         self.destination_position = None
 
     def add_treasure(self):
-        for _ in range(random.randint(10, 20)):
+        for _ in range(random.randint(5, 10)):
             self.items.append(Coin(self.game, self.room))
-        for _ in range(random.randint(2, 5)):
+        for _ in range(random.randint(1, 3)):
             self.items.append(Emerald(self.game, self.room))
-        for _ in range(random.randint(0, 4)):
+        for _ in range(random.randint(0, 3)):
             self.items.append(Ruby(self.game, self.room))
         if random.randint(1, 100) == 1:  # 1 % chance
             self.items.append(RedFlask(self.game, self.room))
-        if random.randint(1, 5) == 1:  # 20 % chance
+        if random.randint(1, 10) == 1:  # 10 % chance
             self.items.append(GreenFlask(self.game, self.room))
 
     def drop_items(self):
