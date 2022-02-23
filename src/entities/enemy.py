@@ -92,6 +92,8 @@ class Enemy(Entity):
                 self.move_towards_player()
             else:
                 self.move_away_from_player(radius=100)
+        else:
+            self.velocity = [0,0]
 
     def move_towards_player(self):
         dir_vector = pygame.math.Vector2(self.game.player.hitbox.x - self.hitbox.x,

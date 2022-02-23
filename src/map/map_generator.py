@@ -247,5 +247,5 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room) and room.type is None:
-                    room.type = random.choices(self.types, weights=[2, 4, 1, 100], k=1)[0]
+                    room.type = random.choices(self.types, weights=[2, 4, 1, 1], k=1)[0]
                     ok_rooms.append(room)

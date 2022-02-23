@@ -169,7 +169,6 @@ class WorldManager:
 
     def load_new_level(self):
         self.new_level = True
-        self.game.bullet_manager.remove_bullets()
         self.game.enemy_manager.damage_multiplier += 0.2
         self.game.enemy_manager.health_multiplier += 0.2
         self.game.player.floor_value = self.game.player.rect.y

@@ -205,6 +205,7 @@ class BulletManager:
         self.bullets.remove(bullet)
 
     def update(self):
+        self.remove_bullets()
         for bullet in self.bullets:
             bullet.update()
 

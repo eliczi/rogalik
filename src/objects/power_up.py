@@ -59,6 +59,7 @@ class AttackPowerUp(PowerUp):
 
     def __init__(self, game, room, position=None):
         super().__init__(game, room, self.name, position)
+        self.value = 100
 
     def interact(self):
         self.game.player.strength *= 1.1
