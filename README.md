@@ -4,4 +4,4 @@ Game pygame
 Roguelike pygame game
 
 How to play?
-Run main.py
+Run main.py or main.exe
