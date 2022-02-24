@@ -1,12 +1,9 @@
 import pygame
 from math import sqrt
-import random
-from objects.weapon import Weapon
+from objects.p import Poop
+from objects.flask import GreenFlask
 from .entity import Entity
-from .animation import load_animation_sprites
-from utils import get_mask_rect
-from particles import DeathAnimation, Dust
-import utils
+from particles import Dust
 
 
 class Player(Entity):
@@ -58,11 +55,11 @@ class Player(Entity):
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and self.items:
                 if event.button == 4:
-                    # self.weapon = self.items[self.items.index(self.weapon) - 1]
+                    self.weapon = self.items[self.items.index(self.weapon) - 1]
                     self.shift_items_left()
                     self.weapon = self.items[0]
                 elif event.button == 5:
-                    # self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
+                    self.weapon = self.items[(self.items.index(self.weapon) + 1) % len(self.items)]
                     self.shift_items_right()
                     self.weapon = self.items[0]
 

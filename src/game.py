@@ -46,6 +46,7 @@ class Game:
         self.screen_position = (0, 0)
 
     def refresh(self):
+        pygame.mixer.Sound.stop(self.sound)
         self.__init__()
         pygame.display.flip()
         self.run_game()
@@ -86,8 +87,8 @@ class Game:
 
         self.player.input()
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_r]:
-            self.refresh()
+        # if pressed[pygame.K_r]:
+        #     self.refresh()
 
         if pressed[pygame.K_ESCAPE]:
             if self.game_over.game_over:
