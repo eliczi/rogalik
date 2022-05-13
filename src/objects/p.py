@@ -12,7 +12,7 @@ class Poop(Object):
         self.bounce = None
 
     def load_image(self):
-        self.image = pygame.image.load('../assets/objects/poop/poop.png').convert_alpha()
+        self.image = pygame.image.load('./assets/objects/poop/poop.png').convert_alpha()
 
     def detect_collision(self):
         pass

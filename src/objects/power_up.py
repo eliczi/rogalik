@@ -1,7 +1,7 @@
 import pygame
 from .object import Object
 import random
-from particles import PowerUpAttackParticle, ShieldParticle
+from src.particles import PowerUpAttackParticle, ShieldParticle
 
 
 class PowerUp(Object):
@@ -20,17 +20,17 @@ class PowerUp(Object):
         self.particles = []
 
     def load_image(self):
-        image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
+        image = pygame.image.load(f'./assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
         image = pygame.transform.scale(image, self.size)
         self.image = image
 
     def detect_collision(self):
         if self.game.player.rect.colliderect(self.rect):
             self.image = pygame.image.load(
-                f'../assets/objects/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
+                f'./assets/objects/power_ups/{self.name}/{self.name}_picked.png').convert_alpha()
             self.interaction = True
         else:
-            self.image = pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
+            self.image = pygame.image.load(f'./assets/objects/power_ups/{self.name}/{self.name}.png').convert_alpha()
             self.interaction = False
             self.show_name.reset_line_length()
 
@@ -66,7 +66,7 @@ class AttackPowerUp(PowerUp):
     def interact(self):
         self.game.player.strength *= 1.1
         self.room.objects.remove(self)
-        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/PowerUp.wav'))
+        self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/PowerUp.wav'))
 
     def beautify(self, surface):
         if random.randint(1, 20) == 1:
@@ -85,7 +85,7 @@ class ShieldPowerUp(PowerUp):
     def interact(self):
         self.game.player.shield += 1
         self.room.objects.remove(self)
-        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/PowerUp.wav'))
+        self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/PowerUp.wav'))
 
     def beautify(self, surface):
         if random.randint(1, 10) == 1:

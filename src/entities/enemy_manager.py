@@ -1,8 +1,9 @@
 import pygame
 import random
-from map.map_generator import Room
-from entities.enemy import Imp, Enemy, Demon
-from entities.boss import Boss
+from src.map.map_generator import Room
+from src.map.map_generator import Room
+from src.entities.enemy import Imp, Enemy, Demon
+from src.entities.boss import Boss
 
 
 class EnemyManager:

@@ -8,7 +8,7 @@ class Hole:
         self.game = game
         self.room = room
         self.image = None
-        self.image_picked = pygame.image.load('../assets/objects/passage/passage_picked.png').convert_alpha()
+        self.image_picked = pygame.image.load('./assets/objects/passage/passage_picked.png').convert_alpha()
         self.images = []
         self.load_image()
         self.position = position
@@ -22,7 +22,7 @@ class Hole:
 
     def load_image(self):
         for i in range(5):
-            image = pygame.image.load(f'../assets/objects/passage/passage{i}.png').convert_alpha()
+            image = pygame.image.load(f'./assets/objects/passage/passage{i}.png').convert_alpha()
             self.images.append(image)
         self.image = self.images[0]
 
@@ -34,7 +34,7 @@ class Hole:
 
     def interact(self):
         self.game.world_manager.load_new_level()
-        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Explosion3.wav'))
+        self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Explosion3.wav'))
 
     def detect_collision(self):
         if self.game.player.hitbox.colliderect(self.rect) and self.game.player.interaction:

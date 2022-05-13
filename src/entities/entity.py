@@ -1,15 +1,15 @@
 import pygame
-import utils
+import src.utils as utils
 from .animation import load_animation_sprites, EntityAnimation
-from utils import get_mask_rect
-from particles import DeathAnimation
+from src.utils import get_mask_rect
+from src.particles import DeathAnimation
 
 
 class Entity:
     def __init__(self, game, name):
         self.game = game
         self.name = name
-        self.path = f'../assets/characters/{self.name}'
+        self.path = f'./assets/characters/{self.name}'
         self.animation_database = load_animation_sprites(f'{self.path}/')
         self.image = pygame.transform.scale(pygame.image.load(f'{self.path}/idle/idle0.png'),
                                             utils.basic_entity_size).convert_alpha()

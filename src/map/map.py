@@ -1,7 +1,7 @@
 import pygame
 from collections import namedtuple
 import math
-import utils
+import src.utils as utils
 
 
 class Spritesheet(object):

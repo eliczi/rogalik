@@ -1,6 +1,6 @@
 import pygame
 
-import utils
+import src.utils as utils
 
 
 class GameOver:
@@ -9,13 +9,13 @@ class GameOver:
         self.text = 'GAME OVER'
         self.counter = 0
         self.image_size = (360, 360)
-        self.image = pygame.transform.scale(pygame.image.load('../assets/misc/game_over.png'), self.image_size)
+        self.image = pygame.transform.scale(pygame.image.load('./assets/misc/game_over.png'), self.image_size)
         self.rect = self.image.get_rect()
         self.rect.center = (utils.world_size[0] / 2, utils.world_size[1] / 2)
         self.position = [utils.world_size[0] / 2 - 180, - 800]
         self.hover_value = -5
         self.game_over = False
-        self.sound = pygame.mixer.Sound('../assets/sound/GameOver2.wav')
+        self.sound = pygame.mixer.Sound('./assets/sound/GameOver2.wav')
         self.played = False
 
     @staticmethod

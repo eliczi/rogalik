@@ -1,12 +1,12 @@
 import pygame
 import random
-from utils import get_mask_rect
-from objects.object import ShowName
-from objects.weapon import AnimeSword, FireSword, Staff
-from objects.power_up import ShieldPowerUp, AttackPowerUp
-from objects.flask import GreenFlask, RedFlask
+from src.utils import get_mask_rect
+from src.objects.object import ShowName
+from src.objects.weapon import AnimeSword, FireSword, Staff
+from src.objects.power_up import ShieldPowerUp, AttackPowerUp
+from src.objects.flask import GreenFlask, RedFlask
 import numpy
-from entities.entity import Entity
+from src.entities.entity import Entity
 
 class Merchant(Entity):
     name = 'merchant'
@@ -37,7 +37,7 @@ class Merchant(Entity):
 
     def load_images(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/characters/{self.name}/idle/idle{i}.png').convert_alpha()
+            image = pygame.image.load(f'./assets/characters/{self.name}/idle/idle{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]

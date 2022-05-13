@@ -2,15 +2,16 @@ import copy
 import csv
 import random
 
-from objects.chest import Chest
+
+from src.objects.chest import Chest
 from .map import TileMap, Spritesheet
-from objects.weapon import Weapon, AnimeSword, FireSword, Staff
-from objects.flask import RedFlask, GreenFlask
-from particles import Fire
-from entities.boss import Boss
-from objects.power_up import ShieldPowerUp, AttackPowerUp
-from entities.merchant import Merchant
-import utils
+from src.objects.weapon import Weapon, AnimeSword, FireSword, Staff
+from src.objects.flask import RedFlask, GreenFlask
+from src.particles import Fire
+from src.entities.boss import Boss
+from src.objects.power_up import ShieldPowerUp, AttackPowerUp
+from src.entities.merchant import Merchant
+import src.utils as utils
 
 
 class Room:
@@ -192,7 +193,7 @@ class World:
                     room_map[x][y] = random.choices(utils.floor_tiles, w, k=1)[0]
 
     def add_room_map(self, file):
-        with open(f'../maps/{file}.csv', newline='') as f:  # load room template
+        with open(f'./maps/{file}.csv', newline='') as f:  # load room template
             reader = csv.reader(f)
             basic_map = list(reader)
 
@@ -209,7 +210,7 @@ class World:
         for row in self.world:
             for room in row:
                 if isinstance(room, Room):
-                    room.tile_map = TileMap(room, room.room_map, Spritesheet('../assets/misc/spritesheet.png'))
+                    room.tile_map = TileMap(room, room.room_map, Spritesheet('./assets/misc/spritesheet.png'))
 
     def assign_objects(self):
         for row in self.world:

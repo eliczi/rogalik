@@ -27,7 +27,7 @@ class Coin(Object):
 
     def load_image(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/objects/coin/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.image.load(f'./assets/objects/coin/{self.name}/{self.name}{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]
@@ -97,7 +97,7 @@ class Ruby(Coin):
 
 
 def play_sound():
-    pygame.mixer.Sound.play(pygame.mixer.Sound('../assets/sound/Coin.wav'))
+    pygame.mixer.Sound.play(pygame.mixer.Sound('./assets/sound/Coin.wav'))
 
 
 class Bounce:

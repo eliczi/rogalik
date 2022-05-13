@@ -6,13 +6,13 @@ class Button:
         self.name = name
         self.menu = menu
         self.images = []
-        self.path = '../assets/misc/buttons'
+        self.path = './assets/misc/buttons'
         self.load_images()
         self.image = self.images[0]
         self.rect = self.image.get_rect()
         self.rect.midtop = (x, y)
         self.clicked = False
-        self.sound = pygame.mixer.Sound('../assets/sound/menu select.wav')
+        self.sound = pygame.mixer.Sound('./assets/sound/menu select.wav')
         self.played = False
 
     def load_images(self):
@@ -70,7 +70,7 @@ class MainMenu:
         self.running = True
         self.play_button = PlayButton(self, 21 * 64 / 2, 8 * 64 / 2)
         self.exit_button = ExitButton(self, 21 * 64 / 2, 7 * 64 / 2 + 240)
-        self.rogalik = pygame.image.load('../assets/misc/rogalik.png').convert_alpha()
+        self.rogalik = pygame.image.load('./assets/misc/rogalik.png').convert_alpha()
         self.rogalik = pygame.transform.scale(self.rogalik, (320, 240))
         # self.rogalik.set_colorkey((0, 0, 0, 0))
         self.rogalik_rect = self.rogalik.get_rect()

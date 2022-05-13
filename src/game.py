@@ -1,18 +1,18 @@
 import pygame
 
-from entities.enemy_manager import EnemyManager
-from entities.player import Player
-from menu import MainMenu
-from mini_map import MiniMap
-from particles import ParticleManager
-from hud import Hud
-from background import BackgroundEffects
-from map.world_manager import WorldManager
-from objects.object_manager import ObjectManager
-from game_over import GameOver
+from .entities.enemy_manager import EnemyManager
+from .entities.player import Player
+from .menu import MainMenu
+from .mini_map import MiniMap
+from .particles import ParticleManager
+from .hud import Hud
+from .background import BackgroundEffects
+from .map.world_manager import WorldManager
+from .objects.object_manager import ObjectManager
+from .game_over import GameOver
 import time
-from bullet import BulletManager
-from sound_manager import SoundManager
+from .bullet import BulletManager
+from .sound_manager import SoundManager
 pygame.init()
 pygame.mixer.init()
 
@@ -42,7 +42,7 @@ class Game:
         self.game_over = GameOver(self)
         pygame.mixer.init()
         self.dt = 0
-        self.sound = pygame.mixer.Sound('../assets/sound/dungeon_theme_1.wav')
+        self.sound = pygame.mixer.Sound('./assets/sound/dungeon_theme_1.wav')
         self.screen_position = (0, 0)
 
     def refresh(self):

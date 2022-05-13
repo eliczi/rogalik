@@ -1,11 +1,11 @@
 import pygame
 import random
-from particles import DeathAnimation
+from src.particles import DeathAnimation
 from .entity import Entity
-from bullet import ImpBullet
-from objects.coin import Coin, Emerald, Ruby
-from objects.flask import RedFlask, GreenFlask
-from utils import time_passed
+from src.bullet import ImpBullet
+from src.objects.coin import Coin, Emerald, Ruby
+from src.objects.flask import RedFlask, GreenFlask
+from src.utils import time_passed
 
 
 def draw_health_bar(surf, pos, size, border_c, back_c, health_c, progress):
@@ -178,7 +178,7 @@ class Imp(Enemy):
             self.game.bullet_manager.add_bullet(
                 ImpBullet(self.game, self, self.room, self.hitbox.midbottom[0], self.hitbox.midbottom[1],
                           self.game.player.hitbox.midbottom))
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Shoot5.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Shoot5.wav'))
 
     def update(self):
         self.move()

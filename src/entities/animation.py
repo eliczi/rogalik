@@ -1,6 +1,6 @@
 import os
 import pygame
-import utils
+import src.utils as utils
 
 
 def load_animation_sprites(path, size=utils.basic_entity_size):

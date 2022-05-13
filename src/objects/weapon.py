@@ -3,12 +3,12 @@ import random
 
 import pygame
 from pygame.math import Vector2
-from utils import get_mask_rect
-import utils
+from src.utils import get_mask_rect
+import src.utils
 from PIL import Image
 from .object import Object
-from particles import ParticleManager, Fire
-from bullet import StaffBullet
+from src.particles import ParticleManager, Fire
+from src.bullet import StaffBullet
 
 
 class WeaponSwing:
@@ -72,12 +72,12 @@ class Weapon(Object):
 
     def load_image(self):
         """Load weapon image and initialize instance variables"""
-        self.size = tuple(self.scale * x for x in Image.open(f'../assets/objects/weapon/{self.name}/{self.name}.png').size)
-        self.original_image = pygame.image.load(f'../assets/objects/weapon/{self.name}/{self.name}.png').convert_alpha()
+        self.size = tuple(self.scale * x for x in Image.open(f'./assets/objects/weapon/{self.name}/{self.name}.png').size)
+        self.original_image = pygame.image.load(f'./assets/objects/weapon/{self.name}/{self.name}.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, self.size)
-        self.image_picked = pygame.image.load(f'../assets/objects/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
+        self.image_picked = pygame.image.load(f'./assets/objects/weapon/{self.name}/picked_{self.name}.png').convert_alpha()
         self.image_picked = pygame.transform.scale(self.image_picked, self.size)
-        self.hud_image = pygame.image.load(f'../assets/objects/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
+        self.hud_image = pygame.image.load(f'./assets/objects/weapon/{self.name}/{self.name}_hud.png').convert_alpha()
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.original_image, *self.rect.topleft)
@@ -194,7 +194,7 @@ class Staff(Weapon):
 
     def load_images(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/objects/weapon/{self.name}/{self.name}{i}.png').convert_alpha()
+            image = pygame.image.load(f'./assets/objects/weapon/{self.name}/{self.name}{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.size)
             self.images.append(image)
         self.image = self.images[0]
@@ -216,7 +216,7 @@ class Staff(Weapon):
         self.game.bullet_manager.add_bullet(
             StaffBullet(self.game, self, self.game.world_manager.current_room, self.firing_position[0],
                         self.firing_position[1], pos))
-        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Shoot6.wav'))
+        self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Shoot6.wav'))
 
     def player_update(self):
         self.interaction = False

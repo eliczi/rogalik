@@ -1,6 +1,6 @@
 import pygame
-from utils import get_mask_rect
-import utils
+from src.utils import get_mask_rect
+import src.utils as utils
 import random
 import math
 
@@ -74,7 +74,7 @@ class ShowPrice(ShowName):
 
     def load_image(self):
         for i in range(4):
-            image = pygame.image.load(f'../assets/objects/coin/coin/coin{i}.png').convert_alpha()
+            image = pygame.image.load(f'./assets/objects/coin/coin/coin{i}.png').convert_alpha()
             image = pygame.transform.scale(image, self.image_size)
             self.images.append(image)
         self.image = self.images[0]
@@ -166,7 +166,7 @@ class Object:
         self.image_picked = None
         self.hud_image = None
         self.image = None
-        self.path = f'../assets/objects/{self.name}'
+        self.path = f'./assets/objects/{self.name}'
         self.load_image()
         self.rect = self.image.get_rect()
         self.hitbox = get_mask_rect(self.image, *self.rect.topleft)

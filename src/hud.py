@@ -1,5 +1,5 @@
 import pygame
-import utils
+import src.utils as utils
 from math import ceil
 
 
@@ -9,7 +9,7 @@ class HealthBar:
         self.block = None
         self.end = None
         self.start = None
-        self.path = f'../assets/misc/health_bar'
+        self.path = f'./assets/misc/health_bar'
         self.load_images()
         self.starting_position = (0, 0)
         self.player = player
@@ -55,7 +55,7 @@ class PlayerGold:
         self.text_position = (25, 55)
 
     def load_image(self):
-        self.image = pygame.transform.scale(pygame.image.load('../assets/objects/coin/coin/coin0.png').convert_alpha(),
+        self.image = pygame.transform.scale(pygame.image.load('./assets/objects/coin/coin/coin0.png').convert_alpha(),
                                             self.image_size)
 
     def update(self):
@@ -83,7 +83,7 @@ class PlayerShield:
 
     def load_image(self):
         self.image = pygame.transform.scale(
-            pygame.image.load(f'../assets/objects/power_ups/{self.name}/{self.name}_hud.png').convert_alpha(),
+            pygame.image.load(f'./assets/objects/power_ups/{self.name}/{self.name}_hud.png').convert_alpha(),
             self.image_size)
 
     def update(self):
@@ -113,7 +113,7 @@ class Hud:
 
     def __init__(self, game):
         self.game = game
-        self.hud_frame = pygame.image.load('../assets/misc/hud_frame.png').convert_alpha()
+        self.hud_frame = pygame.image.load('./assets/misc/hud_frame.png').convert_alpha()
         self.rect = self.hud_frame.get_rect()
         self.rect.midtop = (21 / 2 * 64, utils.world_size[1] - 1.4 * 64)
         self.items_positions = [[580, self.position[1] + 4], [644 + 4, self.position[1] + 4],

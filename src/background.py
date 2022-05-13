@@ -1,7 +1,9 @@
 import random
 
 import pygame
-import utils
+import src.utils as utils
+
+
 class BackgroundEffects:
     class Circle:
         def __init__(self, radius, color, x, y, width):
@@ -40,7 +42,7 @@ class BackgroundEffects:
         self.circles.append(self.Circle(radius, color, x, y, width))
 
     def draw(self, surface):
-        self.surface.fill((0,0,0,0))
+        self.surface.fill((0, 0, 0, 0))
         for circle in self.circles:
             pygame.draw.circle(self.surface, circle.color, (circle.x, circle.y), circle.radius, circle.width)
         surface.blit(pygame.transform.scale(self.surface, (utils.world_size[0], utils.world_size[1]), self.dest_surf),

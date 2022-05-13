@@ -1,7 +1,7 @@
 import math
 import pygame
 import random
-from particles import EnemyHitParticle, WallHitParticle, StaffParticle
+from src.particles import EnemyHitParticle, WallHitParticle, StaffParticle
 
 
 class Bullet():
@@ -43,7 +43,7 @@ class Bullet():
     def kill(self):
         if self in self.game.bullet_manager.bullets:
             self.game.bullet_manager.bullets.remove(self)
-        self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
+        self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Impact5.wav'))
 
     def update(self):
         self.update_position()
@@ -101,7 +101,7 @@ class Bullet():
             self.dir = (-self.dir[0] + random.randint(-20, 10) / 100, -self.dir[1] + random.randint(-10, 10) / 100)
             self.speed *= random.randint(10, 20) / 10
             self.bounce_back = False
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Hit.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Hit.wav'))
 
 
 class ImpBullet(Bullet):

@@ -1,12 +1,12 @@
 import pygame
 import random
 import os
-from particles import DeathAnimation
-from bullet import BossBullet, MachineGunBullet
-from objects.flask import RedFlask, GreenFlask
-from objects.coin import Coin
-from entities.animation import EntityAnimation, load_animation_sprites
-from entities.enemy import Enemy
+from src.particles import DeathAnimation
+from src.bullet import BossBullet, MachineGunBullet
+from src.objects.flask import RedFlask, GreenFlask
+from src.objects.coin import Coin
+from src.entities.animation import EntityAnimation, load_animation_sprites
+from src.entities.enemy import Enemy
 
 
 class Boss(Enemy):
@@ -21,13 +21,13 @@ class Boss(Enemy):
     def __init__(self, game, room):
         super().__init__(game, max_hp=self.max_hp, room=room, name=self.name)
         self.room = room
-        self.image = pygame.transform.scale(pygame.image.load(f'../assets/characters/{self.name}/idle/idle0.png'),
+        self.image = pygame.transform.scale(pygame.image.load(f'./assets/characters/{self.name}/idle/idle0.png'),
                                             self.size).convert_alpha()
         self.rect = self.image.get_rect(center=(512, 400))
         self.rect.midbottom = (21 * 64 / 2, 7.25 * 64)
         self.bullets = pygame.sprite.Group()
         self.shooter = Shooting(self)
-        self.animation_database = load_animation_sprites(f'../assets/characters/{self.name}/', self.size)
+        self.animation_database = load_animation_sprites(f'./assets/characters/{self.name}/', self.size)
         self.entity_animation = EntityAnimation(self, 8, 10)
         self.items = [RedFlask(self.game, self.room)]
         self.add_treasure()
@@ -121,7 +121,7 @@ class Shooting:
     def shoot(self):
         if self.time_passed(self.shoot_time, 1000):
             self.shoot_time = pygame.time.get_ticks()
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Impact5.wav'))
             self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,
                                                                 self.boss.hitbox.center[0], self.boss.hitbox.center[1],
                                                                 self.boss.game.player.hitbox.center))
@@ -129,7 +129,7 @@ class Shooting:
     def machine_gun(self):
         if self.time_passed(self.machine_time, 100):
             self.machine_time = pygame.time.get_ticks()
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact5.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Impact5.wav'))
             self.boss.game.bullet_manager.add_bullet(MachineGunBullet(self.boss.game, self.boss, self.boss.room,
                                                                       self.boss.hitbox.center[0],
                                                                       self.boss.hitbox.center[1],
@@ -137,7 +137,7 @@ class Shooting:
 
     def half_circle_shoot(self):
         if self.time_passed(self.circle_time, self.circle_shooting_timer):
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Impact1.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Impact1.wav'))
             self.circle_time = pygame.time.get_ticks()
             for i in range(-12, 12):
                 self.boss.game.bullet_manager.add_bullet(BossBullet(self.boss.game, self.boss, self.boss.room,

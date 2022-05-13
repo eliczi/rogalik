@@ -1,9 +1,9 @@
 import pygame
 from math import sqrt
-from objects.p import Poop
-from objects.flask import GreenFlask
+from src.objects.p import Poop
+from src.objects.flask import GreenFlask
 from .entity import Entity
-from particles import Dust
+from src.particles import Dust
 
 
 class Player(Entity):
@@ -104,7 +104,7 @@ class Player(Entity):
             self.rect.y += value
         else:
             self.falling = False
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Hit.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Hit.wav'))
 
     def add_walking_particles(self):
         if self.moving():
@@ -141,7 +141,7 @@ class Player(Entity):
             self.entity_animation.hurt_timer = pygame.time.get_ticks()
         if self.shield:
             self.shield -= 1
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Random1.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Random1.wav'))
 
     def draw(self, surface):
         if self.death_counter == 0:

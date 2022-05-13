@@ -1,5 +1,5 @@
 from .map_generator import World
-import utils
+import src.utils as utils
 import pygame
 
 
@@ -150,7 +150,7 @@ class WorldManager:
             self.move_current_room = True
             self.game.player.fall(-300)
             self.game.enemy_manager.add_enemies()
-            self.game.sound_manager.play(pygame.mixer.Sound('../assets/sound/Intro.wav'))
+            self.game.sound_manager.play(pygame.mixer.Sound('./assets/sound/Intro.wav'))
 
     def move_current_rom(self):
         anim_speed = 30
